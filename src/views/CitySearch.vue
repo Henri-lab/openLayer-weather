@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { ref, watchEffect, watch, computed /* onMounted */ } from 'vue'
+import { ref, watchEffect, watch, computed /* onMounted */, onMounted } from 'vue'
 import { useWeatherInfoStore } from '../stores/weatherInfoStore'
 import { useSearchStore } from '@/stores/searchStore'
 import { useRouter } from 'vue-router'
@@ -51,6 +51,11 @@ const isShow2 = ref(-1) //控制表格操作btn是否挂载
 const isShow3 = ref(false) //控制note是否展开
 const cityName = ref('')
 const ableWatch = ref(0) //watch 标志位
+
+onMounted(() => {
+  // 刷新页面加载已经添加的城市
+  store2.getlocalStorage()
+})
 
 const list = computed(() => store2.cityList)
 
@@ -99,7 +104,6 @@ const search = () => {
     query: {
       cityName: store.cityName
     }
-
   })
 }
 
@@ -124,6 +128,9 @@ const checkCity = (cityName) => {
 
 const delCity = (cityName) => {
   store2.del(cityName)
+  store2.setlocalStorage()
+  store2.getlocalStorage()
+  console.log('已经更新城市页面')
 }
 
 //输入框样式

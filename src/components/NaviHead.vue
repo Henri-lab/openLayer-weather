@@ -1,5 +1,6 @@
 <template>
   <header class="navi-head">
+    🌐
     <div class="title" @click="home">新中地天气</div>
     <div class="weather-summary">
       <div class="location">{{ local }}</div>
@@ -68,6 +69,11 @@ const addCity = () => {
     temp: store2.temp
   })
   console.log('已经添加的城市名单：', store2.cityList)
+  store2.setlocalStorage()
+  console.log('已经更新localStorage')
+}
+const alert = () => {
+  store2.dialogVisible = true
 }
 </script>
 

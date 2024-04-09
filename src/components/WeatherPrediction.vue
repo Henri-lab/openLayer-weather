@@ -72,23 +72,49 @@ const renderChart = (v1, v2) => {
   option.value = {
     xAxis: {
       type: 'category',
-      data: ['今天', '明天', '后天', '大后天']
+      axisLabel: { show: false },
+      axisLine: { show: false },
+      axisTick: { show: false }
     },
     yAxis: {
       type: 'value',
+      axisLabel: { show: false },
+      axisLine: { show: false },
+      axisTick: { show: false },
+      splitLine: {show: false}
     },
     series: [
       {
+        name: 'daytemp',
         data: v1,
         type: 'line',
-        smooth: true
+        smooth: true,
+        label: {
+          show: true, // Shows data value at each point on the line
+          position: 'top',
+          //'c'
+          formatter: '白{c}℃',
+          fontSize: 10
+        }
       },
       {
+        name: 'nighttemp',
         data: v2,
         type: 'line',
-        smooth: true
+        smooth: true,
+        label: {
+          show: true,
+          position: 'top',
+          formatter: '晚{c}℃',
+          fontSize: 10
+        }
       }
-    ]
+    ],
+    grid: {
+      show: false,
+      height: 'auto'
+
+    }
   }
 }
 </script>
@@ -96,7 +122,7 @@ const renderChart = (v1, v2) => {
 <style lang="scss" scoped>
 .predict {
   width: 960px;
-  height: 400px;
+  height: 300px;
   margin: -20px auto;
   background-color: rgba(0, 82, 110, 0.5);
   .list {
@@ -120,6 +146,7 @@ const renderChart = (v1, v2) => {
   .chart {
     width: 100%;
     height: 300px;
+    margin-top: -100px;
   }
 }
 .title {
