@@ -82,7 +82,8 @@ const home = () => {
 const isShow = computed(() => {
   // 标记：-设置路径的元数据-提供支持
   // 如果你去的是live路由，并且你查看live的城市不在cityList中，添加键显示，否则相反；
-  if (route.meta.enabled && !store2.isExist(route.params.cityName)) return true
+  // 刚开始写注意&&和||的页面效果对比；如果选择&&，注意添加城市的重复添加问题；
+  if (route.meta.enabled || !store2.isExist(route.params.cityName)) return true
   else return false
 })
 

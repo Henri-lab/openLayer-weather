@@ -12,7 +12,7 @@
       <!-- 假如只返回一个城市 -->
       <div class="cityName" @click="search">{{ cityName }}</div>
     </div>
-    <div class="list">
+    <div class="list" v-if="isShow4">
       <ul>
         <li
           @mouseenter="select(index)"
@@ -49,6 +49,8 @@ const value = ref('')
 const isShow = ref(false) //控制input框是否高亮
 const isShow2 = ref(-1) //控制表格操作btn是否挂载
 const isShow3 = ref(false) //控制select是否展开
+const isShow4 = ref(true) //控制cityList是否展开；@default：open
+
 const cityName = ref('')
 const ableWatch = ref(0) //watch 标志位
 
@@ -70,6 +72,8 @@ watch(
   (city_input_new) => {
     if (ableWatch.value) {
       //可以回调,查找输入城市的相关信息
+      // 如果你输入空串，打开cityList
+      if (!city_input_new) isShow4.value = true
       console.log('搜索组件调用')
       store.getCityAdcode(city_input_new).then(() => {
         if (store.cityAdcode) {
@@ -77,6 +81,8 @@ watch(
           cityName.value = store.cityName
           // 展开查询界面
           isShow3.value = true
+          // 关闭cityList
+          isShow4.value = false
         } else {
           console.log('match error')
           // 展开查询界面
