@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { getLocal, getAdcode, getWeatherPrediction, getWeatherLive } from '@/api'
 
-export const useWeatherInfoStore = defineStore('weatherInfo', () => {
+export const useWeatherInfoStore = defineStore('store1', () => {
   //查询所在城市
   const local = ref('')
   const getLocalInfo = async () => {
@@ -29,7 +29,7 @@ export const useWeatherInfoStore = defineStore('weatherInfo', () => {
       else {
         cityAdcode.value = ""
         cityName.value = ""
-        console.log('getCityAdcode/store done', ':cityAdcode=' + cityAdcode.value)
+        console.log('getCityAdcode/store failed')
       }
     } else {
       console.log('getCityAdcode/store failed')

@@ -1,31 +1,30 @@
 <template>
-  <span class="title">近期天气</span>
-  <div class="predict">
-    <ul class="list">
-      <li class="dayweather" v-for="(item, index) in predictions" :key="index">
-        <span class="day" v-if="index !== 0 && index !== 1">{{ item.day }}</span>
-        <span class="day" v-if="index === 0">今天</span>
-        <span class="day" v-if="index === 1">明天</span>
-        <span class="date">{{ item.date }}</span>
-        <span class="weather">{{ item.dayweather }}</span>
-        <span class="power">风力&nbsp;{{ item.daypower }}级</span>
-      </li>
-    </ul>
-    <div class="chart">
-      <v-chart :option="option" />
+  <div class="container">
+    <span class="title">近期天气</span>
+    <div class="predict">
+      <ul class="list">
+        <li class="dayweather" v-for="(item, index) in predictions" :key="index">
+          <span class="day" v-if="index !== 0 && index !== 1">{{ item.day }}</span>
+          <span class="day" v-if="index === 0">今天</span>
+          <span class="day" v-if="index === 1">明天</span>
+          <span class="date">{{ item.date }}</span>
+          <span class="weather">{{ item.dayweather }}</span>
+          <span class="power">风力&nbsp;{{ item.daypower }}级</span>
+        </li>
+      </ul>
+      <div class="chart">
+        <v-chart :option="option" />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch, onMounted, watchEffect } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, watch, onMounted } from 'vue'
 import { useWeatherInfoStore } from '@/stores/weatherInfoStore'
-const route = useRoute()
+
 const store = useWeatherInfoStore()
-const cityName = ref('')
-watchEffect(() => (cityName.value = store.local))
-watchEffect(() => (cityName.value = route.query.cityName))
+
 const predictions = ref([])
 const option = ref({})
 
@@ -35,7 +34,8 @@ onMounted(() => {
 
 // 根据城市名称加载天气预报
 const loadData = async () => {
-  // 获得城市预报-直接使用store中的数据，避免冗余请求
+  //store1的状态已经和页面保持同步：1.跳转会请求，请求则会更新；2.返回home已经时手动更新store1的状态；
+  //获得当前页面城市的天气预报-直接使用store1中的数据，避免冗余请求
   console.log('预告组件调用')
   await store.getWeatherPredictionInfo(store.cityAdcode)
   //处理并返回新天气预报数据
@@ -81,7 +81,7 @@ const renderChart = (v1, v2) => {
       axisLabel: { show: false },
       axisLine: { show: false },
       axisTick: { show: false },
-      splitLine: {show: false}
+      splitLine: { show: false }
     },
     series: [
       {
@@ -113,43 +113,49 @@ const renderChart = (v1, v2) => {
     grid: {
       show: false,
       height: 'auto'
-
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.predict {
+.container {
   width: 960px;
-  height: 300px;
-  margin: -20px auto;
-  background-color: rgba(0, 82, 110, 0.5);
-  .list {
-    display: flex;
-    width: 100%;
-    height: 200px;
-    margin-top: 20px;
-    list-style: none;
-    flex-direction: row;
-    justify-content: space-evenly;
-    .dayweather {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-      margin-top: 30px;
-      text-align: center;
-      height: 100px;
-      font-size: 12px;
-    }
-  }
-  .chart {
+  height: 320px;
+  margin: 0 auto;
+  padding-top: 20px;
+  position: relative;
+  .predict {
     width: 100%;
     height: 300px;
-    margin-top: -100px;
+    background-color: rgba(0, 82, 110, 0.5);
+    .list {
+      display: flex;
+      width: 100%;
+      height: 200px;
+      margin-top: 20px;
+      list-style: none;
+      flex-direction: row;
+      justify-content: space-evenly;
+      .dayweather {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        margin-top: 30px;
+        text-align: center;
+        height: 100px;
+        font-size: 12px;
+      }
+    }
+    .chart {
+      width: 100%;
+      height: 300px;
+      margin-top: -100px;
+    }
   }
-}
-.title {
-  margin-left: 280px;
+  .title {
+    position: absolute;
+    top: 29px
+  }
 }
 </style>

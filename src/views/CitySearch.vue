@@ -25,7 +25,7 @@
             <div class="topo">{{ item.cityName }}</div>
             <div class="temp">{{ item.temp }}度</div>
             <div class="operate" v-if="isShow2 === index">
-              <button class="check" @click="checkCity(item.cityName)">查看</button>
+              <button class="check" @click="checkCity(item)">查看</button>
               <button class="delete" @click="delCity(item.cityName)">删除</button>
             </div>
           </div>
@@ -48,7 +48,7 @@ const router = useRouter()
 const value = ref('')
 const isShow = ref(false) //控制input框是否高亮
 const isShow2 = ref(-1) //控制表格操作btn是否挂载
-const isShow3 = ref(false) //控制note是否展开
+const isShow3 = ref(false) //控制select是否展开
 const cityName = ref('')
 const ableWatch = ref(0) //watch 标志位
 
@@ -63,17 +63,16 @@ const list = computed(() => store2.cityList)
 const enWatch = () => {
   ableWatch.value = 1
 }
-//根据输入框内容搜索城市
-//需要优化：~~~~
+//根据输入框内容返回城市fullName
 watch(
   () => value.value,
-  (newValue) => {
+  (city_input_new) => {
     if (ableWatch.value) {
       //可以回调,查找输入城市的相关信息
-      console.log('搜索组件调用~code')
-      store.getCityAdcode(newValue).then(() => {
+      console.log('搜索组件调用')
+      store.getCityAdcode(city_input_new).then(() => {
         if (store.cityAdcode) {
-          // 根据输入的城市名称找到了adcode,找到了完整城市名称
+          // 根据输入的城市名称找到了adcode,城市fullName
           cityName.value = store.cityName
           // 展开查询界面
           isShow3.value = true
@@ -93,34 +92,41 @@ watch(
   }
 )
 
-//点击城市选项跳转到相应城市的weatherLive
-const search = () => {
-  router.push({
-    name: 'live',
-    params: {
-      adcode: store.cityAdcode,
-      cityName: store.cityName
-    },
-    query: {
-      cityName: store.cityName
-    }
-  })
-}
+//点击输入表单的城市选项跳转到相应城市的weatherLive
 
-const checkCity = (cityName) => {
-  // 跳转到相应城市的weatherLive
-  let code = ''
-  store.getCityAdcode(cityName).then(() => {
-    code = store.cityAdcode
-    console.log('code=', code)
+//在路由中记录查看城市的名称和adcode
+//@store1更新时间：在搜索表单返回城市的fullName之前一丢丢
+//没有找到您输入的城市时，已经在store1中设置为:cityName、adcode置为 '' ；
+const search = () => {
+  
+  if (!store.cityName) // 没搜索到了对应的城市
+  alert('>_< 就不要为难人家了啦~~~~')
+  else {
+    //搜到了
     router.push({
       name: 'live',
       params: {
-        adcode: code,
-        cityName: cityName
+        adcode: store.cityAdcode,
+        cityName: store.cityName
       },
       query: {
-        cityName: cityName
+        cityName: store.cityName
+      }
+    })
+  }
+}
+
+const checkCity = (item) => {
+  // 跳转到相应城市的weatherLive
+  store.getCityAdcode(item.cityName).then(() => {
+    router.push({
+      name: 'live',
+      params: {
+        adcode: item.adcode,
+        cityName: item.cityName
+      },
+      query: {
+        cityName: item.cityName
       }
     })
   })
@@ -136,13 +142,12 @@ const delCity = (cityName) => {
 //输入框样式
 const active = () => {
   store2.active()
-  //   console.log('下边框颜色激活',isShow.value)
 }
 watchEffect(() => {
   isShow.value = store2.inputBorder
 })
 
-//列表操作挂载
+//列表项操作挂载
 const select = (index) => {
   isShow2.value = index
 }
@@ -205,24 +210,34 @@ const cancel = () => {
           position: relative;
           animation: growWidth 1s forwards;
           .topo {
-            width: 15%;
+            width: auto;
             position: absolute;
-            left: 5px;
+            top: 2px;
+            left: 1%;
           }
           .temp {
-            width: 15%;
+            width: auto;
             position: absolute;
-            right: -50px; //?????????????
+            top: 2px;
+            right: 1%; 
           }
           .operate {
-            position: fixed;
-            right: 280px;
+            display: flex;
+            position:absolute;
+            left: 53.5em;
+            background-color: rgb(0, 47, 61) !important;
             button {
               width: 50px;
-              height: 24px;
+              height: 25px;
               margin-right: 4px;
-              background-color: darkolivegreen;
+              background-color: rgb(102, 84, 3);
               border: 0;
+            }
+            .check:hover {
+              color: blue;
+            }
+            .delete:hover {
+              color: red;
             }
           }
         }
