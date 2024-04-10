@@ -1,6 +1,9 @@
 <template>
   <div class="live">
-    <div class="title">你正在预览{{ cityName }}的天气信息</div>
+    <div class="title" v-if="isShow">
+      你正在预览{{ cityName }}的天气信息,可以通过通过右上角的"+"号按钮保存起来
+    </div>
+    <div class="title" v-else>你正在预览{{ cityName }}的天气信息</div>
     <div class="info">
       <h1>当日气温是：{{ temperature }}摄氏度</h1>
       <h1>当日天气是：{{ weather }}</h1>
@@ -23,13 +26,14 @@ const weather = ref('')
 const temperature = ref('')
 const winddirection = ref('')
 const windpower = ref('')
+const isShow = ref(true) //决定title的显示内容；@default:查看live城市不在cityList中
 
 //查看城市的前提条件由route提供
 const adcode = computed(() => route.params.adcode)
 const cityName = computed(() => route.params.cityName)
 //获得相关城市的天气live信息；@执行时间：添加按钮invoke之前
 //将城市的temp和code同步store2,为添加城市至cityList提供支持
-const getLive = () => {
+const getLive = async () => {
   // 获取城市的天气live信息
   store.getWeatherLiveInfo(adcode.value).then(() => {
     weather.value = store.weatherLive.weather
@@ -43,8 +47,19 @@ const getLive = () => {
   })
 }
 
-onMounted(() => {
-  getLive()
+//检查cityList是否已经存在这个城市
+const checkCityList = (city) => {
+  return store2.isExist(city)
+}
+
+onMounted(async () => {
+  await getLive()
+  if (checkCityList(cityName.value)) {
+    // 如果cityList已经存在查看live的城市
+    isShow.value = false
+  }else{
+    isShow.value = true
+  }
 })
 </script>
 
@@ -54,7 +69,7 @@ onMounted(() => {
   width: 960px;
   height: 150px;
   margin: 0 auto;
-  margin-top:10px;
+  margin-top: 10px;
   background-color: transparent;
   flex-direction: column;
   justify-content: space-between;

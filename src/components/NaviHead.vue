@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <header class="navi-head">
-      💬
+      <img class="pic1" src="../img/天气预报 (1).png" />
       <div class="title" @click="home">新中地天气</div>
       <div class="weather-summary">
         <div class="location">{{ local }}</div>
@@ -11,8 +11,12 @@
         >
       </div>
       <div class="alert">
-        <button class="btn" @click="alert">&nbsp;i&nbsp;</button>&nbsp;&nbsp;
-        <button class="btn" @click="addCity" v-if="isShow">+</button>
+        <el-button class="btn" @click="alert" circle size="small"
+          ><img class="pic2" src="../img/i.png" /></el-button
+        >&nbsp;&nbsp;
+        <span class="btn btn2" @click="addCity" circle size="small" v-if="isShow"
+          ><img class="pic3" src="../img/+.png"
+        /></span>
       </div>
     </header>
   </div>
@@ -41,7 +45,7 @@ watchEffect(() => {
   windpower.value = store.weatherLive.windpower
 })
 
-onMounted(() => {
+const requestLive = async () => {
   console.log('头部组件调用')
   store.getLocalInfo().then(() => {
     console.log('头部组件调用')
@@ -51,6 +55,17 @@ onMounted(() => {
       store.getWeatherLiveInfo(store.cityAdcode)
     })
   })
+}
+onMounted(async () => {
+  let count=0
+  console.log('本地实时天气-首次请求')
+  await requestLive()
+  // 每5分钟请求一次
+  setInterval(async () => {
+    count++
+    console.log(`本地实时天气-第${count}次请求`)
+    await requestLive()
+  }, 300000)
 })
 
 const home = () => {
@@ -66,7 +81,8 @@ const home = () => {
 //添加按钮的显示
 const isShow = computed(() => {
   // 标记：-设置路径的元数据-提供支持
-  if (route.meta.enabled) return true
+  // 如果你去的是live路由，并且你查看live的城市不在cityList中，添加键显示，否则相反；
+  if (route.meta.enabled && !store2.isExist(route.params.cityName)) return true
   else return false
 })
 
@@ -91,14 +107,18 @@ const alert = () => {
 .container {
   width: 100%;
   height: 60px;
-  background-color:rgba(0, 82, 110, 0.5); ;
+  background-color: rgba(0, 82, 110, 0.5);
   .navi-head {
     width: 960px;
     height: 60px;
     margin: 0 auto;
-    background-color:transparent;
+    background-color: transparent;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
     position: relative;
+    .pic1 {
+      width: 40px;
+      margin-top: 10px;
+    }
     .title {
       height: 40px;
       line-height: 40px;
@@ -138,16 +158,22 @@ const alert = () => {
       position: absolute;
       top: 50%;
       transform: translate(0, -50%);
-      right: -1%;
+      right: 0;
       .btn {
-        width: 25px;
-        height: 25px;
-        background-color: #e8e6e3;
-        border: 0 solid;
-        border-radius: 50%;
+        border: 0;
+        background-color: rgb(143, 143, 143);
+        .pic2 {
+          margin-left: 5%;
+          width: 15px;
+        }
+        .pic3 {
+          width: 20px;
+        }
       }
-      .btn:hover {
-        color: green;
+      .btn2 {
+        margin-top: 5%;
+        text-align: center;
+        background-color: transparent;
       }
     }
   }

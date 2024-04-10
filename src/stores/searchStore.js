@@ -6,31 +6,24 @@ export const useSearchStore = defineStore('store2', () => {
     //dialoge
     const dialogVisible = ref(false)
 
-    //输入框的边框
-    const inputBorder = ref(false)
-   
-    const deactive = () => {
-        inputBorder.value = false
-    }
-    const active = () => {
-        inputBorder.value = true
-    }
-
     //添加的城市
     //cityList:searched+recorded
     const cityList = ref([])
     const temp = ref('')
     const adcode = ref('')
 
+    // 判断是否已经存在
+    const isExist = (city) => {
+        return cityList.value.some(item => (item.cityName === city))
+    }
+
     const add = (city_temp_adcode) => {
         // 列表已经存在该城市
         if (cityList.value.some(item => (item.cityName === city_temp_adcode.cityName))) return
         else cityList.value.push(city_temp_adcode)
-        inputBorder.value = false
     }
     const del = (city) => {
         cityList.value = cityList.value.filter(item => (item.cityName !== city))
-        inputBorder.value = false
     }
     const setTemp = (t) => {
         temp.value = t
@@ -62,12 +55,10 @@ export const useSearchStore = defineStore('store2', () => {
     }
     return {
         dialogVisible,
-        inputBorder,
         cityList,
         temp,
         adcode,
-        deactive,
-        active,
+        isExist,
         add,
         del,
         setTemp,

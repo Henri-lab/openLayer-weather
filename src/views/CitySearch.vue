@@ -4,7 +4,6 @@
       type="text"
       placeholder="请输入城市名称"
       class="input"
-      @click="active"
       :class="{ active: isShow }"
       v-model="value"
       @input="enWatch"
@@ -36,7 +35,7 @@
 </template>
 
 <script setup>
-import { ref, watchEffect, watch, computed /* onMounted */, onMounted } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
 import { useWeatherInfoStore } from '../stores/weatherInfoStore'
 import { useSearchStore } from '@/stores/searchStore'
 import { useRouter } from 'vue-router'
@@ -44,6 +43,7 @@ import { useRouter } from 'vue-router'
 const store = useWeatherInfoStore()
 const store2 = useSearchStore()
 const router = useRouter()
+const document = window.document
 
 const value = ref('')
 const isShow = ref(false) //控制input框是否高亮
@@ -55,6 +55,7 @@ const ableWatch = ref(0) //watch 标志位
 onMounted(() => {
   // 刷新页面加载已经添加的城市
   store2.getlocalStorage()
+  document.addEventListener('click', active)
 })
 
 const list = computed(() => store2.cityList)
@@ -76,18 +77,18 @@ watch(
           cityName.value = store.cityName
           // 展开查询界面
           isShow3.value = true
+        } else {
+          console.log('match error')
+          // 展开查询界面
+          cityName.value = '似乎没有找到你查找的城市'
+          isShow3.value = true
           //一段时间后关闭查询界面
           setTimeout(() => {
             isShow3.value = false
           }, 5000)
-        } else {
-          console.log('match error')
-          // 展开查询界面
-          isShow3.value = true
-          cityName.value = '似乎没有找到你查找的城市'
         }
       })
-      ableWatch.value = 0
+      // ableWatch.value = 0
     }
   }
 )
@@ -98,9 +99,9 @@ watch(
 //@store1更新时间：在搜索表单返回城市的fullName之前一丢丢
 //没有找到您输入的城市时，已经在store1中设置为:cityName、adcode置为 '' ；
 const search = () => {
-  
-  if (!store.cityName) // 没搜索到了对应的城市
-  alert('>_< 就不要为难人家了啦~~~~')
+  if (!store.cityName)
+    // 没搜索到了对应的城市
+    alert('>_< 就不要为难人家了啦~~~~')
   else {
     //搜到了
     router.push({
@@ -140,14 +141,17 @@ const delCity = (cityName) => {
 }
 
 //输入框样式
-const active = () => {
-  store2.active()
+const active = (e) => {
+  //如果你点击的是input框
+  if (e.target.classList.contains('input')) {
+    isShow.value = true
+  } else {
+    isShow.value = false
+    // 顺便把select也~~
+    isShow3.value = false
+  }
 }
-watchEffect(() => {
-  isShow.value = store2.inputBorder
-})
 
-//列表项操作挂载
 const select = (index) => {
   isShow2.value = index
 }
@@ -172,7 +176,7 @@ const cancel = () => {
     outline: none;
   }
   .select {
-    height: 0px;
+    height: 0;
     overflow-y: hidden;
   }
   .select.expand {
@@ -181,9 +185,10 @@ const cancel = () => {
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
     //优化：自适应高度
     overflow-y: scroll;
-    background-color: rgba(0, 82, 110, 0.5);
+    background-color: rgba(7, 179, 236, 0.5);
     margin-top: -10px;
     .cityName {
+      width: 100%;
       font-size: 14px;
     }
     .cityName:hover {
@@ -219,11 +224,11 @@ const cancel = () => {
             width: auto;
             position: absolute;
             top: 2px;
-            right: 1%; 
+            right: 1%;
           }
           .operate {
             display: flex;
-            position:absolute;
+            position: absolute;
             left: 53.5em;
             background-color: rgb(0, 47, 61) !important;
             button {

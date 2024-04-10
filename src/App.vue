@@ -9,6 +9,7 @@ const dialogVisible = ref(false)
 watchEffect(() => {
   dialogVisible.value = store2.dialogVisible
 })
+
 </script>
 
 <template>
