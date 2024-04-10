@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <header class="navi-head">
-      <img class="pic1" src="../img/天气预报 (1).png" />
+      <img class="pic1" src="../img/天气预报 (1).png" @click="home"/>
       <div class="title" @click="home">新中地天气</div>
       <div class="weather-summary">
         <div class="location">{{ local }}</div>
