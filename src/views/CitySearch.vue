@@ -183,14 +183,12 @@ const cancel = () => {
   }
   .select {
     height: 0;
-    overflow-y: hidden;
   }
   .select.expand {
     width: 100%;
     height: auto;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
     //优化：自适应高度
-    overflow-y: scroll;
     background-color: rgba(7, 179, 236, 0.5);
     margin-top: -10px;
     .cityName {

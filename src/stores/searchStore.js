@@ -11,6 +11,7 @@ export const useSearchStore = defineStore('store2', () => {
     const cityList = ref([])
     const temp = ref('')
     const adcode = ref('')
+    const isfirst = ref(1)//判断是否首次添加
 
     // 判断是否已经存在
     const isExist = (city) => {
@@ -58,6 +59,7 @@ export const useSearchStore = defineStore('store2', () => {
         cityList,
         temp,
         adcode,
+        isfirst,
         isExist,
         add,
         del,

@@ -76,14 +76,17 @@ const home = () => {
   //因此返回至home时手动更新store1中的状态，确保显示的页面城市与store1保持同步
   store.cityName = local.value
   store.cityAdcode = adcode.value
+  // 改变首次添加
+  store2.isfirst=0
 }
 
 //添加按钮的显示
 const isShow = computed(() => {
   // 标记：-设置路径的元数据-提供支持
-  // 如果你去的是live路由，并且你查看live的城市不在cityList中，添加键显示，否则相反；
-  // 刚开始写注意&&和||的页面效果对比；如果选择&&，注意添加城市的重复添加问题；
-  if (route.meta.enabled || !store2.isExist(route.params.cityName)) return true
+  // 如果你去的是live路由，并且你查看live的城市不在cityList中，添加添加键显示；
+  if (route.meta.enabled && !store2.isExist(route.params.cityName)) return true
+  // 如果你去的是live路由，并且你查看live的城市在cityList中，但是是首次添加，添加添加键显示；
+  else if(store2.isExist(route.params.cityName)&&store2.isfirst) return true
   else return false
 })
 
@@ -93,6 +96,9 @@ const addCity = () => {
     temp: store2.temp,
     adcode: store2.cityAdcode
   })
+  // 声明为首次添加
+  store2.isfirst=1
+
   console.log('已经添加的城市名单：', store2.cityList)
   store2.setlocalStorage()
   console.log('已经更新localStorage')
