@@ -10,13 +10,16 @@ const router = createRouter({
       // 注意＋s
       components: {
         search: CitySearch,
-
+      },
+      meta:{
+        name: 'home'
       }
     },
     {
       path: '/live/adcode=:adcode/cityName=:cityName',
       name: 'live',
       meta: {
+        name: 'live',
         enabled: true//route-flag是否挂载添加按钮
       },
       components:

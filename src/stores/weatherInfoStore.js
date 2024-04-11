@@ -5,6 +5,7 @@ import { getLocal, getAdcode, getWeatherPrediction, getWeatherLive } from '@/api
 export const useWeatherInfoStore = defineStore('store1', () => {
   //查询所在城市
   const local = ref('')
+  const localCode=ref('')
   const getLocalInfo = async () => {
     console.log('getLocalInfo/store')
     const res = await getLocal()
@@ -87,6 +88,7 @@ export const useWeatherInfoStore = defineStore('store1', () => {
   }
   return {
     local,
+    localCode,
     cityAdcode,
     weatherPrediction,
     weatherLive,

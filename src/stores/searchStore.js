@@ -4,7 +4,7 @@ import { defineStore } from 'pinia'
 export const useSearchStore = defineStore('store2', () => {
 
     //dialoge
-    const dialogVisible = ref(false)
+    const dialog = ref(false)
 
     //添加的城市
     //cityList:searched+recorded
@@ -39,7 +39,7 @@ export const useSearchStore = defineStore('store2', () => {
         // 
         cityList.value.forEach(item => {
             let key = item.cityName
-            let value = JSON.stringify(+item.temp)
+            let value = JSON.stringify({ temp: +item.temp, adcode: item.adcode })//*
             localStorage.setItem(key, value)
         })
     }
@@ -47,15 +47,16 @@ export const useSearchStore = defineStore('store2', () => {
         for (let i = 0; i < localStorage.length; i++) {
             if (localStorage.key(i) !== 'login') {
                 let cityName = localStorage.key(i)
-                let temp = localStorage.getItem(cityName)
+                let temp = JSON.parse(localStorage.getItem(cityName)).temp//*
+                let adcode = JSON.parse(localStorage.getItem(cityName)).adcode//*
                 // 好习惯：添加前问一下是否已经存在
                 if (cityList.value.some(item => (item.cityName === cityName))) return
-                else cityList.value.push({ cityName, temp ,adcode})
+                else cityList.value.push({ cityName, temp, adcode })
             }
         }
     }
     return {
-        dialogVisible,
+        dialog,
         cityList,
         temp,
         adcode,

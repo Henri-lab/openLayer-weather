@@ -73,7 +73,7 @@ watch(
     if (ableWatch.value) {
       //可以回调,查找输入城市的相关信息
       // 如果你输入空串，打开cityList
-      if (!city_input_new) isShow4.value = true
+      if (!city_input_new) isShow4.value = false
       console.log('搜索组件调用')
       store.getCityAdcode(city_input_new).then(() => {
         if (store.cityAdcode) {
@@ -115,9 +115,6 @@ const search = () => {
       params: {
         adcode: store.cityAdcode,
         cityName: store.cityName
-      },
-      query: {
-        cityName: store.cityName
       }
     })
   }
@@ -125,17 +122,13 @@ const search = () => {
 
 const checkCity = (item) => {
   // 跳转到相应城市的weatherLive
-  store.getCityAdcode(item.cityName).then(() => {
-    router.push({
-      name: 'live',
-      params: {
-        adcode: item.adcode,
-        cityName: item.cityName
-      },
-      query: {
-        cityName: item.cityName
-      }
-    })
+
+  router.push({
+    name: 'live',
+    params: {
+      adcode: item.adcode,
+      cityName: item.cityName
+    }
   })
 }
 
@@ -155,6 +148,7 @@ const active = (e) => {
     isShow.value = false
     // 顺便把select也~~
     isShow3.value = false
+    cityName.value = ''
   }
 }
 
@@ -183,6 +177,7 @@ const cancel = () => {
   }
   .select {
     height: 0;
+    overflow: hidden;
   }
   .select.expand {
     width: 100%;
@@ -215,7 +210,7 @@ const cancel = () => {
           width: 100%;
           height: 25px;
           margin: 5px 0;
-          background-color: rgba(0, 82, 110, 0.5);
+          background-color: var(--bcolor2);
           position: relative;
           animation: growWidth 1s forwards;
           .topo {
@@ -234,7 +229,7 @@ const cancel = () => {
             display: flex;
             position: absolute;
             left: 53.5em;
-            background-color: rgb(0, 47, 61) !important;
+            background-color: var(--bcolor);
             button {
               width: 50px;
               height: 25px;
@@ -253,6 +248,7 @@ const cancel = () => {
         .record:hover {
           width: 80%;
           margin-left: 0;
+          color: aquamarine;
           animation: fadeWidth 1s forwards;
         }
         @keyframes growWidth {

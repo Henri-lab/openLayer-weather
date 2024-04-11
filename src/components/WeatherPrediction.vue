@@ -20,24 +20,39 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useWeatherInfoStore } from '@/stores/weatherInfoStore'
+import { useRoute } from 'vue-router'
 
 const store = useWeatherInfoStore()
+const route = useRoute()
 
 const predictions = ref([])
+const dayT = ref([])
+const nightT = ref([])
 const option = ref({})
 
-onMounted(() => {
-  loadData()
-})
+const adcodeFromRoute = computed(() => route.params.adcode)
+const localCode = computed(() => store.localCode)
 
-// 根据城市名称加载天气预报
-const loadData = async () => {
+watch(
+  () => localCode.value,
+  async () => {
+    //avoid在live页面刷新的时候会读取本地的数据----!
+    if (route.meta.name === 'home') {
+      console.log('本地天气预报~loading ')
+      await loadData(localCode.value)
+      renderChart(dayT, nightT)
+    }
+  }
+)
+
+// 根据城市名称获得天气预报数据
+const getData = async (adcode) => {
   //store1的状态已经和页面保持同步：1.跳转会请求，请求则会更新；2.返回home已经时手动更新store1的状态；
   //获得当前页面城市的天气预报-直接使用store1中的数据，避免冗余请求
   console.log('预告组件调用')
-  await store.getWeatherPredictionInfo(store.cityAdcode)
+  await store.getWeatherPredictionInfo(adcode)
   //处理并返回新天气预报数据
   return store.weatherPrediction.map((item) => {
     const day = store.getFormatDay(item.date).replace('星期', '周')
@@ -53,17 +68,27 @@ const loadData = async () => {
     }
   })
 }
+// 加载数据到本地
+const loadData = async (adcode) => {
+  predictions.value = await getData(adcode)
+  dayT.value = predictions.value.map((item) => item.daytemp)
+  nightT.value = predictions.value.map((item) => item.nighttemp)
+}
+
 watch(
-  () => store.cityAdcode,
-  async () => {
-    console.log('天气预报~loading ')
-    predictions.value = await loadData()
-    console.log('天气预报~加载完毕')
-    console.log('renderChart')
-    renderChart(
-      predictions.value.map((item) => item.daytemp),
-      predictions.value.map((item) => item.nighttemp)
-    )
+  () => route.meta.name,
+  async (routeName) => {
+    if (routeName === 'home') {
+      //返回home时加载天气预报
+      console.log('本地天气预报~loading ')
+      await loadData(localCode.value)
+      renderChart(dayT, nightT)
+    } else if (routeName === 'live') {
+      //跳转live时加载天气预报
+      console.log('普通天气预报~loading ')
+      await loadData(adcodeFromRoute.value)
+      renderChart(dayT, nightT)
+    }
   }
 )
 
@@ -112,7 +137,11 @@ const renderChart = (v1, v2) => {
     ],
     grid: {
       show: false,
-      height: 'auto'
+      height: 'auto',
+      top: 20,
+      right: 0,
+      bottom: 0,
+      left: 0
     }
   }
 }
@@ -121,18 +150,18 @@ const renderChart = (v1, v2) => {
 <style lang="scss" scoped>
 .container {
   width: 960px;
-  height: 320px;
+  height: 380px;
   margin: 0 auto;
   padding-top: 20px;
   position: relative;
   .predict {
     width: 100%;
-    height: 300px;
-    background-color: rgba(0, 82, 110, 0.5);
+    height: 340px;
+    background-color: var(--bcolor2);
     .list {
       display: flex;
       width: 100%;
-      height: 200px;
+      height: 150px;
       margin-top: 20px;
       list-style: none;
       flex-direction: row;
@@ -149,13 +178,16 @@ const renderChart = (v1, v2) => {
     }
     .chart {
       width: 100%;
-      height: 300px;
-      margin-top: -100px;
+      height: 180px;
     }
   }
   .title {
     position: absolute;
-    top: 29px
+    top: 20px;
+    color: black;
+  }
+  .title:hover {
+    color: rgb(93, 228, 160);
   }
 }
 </style>
