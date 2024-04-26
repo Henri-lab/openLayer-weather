@@ -8,12 +8,5 @@
     --bcolor2:rgba(0, 82, 110, 0.5);
 }
 
-.el-dialog {
-  margin-top: 100px;
-  height: 210px;
-  padding: 5px;
-  background-color: black;
-  opacity: 50%;
-}
 
 

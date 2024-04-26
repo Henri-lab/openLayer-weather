@@ -11,10 +11,10 @@
         >
       </div>
       <div class="alert">
-        <el-button class="btn btn-i" @click="alert" circle size="small"
+        <el-button class="btn btn-i" @click="pop" circle size="small"
           ><img class="pic2" src="../img/i.png" /></el-button
         >&nbsp;&nbsp;
-        <div class="btn btn2" circle size="small" v-if="isShow" @click="addCity">
+        <div class="btn btn2" circle size="small" v-if="isShow" @click.stop="addCity">
           <img class="pic3" src="../img/+.png" />
         </div>
       </div>
@@ -37,7 +37,8 @@ const weather = ref('')
 const temperature = ref('')
 const winddirection = ref('')
 const windpower = ref('')
-const record ="weather项目开发日志(JS:Vue3+Router+Pinia)@总结：越写越觉得问题比较多，现在问题仍旧有很多，但是提交先略略略@问题：添加按钮点击时，会弹出《关于》，可能写代码时手滑或者脑抽，反正暂时不知道怎么改~~☢@更新:在头部组件的isShow判断条件。解决了进入已添加城市的live组件时，添加键仍然挂载的问@更新:在头部组件中返回home路由的操作内容@更新：在WeatherPredictionVue中的loadData阶段增加了对于页面的判断，在数据来源方面增加了路由。解决了天气预报加载时机过早的问题@更新：对页面布局的颜色和布局重新设计。解决无效占位和色彩显示的问题；*色彩显示主要是之前开了DARK主题插件导致的~@更新：本地储存城市列表时，同时储存城市adcode方便使用@更新：修复了输入城市时显示没有样式的问题 "
+const record =
+  'weather项目开发日志(JS:Vue3+Router+Pinia)@总结：越写越觉得问题比较多，现在问题仍旧有很多☢@更新:在头部组件的isShow判断条件。解决了进入已添加城市的live组件时，添加键仍然挂载的问@更新:在头部组件中返回home路由的操作内容@更新：在WeatherPredictionVue中的loadData阶段增加了对于页面的判断，在数据来源方面增加了路由。解决了天气预报加载时机过早的问题@更新：对页面布局的颜色和布局重新设计。解决无效占位和色彩显示的问题；*色彩显示主要是之前开了DARK主题插件导致的~@更新：本地储存城市列表时，同时储存城市adcode方便使用@更新：修复了输入城市时显示没有样式的问题 '
 watchEffect(() => {
   local.value = store.local
   weather.value = store.weatherLive.weather
@@ -85,9 +86,7 @@ onMounted(async () => {
 })
 
 const home = () => {
-  router.push({
-    name: 'home'
-  })
+  router.back()
   //store1中的记录只在查询后更新；
   //因此返回至home时手动更新store1中的状态，确保显示的页面城市与store1保持同步
   store.cityName = local.value
@@ -119,10 +118,11 @@ const addCity = () => {
   store2.setlocalStorage()
   console.log('已经更新localStorage')
   alert('添加成功')
+  
 }
 
 //弹出按钮控制根组件遮罩的显示
-const alert = () => {
+const pop = () => {
   store2.dialog = true
 }
 </script>

@@ -252,18 +252,21 @@ const cancel = () => {
           animation: fadeWidth 1s forwards;
         }
         @keyframes growWidth {
-          from {
+          0% {
             width: 80%;
           }
-          to {
+          100% {
             width: 100%;
           }
         }
         @keyframes fadeWidth {
-          from {
-            width: 100%;
+          0% {
+            width: 89%;
           }
-          to {
+          30% {
+            width: 89%;
+          }
+          100% {
             width: 80%;
           }
         }
