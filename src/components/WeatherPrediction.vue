@@ -24,7 +24,7 @@ import { ref, watch, computed } from 'vue'
 import { useWeatherInfoStore } from '@/stores/weatherInfoStore'
 import { useRoute } from 'vue-router'
 
-const store = useWeatherInfoStore()
+const weatherInfoStore = useWeatherInfoStore()
 const route = useRoute()
 
 const predictions = ref([])
@@ -33,14 +33,14 @@ const nightT = ref([])
 const option = ref({})
 
 const adcodeFromRoute = computed(() => route.params.adcode)
-const localCode = computed(() => store.localCode)
+const localCode = computed(() => weatherInfoStore.localCode)
 
 watch(
   () => localCode.value,
   async () => {
     //avoid在live页面刷新的时候会读取本地的数据----!
     if (route.meta.name === 'home') {
-      console.log('本地天气预报~loading ')
+      // console.log('本地天气预报~loading ')
       await loadData(localCode.value)
       renderChart(dayT, nightT)
     }
@@ -51,11 +51,11 @@ watch(
 const getData = async (adcode) => {
   //store1的状态已经和页面保持同步：1.跳转会请求，请求则会更新；2.返回home已经时手动更新store1的状态；
   //获得当前页面城市的天气预报-直接使用store1中的数据，避免冗余请求
-  console.log('预告组件调用')
-  await store.getWeatherPredictionInfo(adcode)
+  // console.log('预告组件调用')
+  await weatherInfoStore.getWeatherPredictionInfo(adcode)
   //处理并返回新天气预报数据
-  return store.weatherPrediction.map((item) => {
-    const day = store.getFormatDay(item.date).replace('星期', '周')
+  return weatherInfoStore.weatherPrediction.map((item) => {
+    const day = weatherInfoStore.getFormatDay(item.date).replace('星期', '周')
     const date = new Date(item.date)
     const formattedDate = (date.getMonth() + 1 + '-' + date.getDate()).padStart(2, '0')
     return {
@@ -80,12 +80,12 @@ watch(
   async (routeName) => {
     if (routeName === 'home') {
       //返回home时加载天气预报
-      console.log('本地天气预报~loading ')
+      // console.log('本地天气预报~loading ')
       await loadData(localCode.value)
       renderChart(dayT, nightT)
     } else if (routeName === 'live') {
       //跳转live时加载天气预报
-      console.log('普通天气预报~loading ')
+      // console.log('普通天气预报~loading ')
       await loadData(adcodeFromRoute.value)
       renderChart(dayT, nightT)
     }
@@ -173,7 +173,8 @@ const renderChart = (v1, v2) => {
         margin-top: 30px;
         text-align: center;
         height: 100px;
-        font-size: 12px;
+        font-size: 18px;
+        color: antiquewhite;
       }
     }
     .chart {

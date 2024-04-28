@@ -1,9 +1,10 @@
 <template>
-    <!-- 遮罩 -->
+  <!-- 遮罩 -->
   <div class="custom-mask"></div>
 </template>
 
-<script setup></script>
+<script setup>
+</script>
 
 <style lang="scss" scoped>
 .custom-mask {
@@ -14,6 +15,6 @@
   height: 100%;
   background-color: rgb(153, 229, 229);
   opacity: 10%;
-  z-index:-1;
+  z-index: -1;
 }
 </style>

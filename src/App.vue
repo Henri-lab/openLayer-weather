@@ -1,13 +1,14 @@
 <script setup>
 import NaviHead from './components/NaviHead.vue'
 import WeatherPrediction from './components/WeatherPrediction.vue'
+import MapPosition from './components/MapPosition.vue'
 import { ref, watchEffect } from 'vue'
 import { useSearchStore } from './stores/searchStore'
 import './main.css'
-const store2 = useSearchStore()
+const searchStore = useSearchStore()
 const dialog = ref(false)
 watchEffect(() => {
-  dialog.value = store2.dialog
+  dialog.value = searchStore.dialog
 })
 </script>
 
@@ -17,6 +18,7 @@ watchEffect(() => {
       <NaviHead />
       <router-view name="search" />
       <WeatherPrediction />
+      <MapPosition/>
     </div>
     <div class="dialog">
       <transition name="dialog-fade">
@@ -41,7 +43,7 @@ watchEffect(() => {
           </span>
           <template #footer>
             <div class="dialog-footer">
-              <el-button class="close" @click="store2.dialog = false">关闭</el-button>
+              <el-button class="close" @click="searchStore.dialog = false">关闭</el-button>
             </div>
           </template>
         </el-dialog>
@@ -52,7 +54,7 @@ watchEffect(() => {
 
 <style lang="scss" scoped>
 #app {
-  height: 900px;
+  height: 1500px;
   .box {
     height: 100%;
     background-color: var(--bcolor);

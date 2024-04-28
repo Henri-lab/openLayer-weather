@@ -40,8 +40,8 @@ import { useWeatherInfoStore } from '../stores/weatherInfoStore'
 import { useSearchStore } from '@/stores/searchStore'
 import { useRouter } from 'vue-router'
 
-const store = useWeatherInfoStore()
-const store2 = useSearchStore()
+const weatherInfoStore = useWeatherInfoStore()
+const searchStore = useSearchStore()
 const router = useRouter()
 const document = window.document
 
@@ -56,11 +56,11 @@ const ableWatch = ref(0) //watch 标志位
 
 onMounted(() => {
   // 刷新页面加载已经添加的城市
-  store2.getlocalStorage()
+  searchStore.getlocalStorage()
   document.addEventListener('click', active)
 })
 
-const list = computed(() => store2.cityList)
+const list = computed(() => searchStore.cityList)
 
 // enWatch help合理化watch频率
 const enWatch = () => {
@@ -75,16 +75,16 @@ watch(
       // 如果你输入空串，打开cityList
       if (!city_input_new) isShow4.value = false
       console.log('搜索组件调用')
-      store.getCityAdcode(city_input_new).then(() => {
-        if (store.cityAdcode) {
+      weatherInfoStore.getCityAdcode(city_input_new).then(() => {
+        if (weatherInfoStore.cityAdcode) {
           // 根据输入的城市名称找到了adcode,城市fullName
-          cityName.value = store.cityName
+          cityName.value = weatherInfoStore.cityName
           // 展开查询界面
           isShow3.value = true
           // 关闭cityList
           isShow4.value = false
         } else {
-          console.log('match error')
+          // console.log('match error')
           // 展开查询界面
           cityName.value = '似乎没有找到你查找的城市'
           isShow3.value = true
@@ -105,7 +105,7 @@ watch(
 //@store1更新时间：在搜索表单返回城市的fullName之前一丢丢
 //没有找到您输入的城市时，已经在store1中设置为:cityName、adcode置为 '' ；
 const search = () => {
-  if (!store.cityName)
+  if (!weatherInfoStore.cityName)
     // 没搜索到了对应的城市
     alert('>_< 就不要为难人家了啦~~~~')
   else {
@@ -113,8 +113,8 @@ const search = () => {
     router.push({
       name: 'live',
       params: {
-        adcode: store.cityAdcode,
-        cityName: store.cityName
+        adcode: weatherInfoStore.cityAdcode,
+        cityName: weatherInfoStore.cityName
       }
     })
   }
@@ -133,9 +133,9 @@ const checkCity = (item) => {
 }
 
 const delCity = (cityName) => {
-  store2.del(cityName)
-  store2.setlocalStorage()
-  store2.getlocalStorage()
+  searchStore.del(cityName)
+  searchStore.setlocalStorage()
+  searchStore.getlocalStorage()
   console.log('已经更新城市页面')
 }
 

@@ -20,8 +20,8 @@ import { useWeatherInfoStore } from '@/stores/weatherInfoStore'
 import { useSearchStore } from '@/stores/searchStore'
 
 const route = useRoute()
-const store = useWeatherInfoStore()
-const store2 = useSearchStore()
+const weatherInfoStore = useWeatherInfoStore()
+const searchStore = useSearchStore()
 const weather = ref('')
 const temperature = ref('')
 const winddirection = ref('')
@@ -35,21 +35,21 @@ const cityName = computed(() => route.params.cityName)
 //将城市的temp和code同步store2,为添加城市至cityList提供支持
 const getLive = async () => {
   // 获取城市的天气live信息
-  store.getWeatherLiveInfo(adcode.value).then(() => {
-    weather.value = store.weatherLive.weather
-    temperature.value = store.weatherLive.temperature
-    winddirection.value = store.weatherLive.winddirection
-    windpower.value = store.weatherLive.windpower
+  weatherInfoStore.getWeatherLiveInfo(adcode.value).then(() => {
+    weather.value = weatherInfoStore.weatherLive.weather
+    temperature.value = weatherInfoStore.weatherLive.temperature
+    winddirection.value = weatherInfoStore.weatherLive.winddirection
+    windpower.value = weatherInfoStore.weatherLive.windpower
     // 记录查看城市的气温
-    store2.setTemp(temperature.value)
+    searchStore.setTemp(temperature.value)
     // 记录查看城市的adcode
-    store2.setAdcode(adcode.value)
+    searchStore.setAdcode(adcode.value)
   })
 }
 
 //检查cityList是否已经存在这个城市
 const checkCityList = (city) => {
-  return store2.isExist(city)
+  return searchStore.isExist(city)
 }
 
 onMounted(async () => {
