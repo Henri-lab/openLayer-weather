@@ -1,5 +1,5 @@
 <template>
-  <div class="openmap">
+  <div class="openmap" @click.stop="isShow = !isShow">
     <div class="title" v-if="isPosition">
       <span class="now-position">您现在处于的位置:{{ local }}</span>
       <br />
@@ -15,14 +15,14 @@
             class="input"
             v-show="!(isHover === 1)"
             v-model.trim.number.lazy="inputSec"
-            placeholder={{ count }}
+            :placeholder="count"
             @keypress.enter="isShowTraggle"
-            v-if="!isShow"
+            v-if="isShow"
           />
-          <span class="count" v-else>
+          <span class="count" v-else @click.stop="isShow = true">
             {{ count }}
           </span> </span
-        ><span
+        >&nbsp;<span
           class="text"
           ref="txt"
           @click="positionOnce"
@@ -46,7 +46,7 @@ const weatherInfoStore = useWeatherInfoStore()
 const mapStore = useMapStore()
 
 // 全局常量
-const MAX = 86400
+const MAX = 51
 
 //默认地点
 const defaultCity = mapStore.defaultCity
@@ -86,7 +86,7 @@ async function load() {
     layers: [gdTile]
   })
   mapStore.$map = map
-  console.log(mapStore.longtitude, mapStore.latitude, '--old 经纬state')
+  // console.log(mapStore.longtitude, mapStore.latitude, '--old 经纬state')
 }
 // 🧭定位
 async function getPosition(method) {
@@ -105,22 +105,22 @@ async function positionOnce() {
 
 function manuTxt() {
   tempTxt = eleTxtInnerText.value
-  eleTxtInnerText.value = '立即定位'
+  eleTxtInnerText.value = '点击 立即定位'
 }
 function autoTxt() {
   eleTxtInnerText.value = tempTxt
 }
 
 function isShowTraggle() {
-  console.log('ss', inputSec)
-  count.value = inputSec.value
+  count.value = 5
   isShow = !isShow
   // alert('Please enter valid number')
 }
 // onMounted---------------------------
 onMounted(async () => {
+  console.log('openmap mounted start')
   await load()
-  console.log(`${count.value}s后开始自动定位`)
+  // console.log(`${count.value}s后开始自动定位`)
   const timer = setInterval(async () => {
     if (count.value > 0) count.value--
     else {
@@ -129,11 +129,12 @@ onMounted(async () => {
       console.log(mapStore.isPosition(), '定位成功？')
       //🌏🔄更新mapView在position更新之后
       if (mapStore.isPosition()) {
-        console.log(mapStore.longtitude, mapStore.latitude, 'now 经纬state')
+        // console.log(mapStore.longtitude, mapStore.latitude, 'now 经纬state')
         map.getView().setCenter(ol.proj.fromLonLat([mapStore.longtitude, mapStore.latitude]))
       } else console.log('定位失败')
     }
   }, 1000)
+  console.log('openmap mounted done')
 })
 
 watch(isHover, () => {
@@ -164,18 +165,19 @@ watch(isHover, () => {
     width: 100%;
     height: 500px;
     box-sizing: border-box;
-    border: 1px solid var(--bcolor2);
+    border: 0 1px solid var(--bcolor2);
     box-shadow: 50px 50px 100px;
     transition: all linear 0.3s;
   }
   #myMap:hover {
-    border: 10px solid var(--bcolor2);
+    border: 10px solid var(--bcolor3);
     box-shadow: 0 0 0;
     transition: all linear 0.3s;
   }
   .title {
     width: 50%;
     margin: 0 auto;
+    margin-bottom: 5px;
     text-align: center;
     font-size: 20px;
     color: white;
@@ -184,7 +186,7 @@ watch(isHover, () => {
       font-weight: bolder;
       .input {
         width: 15%;
-        height: 20px;
+        height: 30px;
         margin-bottom: 5px;
       }
     }

@@ -20,6 +20,7 @@ watchEffect(() => {
       <router-view name="search" />
       <WeatherPrediction />
       <OpenMap/>
+      <OpenControl/>
       <!-- <OpenControl/> -->
     </div>
     <div class="dialog">
