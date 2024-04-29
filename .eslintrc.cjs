@@ -11,9 +11,8 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest'
   },
+  // ?
   rules: {
-    "no-console": "off",  // 关闭 no-console 规则
-    "no-unused-vars": 0,  // 将 no-unused-vars 设置为 0 表示关闭
-    // "semi": ["error", "always"]  // 使用分号的规则保持启用
+    // 你的规则配置
   }
 }

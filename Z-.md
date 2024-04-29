@@ -20,3 +20,8 @@ const requestLive = async () => {
   })
 }
 ```
+
+1.  ref('htmlelement') 返回的是响应对象
+2.  改完innerTxt maybe强制重绘
+3.  从pinia返回的state不是响应对象，但state有响应性
+4.  ref 定义响应定义引用要在对的位置

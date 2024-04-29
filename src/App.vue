@@ -1,7 +1,8 @@
 <script setup>
 import NaviHead from './components/NaviHead.vue'
 import WeatherPrediction from './components/WeatherPrediction.vue'
-import MapPosition from './components/MapPosition.vue'
+import OpenMap from './components/OpenMap.vue'
+import OpenControl from './components/OpenControl.vue'
 import { ref, watchEffect } from 'vue'
 import { useSearchStore } from './stores/searchStore'
 import './main.css'
@@ -18,7 +19,8 @@ watchEffect(() => {
       <NaviHead />
       <router-view name="search" />
       <WeatherPrediction />
-      <MapPosition/>
+      <OpenMap/>
+      <!-- <OpenControl/> -->
     </div>
     <div class="dialog">
       <transition name="dialog-fade">
@@ -54,7 +56,7 @@ watchEffect(() => {
 
 <style lang="scss" scoped>
 #app {
-  height: 1500px;
+  height: 2000px;
   .box {
     height: 100%;
     background-color: var(--bcolor);
