@@ -3,7 +3,7 @@
     <div class="title" v-if="isPosition">
       <span class="now-position">您现在处于的位置:{{ local }}</span>
       <br />
-      <span class="now-browsing">正在浏览：？？？</span>
+      <span class="now-browsing">正在浏览：{{ mouseCity }}</span>
     </div>
     <div class="title" v-else>
       <span class="welcome">欢迎来到{{ defaultCity }}╰(￣ω￣ｏ)</span>
@@ -53,6 +53,9 @@ const defaultCity = mapStore.defaultCity
 
 // user城市
 const local = computed(() => weatherInfoStore.local)
+
+// mouse城市
+const mouseCity = ref(local)
 
 // ol data
 let map = null
@@ -137,6 +140,20 @@ onMounted(async () => {
   console.log('openmap mounted done')
 })
 
+// 请求mouse放置的城市名称
+watch(
+  () => mapStore.mouseX,
+  async () => {
+    // console.log('watch x')
+    await mapStore.getMouseCity()
+    mouseCity.value = mapStore.mouseLocation
+  },
+  {
+    immediate: true
+  }
+)
+
+// 切换标题内容
 watch(isHover, () => {
   // 确保eleTxt已经mounted
   if (eleTxt) {

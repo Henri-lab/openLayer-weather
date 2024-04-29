@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import getCityByCoordinates from '@/api/cityBycoordinates'
 
 export const useMapStore = defineStore('MapStore', () => {
     // Data-----------------------------
@@ -14,6 +15,11 @@ export const useMapStore = defineStore('MapStore', () => {
     const longtitude = ref(defaultJing)
     const latitude = ref(defaultWei)
     const zoom = ref(defaultZoom)
+    // -------鼠标坐标-----------
+    const mouseX = ref(0)
+    const mouseY = ref(0)
+    const mouseLocation = ref(null)
+
     // --openLayer objects
     let $map = null;
     const gdXYZ = new ol.source.XYZ({
@@ -36,9 +42,14 @@ export const useMapStore = defineStore('MapStore', () => {
     const isPosition = () => {
         return !(longtitude.value === defaultJing && latitude.value === defaultWei)
     }
+    // API
+    const getMouseCity = async (mouseX, mouseY) => {
+        mouseLocation.value = await getCityByCoordinates(mouseX, mouseY)
+    }
 
 
-    
+
+
     return {
         $map,
         gdXYZ,
@@ -51,6 +62,10 @@ export const useMapStore = defineStore('MapStore', () => {
         zoom,
         longtitude,
         latitude,
+        mouseX,
+        mouseY,
+        mouseLocation,
         isPosition,
+        getMouseCity,
     }
 })

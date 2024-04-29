@@ -38,10 +38,14 @@ onMounted(async () => {
     $map.on('pointermove', (e) => {
       if (mouse.value) {
         let domEle = mouse.value
-        console.log(e.coordinate)
-        let arr=e.coordinate.map((item) => item)
-        domEle.innerHTML = coordinateFormat(arr[0],arr[1])
-        
+        // console.log(e.coordinate)
+        let XYarr = e.coordinate.map((item) => item)
+        if (XYarr.length) {
+          domEle.innerHTML = coordinateFormat(XYarr[0], XYarr[1])
+          // 更新pinia
+          mapStore.mouseX = XYarr[0]
+          mapStore.mouseY = XYarr[1]
+        }
       }
     })
     const overviewMapControl = new ol.control.OverviewMap({
