@@ -185,7 +185,7 @@ const renderChart = (v1, v2) => {
   .title {
     position: absolute;
     top: 20px;
-    color: black;
+    color:darkgrey;
   }
   .title:hover {
     color: rgb(93, 228, 160);

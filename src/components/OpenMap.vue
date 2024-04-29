@@ -8,14 +8,28 @@
     <div class="title" v-else>
       <span class="welcome">欢迎来到{{ defaultCity }}╰(￣ω￣ｏ)</span>
       <br />
-      <span
-        class="position"
-        @click="positionOnce"
-        @mouseover="isHover = 1"
-        @mouseleave="isHover = 0"
-        ref="txt"
-        ><span class="sec"><input type="text" class="input" /></span
-        ><span class="text" v-show="!(isHover === 1)">{{ eleTxtInnerText }}</span></span
+      <span class="position"
+        ><span class="sec"
+          ><input
+            type="text"
+            class="input"
+            v-show="!(isHover === 1)"
+            v-model.trim.number.lazy="inputSec"
+            placeholder={{ count }}
+            @keypress.enter="isShowTraggle"
+            v-if="!isShow"
+          />
+          <span class="count" v-else>
+            {{ count }}
+          </span> </span
+        ><span
+          class="text"
+          ref="txt"
+          @click="positionOnce"
+          @mouseover="isHover = 1"
+          @mouseleave="isHover = 0"
+          >{{ eleTxtInnerText }}</span
+        ></span
       >
     </div>
     <div id="myMap"></div>
@@ -23,7 +37,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed, nextTick } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useWeatherInfoStore } from '@/stores/weatherInfoStore'
 import { useMapStore } from '@/stores/mapStore'
 import { fetchCoordinatesH5 } from '@/util/positionH5'
@@ -31,22 +45,37 @@ import { fetchCoordinatesH5 } from '@/util/positionH5'
 const weatherInfoStore = useWeatherInfoStore()
 const mapStore = useMapStore()
 
-//
+// 全局常量
+const MAX = 86400
+
+//默认地点
 const defaultCity = mapStore.defaultCity
+
 // user城市
 const local = computed(() => weatherInfoStore.local)
+
 // ol data
 let map = null
 const gdTile = mapStore.gdTile
 const defaultView = mapStore.defaultView
 const isPosition = computed(() => mapStore.isPosition())
-const count = ref(999999999)
-//
+const count = ref(MAX)
+
+//title中文本的设置
 const eleTxt = ref('txt')
+//--文本是否hover状态(default:-1)
+//--mouseover状态:1
+//--mouseleave状态:0
 const isHover = ref(-1)
 const eleTxtInnerText = ref(`秒后开始自动定位`)
 let tempTxt = ''
 
+// input交互
+const inputSec = ref(null)
+// input与count倒计时的显示isShow(default:false)
+// --isShow:true-- input倒计时显示
+// --isShow:false-- count显示
+const isShow = ref(false)
 // method---------------------------
 //🌍加载map
 async function load() {
@@ -82,6 +111,12 @@ function autoTxt() {
   eleTxtInnerText.value = tempTxt
 }
 
+function isShowTraggle() {
+  console.log('ss', inputSec)
+  count.value = inputSec.value
+  isShow = !isShow
+  // alert('Please enter valid number')
+}
 // onMounted---------------------------
 onMounted(async () => {
   await load()
@@ -116,8 +151,6 @@ watch(isHover, () => {
     }
   }
 })
-
-function test() {}
 </script>
 
 <style lang="scss" scoped>
@@ -131,7 +164,14 @@ function test() {}
     width: 100%;
     height: 500px;
     box-sizing: border-box;
+    border: 1px solid var(--bcolor2);
     box-shadow: 50px 50px 100px;
+    transition: all linear 0.3s;
+  }
+  #myMap:hover {
+    border: 10px solid var(--bcolor2);
+    box-shadow: 0 0 0;
+    transition: all linear 0.3s;
   }
   .title {
     width: 50%;
@@ -144,9 +184,11 @@ function test() {}
       font-weight: bolder;
       .input {
         width: 15%;
+        height: 20px;
+        margin-bottom: 5px;
       }
     }
-    .count:hover {
+    .position:hover {
       cursor: pointer;
       color: deeppink;
     }
