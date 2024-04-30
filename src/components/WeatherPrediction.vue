@@ -23,7 +23,7 @@
 import { ref, watch, computed } from 'vue'
 import { useWeatherInfoStore } from '@/stores/weatherInfoStore'
 import { useRoute } from 'vue-router'
-import getFormatDay from '@/util/format/formatDay'
+import getFormatDay from '@/util/format/getFormatDay'
 
 const weatherInfoStore = useWeatherInfoStore()
 const route = useRoute()
@@ -192,4 +192,4 @@ const renderChart = (v1, v2) => {
     color: rgb(93, 228, 160);
   }
 }
-</style>
+</style>@/util/format/getFormatDay
