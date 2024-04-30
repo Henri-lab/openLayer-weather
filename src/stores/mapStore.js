@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import getCityByCoordinates from '@/api/cityBycoordinates'
+import { regeoByCoordinates } from '@/api'
 
 export const useMapStore = defineStore('MapStore', () => {
     // Data-----------------------------
@@ -15,10 +15,10 @@ export const useMapStore = defineStore('MapStore', () => {
     const longtitude = ref(defaultJing)
     const latitude = ref(defaultWei)
     const zoom = ref(defaultZoom)
-    // -------鼠标坐标-----------
-    const mouseX = ref(0)
-    const mouseY = ref(0)
-    const mouseLocation = ref(null)
+    // -----反投影后的鼠标经纬坐标-----
+    const mouseJing = ref(0)
+    const mouseWei = ref(0)
+    const mouseCity = ref(null)
 
     // --openLayer objects
     let $map = null;
@@ -43,8 +43,11 @@ export const useMapStore = defineStore('MapStore', () => {
         return !(longtitude.value === defaultJing && latitude.value === defaultWei)
     }
     // API
-    const getMouseCity = async (mouseX, mouseY) => {
-        mouseLocation.value = await getCityByCoordinates(mouseX, mouseY)
+    const getMouseCity = async (jing, wei) => {
+        // 不超过6位小数 api规定
+        const city = await regeoByCoordinates(jing, wei, 'city')
+        console.log(city)
+        city && (mouseCity.value = city)
     }
 
 
@@ -62,9 +65,9 @@ export const useMapStore = defineStore('MapStore', () => {
         zoom,
         longtitude,
         latitude,
-        mouseX,
-        mouseY,
-        mouseLocation,
+        mouseJing,
+        mouseWei,
+        mouseCity,
         isPosition,
         getMouseCity,
     }

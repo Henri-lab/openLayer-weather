@@ -39,12 +39,15 @@ onMounted(async () => {
       if (mouse.value) {
         let domEle = mouse.value
         // console.log(e.coordinate)
+        // EPSG:3857，也称为Web Mercator投影
         let XYarr = e.coordinate.map((item) => item)
         if (XYarr.length) {
           domEle.innerHTML = coordinateFormat(XYarr[0], XYarr[1])
+          // 转换平面投影到经纬度
+          const jingwei = ol.proj.toLonLat(XYarr, 'EPSG:3857')
           // 更新pinia
-          mapStore.mouseX = XYarr[0]
-          mapStore.mouseY = XYarr[1]
+          mapStore.mouseJing = parseFloat(jingwei[0].toFixed(6))
+          mapStore.mouseWei = parseFloat(jingwei[1].toFixed(6))
         }
       }
     })
@@ -55,8 +58,7 @@ onMounted(async () => {
       label: '\u00AB',
       collapsed: false,
       view: new ol.View({
-        projection: 'EPSG:4326',
-        minZoom: 8,
+        minZoom: 1,
         maxZoom: 18
       })
     })

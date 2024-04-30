@@ -141,16 +141,14 @@ onMounted(async () => {
 })
 
 // 请求mouse放置的城市名称
+// range:调整变化的反应权重
+const range = 2
 watch(
-  () => mapStore.mouseX,
+  () => parseInt([mapStore.mouseJing * range, mapStore.mouseWei * range]),
   async () => {
     // console.log('watch x')
-    await mapStore.getMouseCity()
-    mouseCity.value = mapStore.mouseLocation
+    await mapStore.getMouseCity(mapStore.mouseJing,mapStore.mouseWei)
   },
-  {
-    immediate: true
-  }
 )
 
 // 切换标题内容
