@@ -7,8 +7,10 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import { useMapStore } from '@/stores/mapStore'
+import {useMouseStore} from '@/stores/mouseStore'
 import coordinateFormat from '@/util/coordinateFormat'
 const mapStore = useMapStore()
+const mouseStore = useMouseStore()
 const mouse = ref(null)
 let $map = null
 async function sleep(time) {
@@ -46,8 +48,8 @@ onMounted(async () => {
           // 转换平面投影到经纬度
           const jingwei = ol.proj.toLonLat(XYarr, 'EPSG:3857')
           // 更新pinia
-          mapStore.mouseJing = parseFloat(jingwei[0].toFixed(6))
-          mapStore.mouseWei = parseFloat(jingwei[1].toFixed(6))
+          mouseStore.mouseJing = parseFloat(jingwei[0].toFixed(6))
+          mouseStore.mouseWei = parseFloat(jingwei[1].toFixed(6))
         }
       }
     })
@@ -119,4 +121,4 @@ onMounted(async () => {
     }
   }
 }
-</style>
+</style>@/util/format/coordinateFormat

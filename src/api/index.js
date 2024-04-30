@@ -1,6 +1,8 @@
 import Instance from './Instance'
 
-const key = '030f480ba89c9b9bf9efe99c5f98c7a0'
+// const key = '030f480ba89c9b9bf9efe99c5f98c7a0'
+const key ='15ac89d2e97769c345aa9be687d7bec3'
+// const key ='4901b64d10fa26f30af3850ba1b9ad65'
 
 // 天气查询------------------------------------------------
 const getLocal = async () => {
@@ -87,14 +89,14 @@ const getWeatherLive = async (adcode) => {
     // "info": "OK",
     // "infocode": "10000"
 }
-const regeoByCoordinates = async (lat, lon, prop) => {
+const regeoByCoordinates = async (lon, lat, prop) => {
     try {
         const res = await Instance.get(`/geocode/regeo?location=${lon},${lat}&key=${key}`);
         if (res.data.status === '1' && res.data.regeocode.addressComponent) {
             switch (prop) {
                 case 'city':
                     if (res.data.regeocode.addressComponent.city) {
-                        console.log('ss')
+                        console.log('city success:',res.data.regeocode.addressComponent.city)
                         return res.data.regeocode.addressComponent.city;
                     }
                     else

@@ -23,6 +23,7 @@
 import { ref, watch, computed } from 'vue'
 import { useWeatherInfoStore } from '@/stores/weatherInfoStore'
 import { useRoute } from 'vue-router'
+import getFormatDay from '@/util/format/formatDay'
 
 const weatherInfoStore = useWeatherInfoStore()
 const route = useRoute()
@@ -55,7 +56,7 @@ const getData = async (adcode) => {
   await weatherInfoStore.getWeatherPredictionInfo(adcode)
   //处理并返回新天气预报数据
   return weatherInfoStore.weatherPrediction.map((item) => {
-    const day = weatherInfoStore.getFormatDay(item.date).replace('星期', '周')
+    const day = getFormatDay(item.date).replace('星期', '周')
     const date = new Date(item.date)
     const formattedDate = (date.getMonth() + 1 + '-' + date.getDate()).padStart(2, '0')
     return {

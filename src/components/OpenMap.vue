@@ -25,14 +25,14 @@
         >&nbsp;<span
           class="text"
           ref="txt"
-          @click="positionOnce"
+          @click="positionH5Immediate"
           @mouseover="isHover = 1"
           @mouseleave="isHover = 0"
           >{{ eleTxtInnerText }}</span
         ></span
       >
     </div>
-    <div id="myMap"></div>
+    <div id="myMap"><canvas ref="myCanvas" height="0"></canvas></div>
   </div>
 </template>
 
@@ -40,10 +40,12 @@
 import { ref, onMounted, watch, computed } from 'vue'
 import { useWeatherInfoStore } from '@/stores/weatherInfoStore'
 import { useMapStore } from '@/stores/mapStore'
-import { fetchCoordinatesH5 } from '@/util/positionH5'
+import { useMouseStore } from '@/stores/mouseStore'
+import getPosition from '@/util/position'
 
 const weatherInfoStore = useWeatherInfoStore()
 const mapStore = useMapStore()
+const mouseStore = useMouseStore()
 
 // 全局常量
 const MAX = 51
@@ -79,6 +81,7 @@ const inputSec = ref(null)
 // --isShow:true-- input倒计时显示
 // --isShow:false-- count显示
 const isShow = ref(false)
+
 // method---------------------------
 //🌍加载map
 async function load() {
@@ -89,66 +92,71 @@ async function load() {
     layers: [gdTile]
   })
   mapStore.$map = map
-  // console.log(mapStore.longtitude, mapStore.latitude, '--old 经纬state')
+  // ---------------------------------------------------------------------------------------------------------------------------console.log(mapStore.longtitude, mapStore.latitude, '--old 经纬state')
 }
 // 🧭定位
-async function getPosition(method) {
-  if (method === 'H5') return await fetchCoordinatesH5()
-}
-async function position(method) {
-  const position = await getPosition(method)
+async function updatePositionH5() {
+  const position = await getPosition('H5')
   mapStore.longtitude = position.jingH5
   mapStore.latitude = position.weiH5
 }
-
-async function positionOnce() {
-  await position('H5')
+// 立即定位
+async function positionH5Immediate() {
+  await updatePositionH5()
   count.value = 0
 }
-
+// 📃title文本切换
+// 文本1默认
 function manuTxt() {
   tempTxt = eleTxtInnerText.value
   eleTxtInnerText.value = '点击 立即定位'
 }
+// 文本2
 function autoTxt() {
   eleTxtInnerText.value = tempTxt
 }
-
+// 切换
 function isShowTraggle() {
   count.value = 5
   isShow = !isShow
-  // alert('Please enter valid number')
 }
 // onMounted---------------------------
 onMounted(async () => {
-  console.log('openmap mounted start')
+  // ---------------------------------------------------------------------------------------------------------------------------console.log('openmap mounted start')
   await load()
-  // console.log(`${count.value}s后开始自动定位`)
+  // ---------------------------------------------------------------------------------------------------------------------------console.log(`${count.value}s后开始自动定位`)
   const timer = setInterval(async () => {
     if (count.value > 0) count.value--
     else {
       clearInterval(timer)
-      await position('H5')
-      console.log(mapStore.isPosition(), '定位成功？')
+      await updatePositionH5()
+      // -------------------------------------------------------------------------------------------------------------------------------------console.log(mapStore.isPosition(), '定位成功？')
       //🌏🔄更新mapView在position更新之后
       if (mapStore.isPosition()) {
-        // console.log(mapStore.longtitude, mapStore.latitude, 'now 经纬state')
+        //--------------------------------------------------------------------------------------------------------------------------- console.log(mapStore.longtitude, mapStore.latitude, 'now 经纬state')
         map.getView().setCenter(ol.proj.fromLonLat([mapStore.longtitude, mapStore.latitude]))
+        // 设置动画
       } else console.log('定位失败')
     }
   }, 1000)
-  console.log('openmap mounted done')
+  // ---------------------------------------------------------------------------------------------------------------------------console.log('openmap mounted done')
 })
 
+// watch-----------------------------
+const range = 0.3
+let alterCity = false
 // 请求mouse放置的城市名称
-// range:调整变化的反应权重
-const range = 2
+// 请求api的频率控制
+// --Int+range:都可以调整变化的反应权重
+// --根据已知正在浏览的城市的中心点和鼠标移动后的经纬度计算你是否切换城市
 watch(
-  () => parseInt([mapStore.mouseJing * range, mapStore.mouseWei * range]),
+  () => parseInt([mouseStore.mouseJing * range, mapStore.mouseWei * range]),
   async () => {
-    // console.log('watch x')
-    await mapStore.getMouseCity(mapStore.mouseJing,mapStore.mouseWei)
-  },
+    if (alterCity) {
+      console.log('watch x')
+      // await mapStore.getMouseCity(mapStore.mouseJing,mapStore.mouseWei)
+    }
+  }
 )
 
 // 切换标题内容
