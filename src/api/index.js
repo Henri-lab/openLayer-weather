@@ -1,7 +1,7 @@
 import Instance from './Instance'
 
 // const key = '030f480ba89c9b9bf9efe99c5f98c7a0'
-const key ='15ac89d2e97769c345aa9be687d7bec3'
+const key = '15ac89d2e97769c345aa9be687d7bec3'
 // const key ='4901b64d10fa26f30af3850ba1b9ad65'
 
 // 天气查询------------------------------------------------
@@ -95,63 +95,61 @@ const regeoByCoordinates = async (lon, lat, prop) => {
         if (res.data.status === '1' && res.data.regeocode.addressComponent) {
             switch (prop) {
                 case 'city':
-                    if (res.data.regeocode.addressComponent.city) {
-                        console.log('city success:',res.data.regeocode.addressComponent.city)
+                    if (res.data.regeocode.addressComponent.city!=[]) {
+                        console.log('city success:', res.data.regeocode.addressComponent)
                         return res.data.regeocode.addressComponent.city;
                     }
-                    else
-                        break;
+                    break;
                 case 'adcode':
-                    if (res.data.regeocode.addressComponent.adcode)
+                    if (res.data.regeocode.addressComponent.adcode!=[])
                         return res.data.regeocode.addressComponent.adcode;
                     break;
                 case 'province':
-                    if (res.data.regeocode.addressComponent.province)
+                    if (res.data.regeocode.addressComponent.province!=[])
                         return res.data.regeocode.addressComponent.province;
                     break;
                 case 'district':
-                    if (res.data.regeocode.addressComponent.district)
+                    if (res.data.regeocode.addressComponent.district!=[])
                         return res.data.regeocode.addressComponent.district;
                     break;
                 case 'township':
-                    if (res.data.regeocode.addressComponent.township)
+                    if (res.data.regeocode.addressComponent.township!=[])
                         return res.data.regeocode.addressComponent.township;
                     break;
                 case 'citycode':
-                    if (res.data.regeocode.addressComponent.citycode)
+                    if (res.data.regeocode.addressComponent.citycode!=[])
                         return res.data.regeocode.addressComponent.citycode;
                     break;
                 case 'country':
-                    if (res.data.regeocode.addressComponent.country)
+                    if (res.data.regeocode.addressComponent.country!=[])
                         return res.data.regeocode.addressComponent.country;
                     break;
                 case "streetNumber":
-                    if (res.data.regeocode.addressComponent.streetNumber)
+                    if (res.data.regeocode.addressComponent.streetNumber!=[])
                         return res.data.regeocode.addressComponent.streetNumber;
                     break;
                 case "towncode":
-                    if (res.data.regeocode.addressComponent.towncode)
+                    if (res.data.regeocode.addressComponent.towncode!=[])
                         return res.data.regeocode.addressComponent.towncode;
                     break;
                 case 'building':
-                    if (res.data.regeocode.addressComponent.building)
+                    if (res.data.regeocode.addressComponent.building!=[])
                         return res.data.regeocode.addressComponent.building;
                     break;
                 case 'neighborhood':
-                    if (res.data.regeocode.addressComponent.neighborhood)
+                    if (res.data.regeocode.addressComponent.neighborhood!=[])
                         return res.data.regeocode.addressComponent.neighborhood;
                     break;
                 case 'businessAreas':
-                    if (res.data.regeocode.addressComponent.businessAreas)
+                    if (res.data.regeocode.addressComponent.businessAreas!=[])
                         return res.data.regeocode.addressComponent.businessAreas;
                     break;
                 case 'formattedAddress':
-                    if (res.data.regeocode.formatted_Address)
+                    if (res.data.regeocode.formatted_Address!=[])
                         return res.data.regeocode.formatted_Address;
                     break;
                 default:
-                    if (res.data.regeocode.addressComponent.city)
-                        return res.data.regeocode.addressComponent.city;
+                        console.log(`你正在解构API返回结果中不存在的数据${prop}`)
                     break;
             }
             return 0;
