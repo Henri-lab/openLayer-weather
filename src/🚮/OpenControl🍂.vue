@@ -5,12 +5,10 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted} from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { useMapStore } from '@/stores/mapStore'
-import { useMouseStore } from '@/stores/mouseStore'
+import {useMouseStore} from '@/stores/mouseStore'
 import coordinateFormat from '@/util/format/coordinateFormat'
-import { addControls } from '@/util/addOlObj'
-
 const mapStore = useMapStore()
 const mouseStore = useMouseStore()
 const mouse = ref(null)
@@ -22,45 +20,40 @@ async function sleep(time) {
     }, time)
   })
 }
-
 onMounted(async () => {
-  // ✨有await才拿到$map
+  // ✨只要有await就会拿到$map
   await sleep(0)
+  await nextTick()
   //----------------------------------------------------------------------------------------- console.log('opencontrol mounted start')
   $map = mapStore.$map
   if ($map) {
     console.log('$map has already generated in the map store')
     const gdTile = mapStore.gdTile
-    
-    // 添加控件
-    const controls = ['ZoomSlider', 'FullScreen', 'OverviewMap', 'ZoomToExtent']
-    const optionsArr = [
-      {
-        type: 'ZoomToExtent',
-        extent: [116.2, 39.75, 116.5, 40.05]
-      },
-      {
-        type: 'ZoomSlider'
-      },
-      {
-        type: 'FullScreen'
-      },
-      {
-        type: 'OverviewMap',
-        className: 'ol-overviewmap ol-custom-overviewmap',
-        layers: [gdTile],
-        collapseLabel: '\u00BB',
-        label: '\u00AB',
-        collapsed: false,
-        view: new ol.View({
-          minZoom: 1,
-          maxZoom: 18
-        })
-      }
-    ]
-    addControls(controls, optionsArr, $map)
 
-    // 鼠标经纬度
+    const navControl = new ol.control.ZoomToExtent({
+      extent: [116.2, 39.75, 116.5, 40.05]
+    })
+    $map.addControl(navControl)
+
+    const zoomslider = new ol.control.ZoomSlider()
+    $map.addControl(zoomslider)
+
+    const overviewMapControl = new ol.control.OverviewMap({
+      className: 'ol-overviewmap ol-custom-overviewmap',
+      layers: [gdTile],
+      collapseLabel: '\u00BB',
+      label: '\u00AB',
+      collapsed: false,
+      view: new ol.View({
+        minZoom: 1,
+        maxZoom: 18
+      })
+    })
+    $map.addControl(overviewMapControl)
+
+    const fullScreen = new ol.control.FullScreen()
+    $map.addControl(fullScreen)
+
     $map.on('pointermove', (e) => {
       if (mouse.value) {
         let domEle = mouse.value
@@ -83,8 +76,6 @@ onMounted(async () => {
   }
   // -----------------------------------------------------------------------------------------console.log('opencontrol mounted done')
 })
-
-
 </script>
 
 <style lang="scss" scoped>

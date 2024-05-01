@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import { regeoByCoordinates } from '@/api'
 
 // 管理根据鼠标hover的经纬度信息返回的接口数据
-export const useMositionStore = defineStore('MouseStore', () => {
+export const useMouseStore = defineStore('MouseStore', () => {
     // -----反投影后的鼠标经纬坐标-----
     const mouseJing = ref(0)
     const mouseWei = ref(0)

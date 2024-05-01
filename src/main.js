@@ -1,11 +1,9 @@
 
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import VueECharts from 'vue-echarts';
-import * as echarts from 'echarts';
-// import { use } from 'echarts/core';
-// import { CanvasRenderer } from 'echarts/renderers';
+import { echartsPlugin } from './plugin/echarts';
+
 
 
 import App from './App.vue'
@@ -17,6 +15,6 @@ app.component('v-chart', VueECharts);
 
 app.use(createPinia())
 app.use(router)
-app.use(echarts)
+app.use(echartsPlugin)
 
 app.mount('#app')

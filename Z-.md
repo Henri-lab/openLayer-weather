@@ -25,3 +25,12 @@ const requestLive = async () => {
 2.  改完innerTxt maybe强制重绘
 3.  从pinia返回的state不是响应对象，但state有响应性
 4.  ref 定义响应定义引用要在对的位置
+
+1.ts关闭类型检查
+```javascript
+let value:any 
+declare var ol: any;
+interface ol_Map {
+  [key: string]: any // 允许该对象有任意数量的其他属性
+}
+```
