@@ -12,7 +12,7 @@
       <!-- 假如只返回一个城市 -->
       <div class="cityName" @click="search">{{ cityName }}</div>
     </div>
-    <div class="list" v-if="isShow4">
+    <div class="list">
       <ul>
         <li
           @mouseenter="select(index)"
@@ -23,7 +23,7 @@
           <div class="record">
             <div class="topo">{{ item.cityName }}</div>
             <div class="temp">{{ item.temp }}度</div>
-            <div class="operate" v-if="isShow2 === index">
+            <div class="operate" v-show="isShow2 === index">
               <button class="check" @click="checkCity(item)">查看</button>
               <button class="delete" @click="delCity(item.cityName)">删除</button>
             </div>
@@ -46,43 +46,32 @@ const router = useRouter()
 const document = window.document
 
 const value = ref('')
-const isShow = ref(false) //控制input框是否高亮
-const isShow2 = ref(-1) //控制表格操作btn是否挂载
-const isShow3 = ref(false) //控制select是否展开
-const isShow4 = ref(true) //控制cityList是否展开；@default：open
+const isShow = ref(false) //控制輸入框是否高亮
+const isShow2 = ref(-1) //控制表格操作是否挂载
+const isShow3 = ref(false) //控制搜索結果列表是否展开
 
 const cityName = ref('')
-const ableWatch = ref(0) //watch 标志位
-
-onMounted(() => {
-  // 刷新页面加载已经添加的城市
-  searchStore.getlocalStorage()
-  document.addEventListener('click', active)
-})
-
+let ableWatch = 0 //watch 标志位
 const list = computed(() => searchStore.cityList)
 
-// enWatch help合理化watch频率
+// enWatch 合理化watch频率
 const enWatch = () => {
-  ableWatch.value = 1
+  ableWatch = 1
 }
+
 //根据输入框内容返回城市fullName
 watch(
   () => value.value,
   (city_input_new) => {
-    if (ableWatch.value) {
+    if (ableWatch) {
       //可以回调,查找输入城市的相关信息
-      // 如果你输入空串，打开cityList
-      if (!city_input_new) isShow4.value = false
-      console.log('搜索组件调用')
+      // ------------------------------------------------------------------console.log('搜索组件调用')
       weatherInfoStore.getCityAdcode(city_input_new).then(() => {
         if (weatherInfoStore.cityAdcode) {
           // 根据输入的城市名称找到了adcode,城市fullName
           cityName.value = weatherInfoStore.cityName
           // 展开查询界面
           isShow3.value = true
-          // 关闭cityList
-          isShow4.value = false
         } else {
           // console.log('match error')
           // 展开查询界面
@@ -94,29 +83,39 @@ watch(
           }, 5000)
         }
       })
-      // ableWatch.value = 0
+      ableWatch = 0
     }
   }
 )
 
-//点击输入表单的城市选项跳转到相应城市的weatherLive
+onMounted(() => {
+  // 刷新页面加载已经添加的城市
+  searchStore.getlocalStorage()
+  document.addEventListener('click', active)
+})
 
-//在路由中记录查看城市的名称和adcode
-//@store1更新时间：在搜索表单返回城市的fullName之前一丢丢
-//没有找到您输入的城市时，已经在store1中设置为:cityName、adcode置为 '' ；
+
+
+//点击输入表单的城市选项跳转到相应城市的weatherLive
+//--在路由中记录查看城市的名称和adcode
+//--@weatherInfoStore更新时间：在搜索表单返回城市的fullName之前一丢丢
+//--没有找到您输入的城市时，已经在@weatherInfoStore中设置为:cityName、adcode置为 '' ；
 const search = () => {
   if (!weatherInfoStore.cityName)
     // 没搜索到了对应的城市
-    alert('>_< 就不要为难人家了啦~~~~')
+    alert('>_< 查询失败~~~~')
   else {
     //搜到了
-    router.push({
-      name: 'live',
-      params: {
-        adcode: weatherInfoStore.cityAdcode,
-        cityName: weatherInfoStore.cityName
-      }
-    })
+    if (typeof weatherInfoStore.cityName !== 'string') alert('>_< 查询失败')
+    else {
+      router.push({
+        name: 'live',
+        params: {
+          adcode: weatherInfoStore.cityAdcode,
+          cityName: weatherInfoStore.cityName
+        }
+      })
+    }
   }
 }
 
@@ -133,10 +132,11 @@ const checkCity = (item) => {
 }
 
 const delCity = (cityName) => {
+  alert('确认删除')
   searchStore.del(cityName)
   searchStore.setlocalStorage()
   searchStore.getlocalStorage()
-  console.log('已经更新城市页面')
+  // ---------------------------------------------------------------------------------------------------------------console.log('已经更新城市页面')
 }
 
 //输入框样式
@@ -144,14 +144,17 @@ const active = (e) => {
   //如果你点击的是input框
   if (e.target.classList.contains('input')) {
     isShow.value = true
+    weatherInfoStore.cityName !== '武汉市' && (cityName.value = weatherInfoStore.cityName)
+    isShow3.value = true
   } else {
     isShow.value = false
-    // 顺便把select也~~
-    isShow3.value = false
+    // 清空搜索框
     cityName.value = ''
+    isShow3.value = false
   }
 }
 
+// 表格操作的顯示--經典排他
 const select = (index) => {
   isShow2.value = index
 }

@@ -5,7 +5,7 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted} from 'vue'
+import { ref, onMounted } from 'vue'
 import { useMapStore } from '@/stores/mapStore'
 import { useMouseStore } from '@/stores/mouseStore'
 import coordinateFormat from '@/util/format/coordinateFormat'
@@ -13,7 +13,7 @@ import { addControls } from '@/util/addOlObj'
 
 const mapStore = useMapStore()
 const mouseStore = useMouseStore()
-const mouse = ref(null)
+const mouse = ref()
 let $map = null
 async function sleep(time) {
   await new Promise((resolve) => {
@@ -31,7 +31,7 @@ onMounted(async () => {
   if ($map) {
     console.log('$map has already generated in the map store')
     const gdTile = mapStore.gdTile
-    
+
     // 添加控件
     const controls = ['ZoomSlider', 'FullScreen', 'OverviewMap', 'ZoomToExtent']
     const optionsArr = [
@@ -60,8 +60,9 @@ onMounted(async () => {
     ]
     addControls(controls, optionsArr, $map)
 
-    // 鼠标经纬度
+    // 鼠标事件-获取鼠标经纬度
     $map.on('pointermove', (e) => {
+      // mouse div 已经创建为DOM时
       if (mouse.value) {
         let domEle = mouse.value
         // console.log(e.coordinate)
@@ -77,14 +78,23 @@ onMounted(async () => {
         }
       }
     })
+
+    //默认鼠标经纬度文本
+    if (mouse.value) {
+      let domEle = mouse.value
+      domEle.innerHTML = '\\👽/'
+      //重置鼠标经纬度文本
+      window.addEventListener('mouseover', (e) => {
+        if(!e.target.classList.contains('openmap'))
+        domEle.innerHTML = '\\👽/'
+      })
+    }
   } else {
     console.error('$map is not initialized.')
     return
   }
   // -----------------------------------------------------------------------------------------console.log('opencontrol mounted done')
 })
-
-
 </script>
 
 <style lang="scss" scoped>

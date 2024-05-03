@@ -106,8 +106,7 @@ const addCity = () => {
   // console.log('已经添加的城市名单：', searchStore.cityList)
   searchStore.setlocalStorage()
   // console.log('已经更新localStorage')
-  alert('添加成功')
-  
+  alert('添加成功')//------------------ ??📌这里发现在弹出框点击确认后localStorage才更新数据？？
 }
 
 //弹出按钮控制根组件遮罩的显示

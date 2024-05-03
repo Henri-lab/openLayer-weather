@@ -38,17 +38,18 @@ export const useSearchStore = defineStore('SearchStore', () => {
         localStorage.clear()
         // 
         cityList.value.forEach(item => {
-            let key = item.cityName
+            let key = 'searchWeatherLiveMoudle-' + item.cityName
             let value = JSON.stringify({ temp: +item.temp, adcode: item.adcode })//*
             localStorage.setItem(key, value)
         })
     }
     const getlocalStorage = () => {
         for (let i = 0; i < localStorage.length; i++) {
-            if (localStorage.key(i) !== 'login') {
-                let cityName = localStorage.key(i)
-                let temp = JSON.parse(localStorage.getItem(cityName)).temp//*
-                let adcode = JSON.parse(localStorage.getItem(cityName)).adcode//*
+            if (localStorage.key(i).includes('searchWeatherLiveMoudle-')) {
+                let searchWeatherLiveMoudleIndex = localStorage.key(i)
+                let cityName = searchWeatherLiveMoudleIndex.replace('searchWeatherLiveMoudle-', '')
+                let temp = JSON.parse(localStorage.getItem(searchWeatherLiveMoudleIndex)).temp//*
+                let adcode = JSON.parse(localStorage.getItem(searchWeatherLiveMoudleIndex)).adcode//*
                 // 好习惯：添加前问一下是否已经存在
                 if (cityList.value.some(item => (item.cityName === cityName))) return
                 else cityList.value.push({ cityName, temp, adcode })
