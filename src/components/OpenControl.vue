@@ -10,18 +10,12 @@ import { useMapStore } from '@/stores/mapStore'
 import { useMouseStore } from '@/stores/mouseStore'
 import coordinateFormat from '@/util/format/coordinateFormat'
 import { addControls } from '@/util/addOlObj'
+import sleep from '../util/sleep'
 
 const mapStore = useMapStore()
 const mouseStore = useMouseStore()
 const mouse = ref()
 let $map = null
-async function sleep(time) {
-  await new Promise((resolve) => {
-    setTimeout(() => {
-      resolve()
-    }, time)
-  })
-}
 
 onMounted(async () => {
   // ✨有await才拿到$map
@@ -85,8 +79,7 @@ onMounted(async () => {
       domEle.innerHTML = '\\👽/'
       //重置鼠标经纬度文本
       window.addEventListener('mouseover', (e) => {
-        if(!e.target.classList.contains('openmap'))
-        domEle.innerHTML = '\\👽/'
+        if (!e.target.classList.contains('openmap')) domEle.innerHTML = '\\👽/'
       })
     }
   } else {

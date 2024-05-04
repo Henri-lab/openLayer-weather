@@ -29,12 +29,12 @@
           @mouseover="isHover = 1"
           @mouseleave="isHover = 0"
           >{{ eleTxtInnerText }}</span
-          ></span
-          >
-        </div>
-        <div id="myMap"><canvas ref="myCanvas" height="0"></canvas></div>
-      </div>
-    </template>
+        ></span
+      >
+    </div>
+    <div id="myMap"><canvas ref="myCanvas" height="0"></canvas></div>
+  </div>
+</template>
 
 <script setup>
 import { ref, onMounted, watch, computed, watchEffect } from 'vue'
@@ -77,7 +77,7 @@ const isBrowse = ref(false)
 // mouse处的城市名称
 const mouseCity = ref('')
 const range = 0
-let alterCity = false
+let inCity = false
 // 请求api的频率控制
 // --Int+range:都可以调整变化的反应权重
 // --根据已知正在浏览的城市的中心点和鼠标移动后的经纬度计算你是否切换城市
@@ -85,7 +85,7 @@ watch(
   () => parseInt([mouseStore.mouseJing * range, mapStore.mouseWei * range]),
   async () => {
     // 初次定位之后才请求城市-根据经纬度
-    if (!alterCity&&isPosition) {
+    if (isPosition && !inCity) {
       console.log('mouse-->jing,wei:', mouseStore.mouseJing, ',', mouseStore.mouseWei)
       await mouseStore.getMouseCity(mouseStore.mouseJing, mouseStore.mouseWei)
       // '正在浏览:'这行文本的显示
@@ -189,7 +189,7 @@ function autoTxt() {
 }
 // --切换
 function isShowTraggle(e) {
-  if(e.target.className)console.log(e.target.className)
+  if (e.target.className) console.log(e.target.className)
   count.value = 5
   isShow = !isShow
 }

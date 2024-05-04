@@ -7,26 +7,24 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      // 注意＋s
       components: {
-        search: CitySearch,
+        citySearchAndWeather: CitySearch,
       },
-      meta:{
+      meta: {
         name: 'home'
-      }
+      },
     },
     {
       path: '/live/adcode=:adcode/cityName=:cityName',
       name: 'live',
+      components:
+      {
+        citySearchAndWeather: () => import('@/views/WeatherLive.vue'),
+      },
       meta: {
         name: 'live',
         enabled: true//route-flag是否挂载添加按钮
       },
-      components:
-      {
-        search: () => import('@/views/WeatherLive.vue'),
-       
-      }
     },
     {
       path: '/:pathMatch(.*)*',

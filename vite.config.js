@@ -23,5 +23,18 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  server: {
+    proxy: {
+      '/api': {
+        target: env.VITE_BASE_URL,
+        changeOrigin: true,
+        rewrite: path => {
+          console.log(path)
+          return path.replace(/^\/api/, "");
+          /*target+/city */
+        }
+      },
+    }
   }
 })

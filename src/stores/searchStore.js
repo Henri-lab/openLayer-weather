@@ -33,9 +33,20 @@ export const useSearchStore = defineStore('SearchStore', () => {
         adcode.value = c
     }
     // 本地存储
+    const deleteLocalStorageItemsContaining = (searchString) => {
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.includes(searchString)) {
+                // 如果键名包含搜索字符串，则删除该项  
+                localStorage.removeItem(key);
+                // 减少i的值，因为我们从localStorage中移除了一个项  
+                i--;
+            }
+        }
+    }
     const setlocalStorage = () => {
         //每次都是重新set===先清空再添加 
-        localStorage.clear()
+        deleteLocalStorageItemsContaining('searchWeatherLiveMoudle-')
         // 
         cityList.value.forEach(item => {
             let key = 'searchWeatherLiveMoudle-' + item.cityName

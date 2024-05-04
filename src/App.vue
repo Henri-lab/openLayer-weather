@@ -2,22 +2,25 @@
 import NaviHead from './components/NaviHead.vue'
 import WeatherPrediction from './components/WeatherPrediction.vue'
 import DialogMark from './components/DialogMark.vue'
-import OpenMap from './components/OpenMap.vue'
+import OpenMap from './views/OpenMap.vue'
 import OpenControl from './components/OpenControl.vue'
+import SideComponent from './components/SideComponent.vue'
+import OpenLayer from './components/OpenLayer.vue'
+import OverLayers from './components/OverLayers.vue'
 import './main.css'
 </script>
 
 <template>
   <div id="app">
     <div class="box">
-      <NaviHead />
-      <router-view name="search" />
+      <!-- <NaviHead />
+      <router-view name="citySearchAndWeather"/>
       <WeatherPrediction />
-      <OpenMap />
+      <router-view name="hotCity"/>
       <OpenControl />
-      <transition name="dialog-fade">
-        <DialogMark />
-      </transition>
+      <OpenLayer/>
+      <OverLayers/>
+      <DialogMark /> -->
     </div>
   </div>
 </template>
@@ -28,6 +31,18 @@ import './main.css'
   .box {
     height: 100%;
     background-color: var(--bcolor);
+    position: relative;
+    .animation {
+      position: absolute;
+      top: 3%;
+      left: 0;
+      width: 20%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   }
 }
 // 🚩not working

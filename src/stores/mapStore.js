@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import { getFeaturesByAliyun } from '@/api'
 
 export const useMapStore = defineStore('MapStore', () => {
     // Data-----------------------------
@@ -16,7 +17,6 @@ export const useMapStore = defineStore('MapStore', () => {
     const zoom = ref(defaultZoom)
 
     // --openLayer objects
-    let $map = null;
     const gdXYZ = new ol.source.XYZ({
         title: 'gdXYZ',
         url: 'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}',
@@ -30,12 +30,45 @@ export const useMapStore = defineStore('MapStore', () => {
         center: ol.proj.fromLonLat([longtitude.value, latitude.value]),
         zoom: 15
     })
+    // 默认地图
+    let $map = new ol.Map({
+        title: 'openMap',
+        target: 'myMap',
+        view: defaultView,
+        layers: [gdTile]
+    })
+    let OpenLayerComponentLayer = null
 
 
     // Func-----------------------------
     // 是否已经定位
     const isPosition = () => {
         return !(longtitude.value === defaultJing && latitude.value === defaultWei)
+    }
+    // 获取阿里云的图层数据
+    const getUrlAliyun = async (adcode) => {
+        return `https://geo.datav.aliyun.com/areas_v3/bound/geojson?code=${adcode}_full`
+    }
+    const getLayerBorder = async (adcode) => {
+        return new ol.layer.Vector({
+            title: 'borderLayer',
+            source: await new ol.source.Vector({
+                title: 'borderSource',
+                url: getUrlAliyun(adcode),
+                format: new ol.format.GeoJSON(),
+                wrapX: true,
+            }),
+        })
+    }
+
+    const getSourceByAliyun = async (adcode) => {
+        const features = getFeaturesByAliyun(adcode)
+        let source = new ol.source.Vector({
+            title: 'borderSource',
+            wrapX: true,
+        })
+        source.addFeatures(features)
+        return source
     }
 
     return {
@@ -50,6 +83,10 @@ export const useMapStore = defineStore('MapStore', () => {
         zoom,
         longtitude,
         latitude,
+        OpenLayerComponentLayer,
         isPosition,
+        getUrlAliyun,
+        getLayerBorder,
+        getSourceByAliyun,
     }
 })

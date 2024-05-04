@@ -2,7 +2,7 @@
   <div class="container">
     <header class="navi-head">
       <img class="pic1" src="../img/天气预报 (1).png" @click="home" />
-      <div class="title" @click="home">假期愉快</div>
+      <div class="title" @click="home">沙滩之子</div>
       <div class="weather-summary">
         <div class="location">{{ local }}</div>
         <span class="lives"

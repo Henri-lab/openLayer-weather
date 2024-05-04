@@ -33,7 +33,7 @@ export const useWeatherInfoStore = defineStore('WeatherInfoStore', () => {
         // console.log('getCityAdcode/store failed')
       }
     } else {
-      // console.log('getCityAdcode/store failed')
+      console.log('getCityAdcode/store failed')
     }
   }
 
