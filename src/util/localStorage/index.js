@@ -1,9 +1,22 @@
 import { setLocalStorageItems, getLocalStorageItemsByPrefix } from './getAndSet'
-export default function localStorage(type, predix, souceArr, resultArray) {
+// 利用predix来标识item的对象类别
+export default function localStorageManager(type, predix, arr) {
     if (type ==='set') {
-        setLocalStorageItems(predix, souceArr)
+        // arr为数据源
+        setLocalStorageItems(predix, arr)
     } else if (type === 'get') {
-        resultArray = getLocalStorageItemsByPrefix(predix,resultArray)
+        // arr为结果集
+        arr = getLocalStorageItemsByPrefix(predix,arr)
+        return arr
     }
-    return resultArray
+    
 }
+
+
+// 示例：
+// 将students[100]存入localStorage；
+// localStorage('set','student-',students[100])
+
+// 将students从localStorage中提取出来，并用result[?]来存储；
+// localStorage('get','student-',result[?])
+

@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import localStorageManager from '@/util/localStorage'
 
 export const useCityHotStore = defineStore('CityHotStore', () => {
     // city:{ "id","spell,"name"}
@@ -19,33 +20,24 @@ export const useCityHotStore = defineStore('CityHotStore', () => {
     const del = (city) => {
         cityVisitedList.value = cityVisitedList.value.filter(item => (item.name !== city))
     }
-    const deleteLocalStorageItemsContaining = (searchString) => {
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key.includes(searchString)) {
-                localStorage.removeItem(key);
-                i--;//💥
-            }
-        }
+    const getlocalStorage = () => {
+        cityVisitedList=[]
+        localStorageManager('set', 'cityVisitedMoudle-', cityVisitedList)
+
     }
     const setlocalStorage = () => {
-        deleteLocalStorageItemsContaining('cityVisitedMoudle-')
-        cityVisitedList.value.forEach(item => {
-            let key = 'cityVisitedMoudle-' + item.id
-            let value = JSON.stringify({ item })
-            localStorage.setItem(key, value)
-        })
+        localStorageManager('get', 'cityVisitedModule-', cityVisitedList)
     }
-    const getlocalStorage = () => {
-        for (let i = 0; i < localStorage.length; i++) {
-            if (localStorage.key(i).includes('cityVisitedMoudle-')) {
-                let cityVisitedMoudleIndex = localStorage.key(i)
-                let id = cityVisitedMoudleIndex.replace('cityVisitedMoudle-', '')
-                let name = JSON.parse(localStorage.getItem(cityVisitedMoudleIndex)).name
-                let spell = JSON.parse(localStorage.getItem(cityVisitedMoudleIndex)).spell
-                if (cityVisitedList.value.some(item => (item.name === name))) return
-                else cityVisitedList.value.push({ id, name, spell })
-            }
-        }
+
+    return {
+        currentCity,
+        positionCity,
+        cityVisitedList,
+        hotCityList,
+        isExist,
+        add,
+        del,
+        getlocalStorage,
+        setlocalStorage
     }
-}) 
+})

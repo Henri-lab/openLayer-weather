@@ -13,10 +13,10 @@ import './main.css'
 <template>
   <div id="app">
     <div class="box">
-      <!-- <NaviHead />
+      <NaviHead />
       <router-view name="citySearchAndWeather"/>
       <WeatherPrediction />
-      <router-view name="hotCity"/>
+      <!-- <router-view name="hotCity"/>
       <OpenControl />
       <OpenLayer/>
       <OverLayers/>

@@ -44,7 +44,7 @@ export const useWeatherInfoStore = defineStore('WeatherInfoStore', () => {
     if (adcode) {
       const res = await getWeatherPrediction(adcode)
 
-      const pres=res.data.forecasts[0].casts//>.< ；postman返回的不是全部；漏写这句找bug找了好久！！
+      const pres=res.data.forecasts[0].casts//
 
       weatherPrediction.value = pres.map(item => {
         // console.log('getWeatherPredictionInfo/store done','WeatherPrediction:', weatherPrediction.value)

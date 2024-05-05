@@ -47,7 +47,6 @@ watchEffect(() => {
   windpower.value = weatherInfoStore.weatherLive.windpower
 })
 
-
 const requestLive = async () => {
   // console.log('头部组件调用')
   await weatherInfoStore.getLocalInfo()
@@ -106,7 +105,7 @@ const addCity = () => {
   // console.log('已经添加的城市名单：', searchStore.cityList)
   searchStore.setlocalStorage()
   // console.log('已经更新localStorage')
-  alert('添加成功')//------------------ ??📌这里发现在弹出框点击确认后localStorage才更新数据？？
+  alert('添加成功') //------------------ ??📌这里发现在弹出框点击确认后localStorage才更新数据？？
 }
 
 //弹出按钮控制根组件遮罩的显示
@@ -173,10 +172,12 @@ const pop = () => {
       right: 0;
       .btn {
         border: 0;
+        border-radius: 50%;
         background-color: white;
         .pic2 {
+          margin-top: 10%;
           margin-left: 5%;
-          width: 15px;
+          width: 20px;
         }
         .pic3 {
           width: 20px;
