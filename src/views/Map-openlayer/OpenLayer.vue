@@ -7,7 +7,7 @@
 <script setup>
 import { useMapStore } from '@/stores/mapStore'
 import { onMounted } from 'vue'
-import sleep from '../util/sleep'
+import sleep from '@/util/sleep'
 
 const mapStore = useMapStore()
 let map = null

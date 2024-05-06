@@ -30,7 +30,7 @@
 
 <script setup>
 import { ref, watchEffect } from 'vue'
-import { useSearchStore } from '../stores/searchStore'
+import { useSearchStore } from '@/stores/searchStore'
 const searchStore = useSearchStore()
 const dialog = ref(false)
 watchEffect(() => {
@@ -70,3 +70,4 @@ watchEffect(() => {
   }
 }
 </style>
+../../stores/searchStore

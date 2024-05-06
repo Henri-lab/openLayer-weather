@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import localStorageManager from '@/util/localStorage'
+import localStorageManager from '@/util/localStorageManager'
 
 export const useSearchStore = defineStore('SearchStore', () => {
 
@@ -15,17 +15,17 @@ export const useSearchStore = defineStore('SearchStore', () => {
     const isfirst = ref(0)//判断是否首次添加
 
     // 判断是否已经存在
-    const isExist = (city) => {
-        return cityList.value.some(item => (item.cityName === city))
+    const isExist = (cityName) => {
+        return cityList.value.some(item => (item.cityName === cityName))
     }
 
-    const add = (city_temp_adcode) => {
+    const add = (city) => {
         // 列表已经存在该城市
-        if (cityList.value.some(item => (item.cityName === city_temp_adcode.cityName))) return
-        else cityList.value.push(city_temp_adcode)
+        if (cityList.value.some(item => (item.cityName === city.cityName))) return
+        else cityList.value.push(city)
     }
-    const del = (city) => {
-        cityList.value = cityList.value.filter(item => (item.cityName !== city))
+    const del = (cityName) => {
+        cityList.value = cityList.value.filter(item => (item.cityName !== cityName))
     }
     const setTemp = (t) => {
         temp.value = t

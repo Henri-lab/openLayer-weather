@@ -1,26 +1,35 @@
 <script setup>
 import NaviHead from './components/NaviHead.vue'
 import WeatherPrediction from './components/WeatherPrediction.vue'
-import DialogMark from './components/DialogMark.vue'
-import OpenMap from './views/OpenMap.vue'
-import OpenControl from './components/OpenControl.vue'
+import DialogMark from './components/common//DialogMark.vue'
+import OpenMap from './views/Map-openlayer/OpenMap.vue'
+import OpenControl from './views/Map-openlayer/OpenControl.vue'
 import SideComponent from './components/SideComponent.vue'
-import OpenLayer from './components/OpenLayer.vue'
-import OverLayers from './components/OverLayers.vue'
+import OpenLayer from './views/Map-openlayer/OpenLayer.vue'
+import OverLayers from './views/Map-openlayer/OverLayers.vue'
+import CityHot from './views/CityHot.vue'
 import './main.css'
+import { onMounted } from 'vue'
+
+const author = '@henriFox:https://github.com/Henri-lab/weather'
+onMounted(() => {
+  console.log(author)
+})
 </script>
 
 <template>
   <div id="app">
     <div class="box">
       <NaviHead />
-      <router-view name="citySearchAndWeather"/>
+      <router-view name="citySearchAndWeather" />
       <WeatherPrediction />
-      <!-- <router-view name="hotCity"/>
+      <OpenMap />
       <OpenControl />
-      <OpenLayer/>
-      <OverLayers/>
-      <DialogMark /> -->
+      <OpenLayer />
+      <!-- <OverLayers/> -->
+      <!-- <router-view name="hotCity"/> -->
+      <!-- <CityHot></CityHot> -->
+      <!-- <DialogMark /> -->
     </div>
   </div>
 </template>
@@ -55,3 +64,4 @@ import './main.css'
 //   opacity: 0;
 // }
 </style>
+./components/common/DialogMark.vue

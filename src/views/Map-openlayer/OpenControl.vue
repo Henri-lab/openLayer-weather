@@ -10,7 +10,7 @@ import { useMapStore } from '@/stores/mapStore'
 import { useMouseStore } from '@/stores/mouseStore'
 import coordinateFormat from '@/util/format/coordinateFormat'
 import { addControls } from '@/util/addOlObj'
-import sleep from '../util/sleep'
+import sleep from '@/util/sleep'
 
 const mapStore = useMapStore()
 const mouseStore = useMouseStore()

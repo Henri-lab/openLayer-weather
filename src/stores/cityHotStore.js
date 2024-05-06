@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import localStorageManager from '@/util/localStorage'
+import localStorageManager from '@/util/localStorageManager'
 
 export const useCityHotStore = defineStore('CityHotStore', () => {
     // city:{ "id","spell,"name"}
@@ -10,18 +10,18 @@ export const useCityHotStore = defineStore('CityHotStore', () => {
     const cityVisitedList = ref([])//最近访问-本地存储
     const hotCityList = ref([])//热门城市
 
-    const isExist = (city) => {
-        return cityVisitedList.value.some(item => (item.name === city))
+    const isExist = (cityName) => {
+        return cityVisitedList.value.some(item => (item.name === cityName))
     }
-    const add = (city) => {
-        if (cityVisitedList.value.some(item => (item.name === city))) return
+    const add = (cityName) => {
+        if (cityVisitedList.value.some(item => (item.name === cityName))) return
         else cityVisitedList.value.push(city)
     }
-    const del = (city) => {
-        cityVisitedList.value = cityVisitedList.value.filter(item => (item.name !== city))
+    const del = (cityName) => {
+        cityVisitedList.value = cityVisitedList.value.filter(item => (item.name !== cityName))
     }
     const getlocalStorage = () => {
-        cityVisitedList=[]
+        cityVisitedList = []
         localStorageManager('set', 'cityVisitedMoudle-', cityVisitedList)
 
     }

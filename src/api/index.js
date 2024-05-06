@@ -175,7 +175,7 @@ const getFeaturesByAliyun = async (adcode) => {
 // http://39.103.151.139:8000/ 非官方接口
 const getCityHttp = async () => {
     return await axios({
-        url: "/api/city"
+        url: "/cheng/city"
     })
 }
 

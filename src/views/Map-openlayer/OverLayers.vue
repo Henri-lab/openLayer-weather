@@ -10,7 +10,7 @@
 <script setup>
 import { useMapStore } from '@/stores/mapStore'
 import { ref, onMounted, watch } from 'vue'
-import sleep from '../util/sleep'
+import sleep from '@/util/sleep'
 const mapStore = useMapStore()
 let map = null
 let popup = null

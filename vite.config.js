@@ -23,7 +23,7 @@ export default defineConfig(({ command, mode }) => {
     },
     server: {
       proxy: {
-        '/api': {
+        '/cheng': {
           target: env.VITE_BASE_URL,
           changeOrigin: true,
           rewrite: path => {
@@ -32,11 +32,6 @@ export default defineConfig(({ command, mode }) => {
             /*target+/city */
           }
         },
-        '/map': {
-          target: env.VITE_BASE_MAP,
-          changeOrigin: true,
-          rewrite: path => path.replace(/^\/map/, "")
-        }
       }
     }
   }

@@ -98,9 +98,6 @@ watch(
       }
     }
   },
-  {
-    immediate: true
-  }
 )
 
 //title中文本的设置
