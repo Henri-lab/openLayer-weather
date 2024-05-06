@@ -92,10 +92,8 @@ const isShow = computed(() => {
 
 const addCity = () => {
   searchStore.add({
-    cityName: searchStore.cityName,
     adcode: searchStore.adcode
     // 🚩虽然searchStore.adcode来自weatherInfoStore.cityAdcode,但是add方法来自searchStore，所以选择；
-    //--cityName同理
   })
   // 声明为首次添加
   searchStore.isfirst = 1

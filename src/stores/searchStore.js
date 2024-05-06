@@ -12,7 +12,6 @@ export const useSearchStore = defineStore('SearchStore', () => {
     //添加的城市
     //cityList:searched+recorded
     const cityList = ref([])
-    const cityName = ref('')//添加cityList预备-由weatherLive组件提供数据源
     const adcode = ref('')//添加cityList预备-由weatherLive组件提供数据源
     const isfirst = ref(0)//判断是否首次添加
 
@@ -31,9 +30,6 @@ export const useSearchStore = defineStore('SearchStore', () => {
     }
     const setAdcode = (c) => {
         adcode.value = c
-    }
-    const setCity = (cityName) => {
-        city.value = cityName
     }
     // 本地存储
     const getlocalStorage = async () => {
@@ -128,20 +124,18 @@ export const useSearchStore = defineStore('SearchStore', () => {
         // console.log(cityList.value, 'cityList')
     }
     const setlocalStorage = () => {
-        localStorageManager('set', 'searchWeatherLiveMoudle-', cityList.value)
+        localStorageManager('set/random', 'searchWeatherLiveMoudle-', cityList.value)
     }
 
     return {
         dialog,
         cityList,
-        cityName,
         adcode,
         isfirst,
         isExist,
         add,
         del,
         setAdcode,
-        setCity,
         setlocalStorage,
         getlocalStorage
     }

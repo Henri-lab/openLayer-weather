@@ -8,20 +8,34 @@ const removeLocalStorageItemsByPrefix = (prefix) => {
     }
 };
 
-function ensureId(obj) {
+let countID = 0;
+function ensureId(obj, IDtype) {
     if (!obj.hasOwnProperty('id')) {
-        obj.id = Date.now();
+        if (IDtype === 'timestamp') obj.id = Date.now();
+        else if (IDtype === 'count') obj.id = countID++;
+        else if (IDtype === 'random') obj.id = Math.random();
+        else if (IDtype === 'uuid') {
+            // UUID的使用
+            let uuidv4;
+            try {
+                uuidv4 = require('uuid').v4;
+            } catch (error) {
+                console.error('你正在使用UUID生成id,但是检测到您并没有安装 uuid 模块');
+            }
+            obj.id = uuidv4();
+        }
+        else obj.id = countID++;
     }
     return obj;
 }
 
-const setLocalStorageItems = (prefix, sourceArr = []) => {
+const setLocalStorageItems = (prefix, sourceArr = [], IDtype) => {
     // 先删除所有以指定前缀开头的项  
     removeLocalStorageItemsByPrefix(prefix);
     // 存储新的项  
     sourceArr.forEach(obj => {
         // 修改原有元素的属性
-        const newItem = ensureId(obj);
+        const newItem = ensureId(obj, IDtype);
         const key = prefix + newItem.id;
         const value = JSON.stringify(newItem);
         try {
