@@ -29,10 +29,12 @@ const windpower = ref('')
 const isShow = ref(true) //决定title的显示内容；@default:查看live城市不在cityList中
 
 //查看城市的前提条件由route提供
+// 🚩传递链：citySearchVue提供weatherInfoStore.cityAdcode---->route.params.adcode被weatherLiveVue使用；
+//citySearchVue与weatherLiveVue有路由的交流，耦合在一起🔥
 const adcode = computed(() => route.params.adcode)
 const cityName = computed(() => route.params.cityName)
 //获得相关城市的天气live信息；@执行时间：添加按钮invoke之前
-//将城市的temp和code同步store2,为添加城市至cityList提供支持
+//将城市的adcode同步searchStore,为cityList提供数据源
 const getLive = async () => {
   // 获取城市的天气live信息
   weatherInfoStore.getWeatherLiveInfo(adcode.value).then(() => {
@@ -40,10 +42,11 @@ const getLive = async () => {
     temperature.value = weatherInfoStore.weatherLive.temperature
     winddirection.value = weatherInfoStore.weatherLive.winddirection
     windpower.value = weatherInfoStore.weatherLive.windpower
-    // 记录查看城市的气温
-    searchStore.setTemp(temperature.value)
     // 记录查看城市的adcode
+    // 🚩传递链：citySearchVue提供weatherInfoStore.cityAdcode---->route.params.adcode被weatherLiveVue使用传递给searchStore.adcode；
+    // --cityName同理
     searchStore.setAdcode(adcode.value)
+    searchStore.setCityName(cityName.value)
   })
 }
 

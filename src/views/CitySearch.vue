@@ -22,7 +22,7 @@
         >
           <div class="record">
             <div class="topo">{{ item.cityName }}</div>
-            <div class="temp">{{ item.temp }}度</div>
+            <div class="temp">{{ item.temperature }}度</div>
             <div class="operate" v-show="isShow2 === index">
               <button class="check" @click="checkCity(item)">查看</button>
               <button class="delete" @click="delCity(item.cityName)">删除</button>
@@ -94,8 +94,6 @@ onMounted(() => {
   document.addEventListener('click', active)
 })
 
-
-
 //点击输入表单的城市选项跳转到相应城市的weatherLive
 //--在路由中记录查看城市的名称和adcode
 //--@weatherInfoStore更新时间：在搜索表单返回城市的fullName之前一丢丢
@@ -121,7 +119,8 @@ const search = () => {
 
 const checkCity = (item) => {
   // 跳转到相应城市的weatherLive
-
+  // 🚩传递链：citySearchVue提供weatherInfoStore.cityAdcode---->route.params.adcode被weatherLiveVue使用；
+  //citySearchVue与weatherLiveVue有路由的交流，耦合在一起🔥
   router.push({
     name: 'live',
     params: {

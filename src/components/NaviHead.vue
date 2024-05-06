@@ -11,8 +11,7 @@
         >
       </div>
       <div class="alert">
-        <button class="btn btn-i" @click="pop" 
-          ><img class="pic2" src="../img/i.png" /></button
+        <button class="btn btn-i" @click="pop"><img class="pic2" src="../img/i.png" /></button
         >&nbsp;&nbsp;
         <div class="btn btn2" circle size="small" v-if="isShow" @click.stop="addCity">
           <img class="pic3" src="../img/+.png" />
@@ -38,7 +37,6 @@ const temperature = ref('')
 const winddirection = ref('')
 const windpower = ref('')
 
-  
 watchEffect(() => {
   local.value = weatherInfoStore.local
   weather.value = weatherInfoStore.weatherLive.weather
@@ -94,9 +92,10 @@ const isShow = computed(() => {
 
 const addCity = () => {
   searchStore.add({
-    cityName: route.params.cityName,
-    temp: searchStore.temp,
-    adcode: weatherInfoStore.cityAdcode
+    cityName: searchStore.cityName,
+    adcode: searchStore.adcode
+    // 🚩虽然searchStore.adcode来自weatherInfoStore.cityAdcode,但是add方法来自searchStore，所以选择；
+    //--cityName同理
   })
   // 声明为首次添加
   searchStore.isfirst = 1
@@ -107,7 +106,7 @@ const addCity = () => {
   alert('添加成功') //------------------ ??📌这里发现在弹出框点击确认后localStorage才更新数据？？
 
   // 关闭添加键(上文已经将isShow与此值关联)
-   searchStore.isfirst = 0
+  searchStore.isfirst = 0
 }
 
 //弹出按钮控制根组件遮罩的显示
