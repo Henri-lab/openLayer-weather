@@ -3,6 +3,8 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import VueECharts from 'vue-echarts';
 import { echartsPlugin } from './plugin/echarts';
+import './main.css'
+import 'animate.css'
 
 
 

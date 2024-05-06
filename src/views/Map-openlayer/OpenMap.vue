@@ -1,7 +1,9 @@
 <template>
   <div class="openmap">
     <div class="title" v-if="isPosition">
-      <span class="now-position">您现在处于的位置:{{ location }}</span>
+      <span class="now-position" @click="animateHinge" ref="animateHTML"
+        >您现在处于的位置:{{ location }}</span
+      >
       <br />
       <span class="now-browsing" v-show="isBrowse">正在浏览：{{ mouseCity }}</span>
     </div>
@@ -46,6 +48,8 @@ import getPosition from '@/util/position'
 const weatherInfoStore = useWeatherInfoStore()
 const mapStore = useMapStore()
 const mouseStore = useMouseStore()
+
+const animateHTML = ref(null)
 // ol data
 let map = null
 const gdTile = mapStore.gdTile
@@ -76,28 +80,21 @@ watch(
 const isBrowse = ref(false)
 // mouse处的城市名称
 const mouseCity = ref('')
-const range = 0
-let inCity = false
+const range = 0.3
 // 请求api的频率控制
 // --Int+range:都可以调整变化的反应权重
 // --根据已知正在浏览的城市的中心点和鼠标移动后的经纬度计算你是否切换城市
 watch(
   () => parseInt([mouseStore.mouseJing * range, mapStore.mouseWei * range]),
   async () => {
-    // 初次定位之后才请求城市-根据经纬度
-    if (isPosition && !inCity) {
-      console.log('mouse-->jing,wei:', mouseStore.mouseJing, ',', mouseStore.mouseWei)
-      await mouseStore.getMouseCity(mouseStore.mouseJing, mouseStore.mouseWei)
-      // '正在浏览:'这行文本的显示
-      // --如果拿不到城市就'隐藏'
-      // --如果拿到城市就'显示'
-      if (mouseStore.mouseCity.length === 0) isBrowse.value = false
-      else {
-        isBrowse.value = true
-        mouseCity.value = mouseStore.mouseCity
-      }
+    // 初次定位之后,如果经纬度变化一定程度，就添加动画
+    if (isPosition.value) {
+      console.log('animation')
     }
   },
+  {
+    immediate: true
+  }
 )
 
 //title中文本的设置
@@ -152,6 +149,28 @@ onMounted(async () => {
     }
   }, 1000)
   // ---------------------------------------------------------------------------------------------------------------------------console.log('openmap mounted done')
+  // 定位之后--点击地图获取鼠标点击处的中国城市
+  map.on('click', async () => {
+    console.log('mouse-->jing,wei:', mouseStore.mouseJing, ',', mouseStore.mouseWei)
+    // '正在浏览:'这行文本的显示
+    // --如果拿不到城市就'隐藏'
+    // --如果拿到城市就'显示'
+    if (
+      // 中国经纬度大概范围+定位之后
+      mouseStore.mouseJing < 135.05 &&
+      mouseStore.mouseJing > 73.66 &&
+      mouseStore.mouseWei < 53.56 &&
+      mouseStore.mouseWei > 3.86 &&
+      isPosition.value
+    ) {
+      await mouseStore.getMouseCity(mouseStore.mouseJing, mouseStore.mouseWei)
+      if (mouseStore.mouseCity.length === 0) isBrowse.value = false
+      else {
+        isBrowse.value = true
+        mouseCity.value = mouseStore.mouseCity
+      }
+    }
+  })
 })
 
 // method---------------------------
@@ -188,7 +207,18 @@ function autoTxt() {
 function isShowTraggle(e) {
   if (e.target.className) console.log(e.target.className)
   count.value = 5
-  isShow = !isShow
+  isShow.value = !isShow.value
+}
+
+// 动画库
+let box = null
+function animateHinge() {
+  animateHTML.value && (box = animateHTML.value)
+  box.classList.add('animate__animated', 'animate__flash')
+  // Remove the class after the animation is completed
+  box.addEventListener('animationend', () => {
+    box.classList.remove('animate__animated', 'animate__flash')
+  })
 }
 </script>
 

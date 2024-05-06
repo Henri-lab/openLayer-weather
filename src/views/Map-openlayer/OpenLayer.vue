@@ -17,8 +17,7 @@ onMounted(async() => {
   await sleep(0)
   map = mapStore.$map
   if (map) {
-    const layer = await mapStore.getLayerBorder(100000)
-    mapStore.OpenLayerComponentlayer=layer
+    const layer = await mapStore.getLayerWithPolygonByAdcodeByAliyun(100000)
     map.addLayer(layer)
     map.on('pointermove', function (e) {
       let pixel = map.getEventPixel(e.originalEvent)

@@ -59,7 +59,7 @@ onMounted(async () => {
       // mouse div 已经创建为DOM时
       if (mouse.value) {
         let domEle = mouse.value
-        // console.log(e.coordinate)
+        // ---------------------------------------------------------------------------------------------------------------------------console.log(e.coordinate)
         // EPSG:3857，也称为Web Mercator投影
         let XYarr = e.coordinate.map((item) => item)
         if (XYarr.length) {
@@ -76,10 +76,10 @@ onMounted(async () => {
     //默认鼠标经纬度文本
     if (mouse.value) {
       let domEle = mouse.value
-      domEle.innerHTML = '\\👽/'
+      domEle.innerHTML = '👽点击地图'
       //重置鼠标经纬度文本
       window.addEventListener('mouseover', (e) => {
-        if (!e.target.classList.contains('openmap')) domEle.innerHTML = '\\👽/'
+        if (!e.target.classList.contains('openmap')) domEle.innerHTML = '👽点击地图'
       })
     }
   } else {

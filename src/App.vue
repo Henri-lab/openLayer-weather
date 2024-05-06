@@ -8,12 +8,13 @@ import SideComponent from './components/SideComponent.vue'
 import OpenLayer from './views/Map-openlayer/OpenLayer.vue'
 import OverLayers from './views/Map-openlayer/OverLayers.vue'
 import CityHot from './views/CityHot.vue'
-import './main.css'
+
 import { onMounted } from 'vue'
 
 const author = '@henriFox:https://github.com/Henri-lab/weather'
 onMounted(() => {
   console.log(author)
+
 })
 </script>
 

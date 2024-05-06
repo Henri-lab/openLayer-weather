@@ -37,7 +37,7 @@ export const useMapStore = defineStore('MapStore', () => {
         view: defaultView,
         layers: [gdTile]
     })
-    let OpenLayerComponentLayer = null
+    let $layerWithPolygonByAliyun = null
 
 
     // Func-----------------------------
@@ -49,8 +49,8 @@ export const useMapStore = defineStore('MapStore', () => {
     const getUrlAliyun = async (adcode) => {
         return `https://geo.datav.aliyun.com/areas_v3/bound/geojson?code=${adcode}_full`
     }
-    const getLayerBorder = async (adcode) => {
-        return new ol.layer.Vector({
+    const getLayerWithPolygonByAdcodeByAliyun = async (adcode) => {
+        const layerWithPolygonByAliyun = new ol.layer.Vector({
             title: 'borderLayer',
             source: await new ol.source.Vector({
                 title: 'borderSource',
@@ -59,10 +59,12 @@ export const useMapStore = defineStore('MapStore', () => {
                 wrapX: true,
             }),
         })
+        $layerWithPolygonByAliyun=layerWithPolygonByAliyun
+        return layerWithPolygonByAliyun
     }
 
-    const getSourceByAliyun = async (adcode) => {
-        const features = getFeaturesByAliyun(adcode)
+    const getSourceWithPolygonByAdcodeByAliyun = async (adcode) => {
+        const features = new ol.format.GeoJSON().readFeatures(getFeaturesByAliyun(adcode));
         let source = new ol.source.Vector({
             title: 'borderSource',
             wrapX: true,
@@ -83,10 +85,10 @@ export const useMapStore = defineStore('MapStore', () => {
         zoom,
         longtitude,
         latitude,
-        OpenLayerComponentLayer,
+        $layerWithPolygonByAliyun ,
         isPosition,
         getUrlAliyun,
-        getLayerBorder,
-        getSourceByAliyun,
+        getLayerWithPolygonByAdcodeByAliyun,
+        getSourceWithPolygonByAdcodeByAliyun,
     }
 })

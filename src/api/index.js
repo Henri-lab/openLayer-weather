@@ -107,7 +107,8 @@ const regeoByCoordinates = async (lon, lat, prop) => {
                     break;
                 case 'province':
                     if (res.data.regeocode.addressComponent.province != [])
-                        return res.data.regeocode.addressComponent.province;
+                        console.log('province success:', res.data.regeocode.addressComponent)
+                    return res.data.regeocode.addressComponent.province;
                     break;
                 case 'district':
                     if (res.data.regeocode.addressComponent.district != [])

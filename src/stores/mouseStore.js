@@ -14,10 +14,14 @@ export const useMouseStore = defineStore('MouseStore', () => {
     const getMouseCity = async (jing, wei) => {
         // 不超过6位小数 api规定
         const city = await regeoByCoordinates(jing, wei, 'city')
-        city && (mouseCity.value = city)
+        if (city == []) {
+            const directProvince = await regeoByCoordinates(mouseJing.value, mouseWei.value, 'province')
+            directProvince && (mouseCity.value = directProvince)
+        } else mouseCity.value = city
     }
 
-    return{
+
+    return {
         mouseJing,
         mouseWei,
         mouseCity,
