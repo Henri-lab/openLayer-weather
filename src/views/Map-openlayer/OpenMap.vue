@@ -5,7 +5,7 @@
         >您现在处于的位置:{{ location }}</span
       >
       <br />
-      <span class="now-browsing" v-show="isBrowse">正在浏览：{{ mouseCity }}</span>
+      <span class="now-browsing" v-show="isBrowse">点击城市：{{ mouseCity }}</span>
     </div>
     <div class="title" v-else>
       <span class="welcome">欢迎来到{{ defaultCity }}</span>
@@ -143,8 +143,18 @@ onMounted(async () => {
       //🌏🔄更新mapView在position更新之后
       if (mapStore.isPosition()) {
         //--------------------------------------------------------------------------------------------------------------------------- console.log(mapStore.longtitude, mapStore.latitude, 'now 经纬state')
-        map.getView().setCenter(ol.proj.fromLonLat([mapStore.longtitude, mapStore.latitude]))
-        // 设置动画
+
+        // 无动画
+        // map.getView().setCenter(ol.proj.fromLonLat([mapStore.longtitude, mapStore.latitude]))
+        // map.getView().setZoom(15)
+
+        // 有动画
+        let viewPosition = map.getView()
+        viewPosition.animate({
+          center: ol.proj.fromLonLat([mapStore.longtitude, mapStore.latitude]),
+          zoom: 15,
+          duration: 2000
+        })
       } else console.log('定位失败')
     }
   }, 1000)

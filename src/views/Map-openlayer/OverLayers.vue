@@ -44,7 +44,6 @@ onMounted(async () => {
         if (pixel) {
           map.forEachFeatureAtPixel(pixel, (feature) => {
             featureAtPixelFirst = feature
-            console.log('forEachFeatureAtPixel invoke')
             return true
           })
         }
@@ -76,7 +75,7 @@ watch(
   () => mapStore.OpenLayerComponentlayer,
   () => {
     // 经典排他
-    mapStore.OpenLayerComponentlayer.getSource()
+    mapStore.$layerWithPolygonByAliyun.getSource()
       .getFeatures()
       .forEach((item) => {
         item.setStyle(null)

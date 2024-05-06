@@ -8,10 +8,10 @@ export const useMapStore = defineStore('MapStore', () => {
     // --longitude(default:116.404)
     // --latitude(default:39.915)
     // --defaultCity(default:'天安门')
-    const defaultZoom = 15
-    const defaultJing = 116.404
-    const defaultWei = 39.915
-    const defaultCity = '天安门'
+    const defaultZoom = 4
+    const defaultJing = 105.00
+    const defaultWei = 35.00
+    const defaultCity = '中国'
     const longtitude = ref(defaultJing)
     const latitude = ref(defaultWei)
     const zoom = ref(defaultZoom)
@@ -28,7 +28,7 @@ export const useMapStore = defineStore('MapStore', () => {
     })
     let defaultView = new ol.View({
         center: ol.proj.fromLonLat([longtitude.value, latitude.value]),
-        zoom: 15
+        zoom: zoom.value,
     })
     // 默认地图
     let $map = new ol.Map({
@@ -46,7 +46,7 @@ export const useMapStore = defineStore('MapStore', () => {
         return !(longtitude.value === defaultJing && latitude.value === defaultWei)
     }
     // 获取阿里云的图层数据
-    const getUrlAliyun = async (adcode) => {
+    const getUrlAliyun = (adcode) => {
         return `https://geo.datav.aliyun.com/areas_v3/bound/geojson?code=${adcode}_full`
     }
     const getLayerWithPolygonByAdcodeByAliyun = async (adcode) => {

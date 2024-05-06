@@ -22,6 +22,7 @@ export default function localStorageManager(type, predix, arr) {
             return arr;
         default:
             // 处理未知的type
+            console.log('localStorageManager参数异常')
             return null;
     }
 }

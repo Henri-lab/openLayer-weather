@@ -44,9 +44,7 @@ const getLive = async () => {
     windpower.value = weatherInfoStore.weatherLive.windpower
     // 记录查看城市的adcode
     // 🚩传递链：citySearchVue提供weatherInfoStore.cityAdcode---->route.params.adcode被weatherLiveVue使用传递给searchStore.adcode；
-    // --cityName同理
     searchStore.setAdcode(adcode.value)
-    searchStore.setCityName(cityName.value)
   })
 }
 
