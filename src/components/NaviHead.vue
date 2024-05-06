@@ -72,8 +72,8 @@ onMounted(async () => {
 
 const home = () => {
   router.back()
-  //store1中的记录只在查询后更新；
-  //因此返回至home时手动更新store1中的状态，确保显示的页面城市与store1保持同步
+  //weatherInfoStore中的记录只在查询后更新；
+  //因此返回至home时手动更新weatherInfoStore中的状态，确保显示的页面城市与weatherInfoStore保持同步
   weatherInfoStore.cityName = local.value
   weatherInfoStore.cityAdcode = adcode.value
   // 改变首次添加

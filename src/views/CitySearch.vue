@@ -21,7 +21,7 @@
           :key="index"
         >
           <div class="record">
-            <div class="topo">{{ item.cityName }}</div>
+            <div class="topo">{{ item.cityName }}{{ item.mark }}</div>
             <div class="temp">{{ item.temperature }}度</div>
             <div class="operate" v-show="isShow2 === index">
               <button class="check" @click="checkCity(item)">查看</button>

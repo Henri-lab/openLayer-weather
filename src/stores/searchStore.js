@@ -12,8 +12,8 @@ export const useSearchStore = defineStore('SearchStore', () => {
     //添加的城市
     //cityList:searched+recorded
     const cityList = ref([])
-    const cityName=ref('')
-    const adcode = ref('')
+    const cityName = ref('')//添加cityList预备-由weatherLive组件提供数据源
+    const adcode = ref('')//添加cityList预备-由weatherLive组件提供数据源
     const isfirst = ref(0)//判断是否首次添加
 
     // 判断是否已经存在
@@ -32,12 +32,11 @@ export const useSearchStore = defineStore('SearchStore', () => {
     const setAdcode = (c) => {
         adcode.value = c
     }
-    const setCity = (cityName) =>{
+    const setCity = (cityName) => {
         city.value = cityName
     }
     // 本地存储
     const getlocalStorage = async () => {
-        console.log('get local storage')
         cityList.value = []  // 🚩
         localStorageManager('get', 'searchWeatherLiveMoudle-', cityList.value)
         // 获得数据的时候只关注存储城市的adcode，然后更新补全其其他天气信息
@@ -47,7 +46,8 @@ export const useSearchStore = defineStore('SearchStore', () => {
             switch (pres.weather) {
                 case '晴':
                     return {
-                        cityName: pres.city + "🤗",
+                        mark: "🤗",
+                        cityName: pres.city,
                         adcode: pres.adcode,
                         weather: pres.weather,
                         temperature: pres.temperature,
@@ -63,7 +63,8 @@ export const useSearchStore = defineStore('SearchStore', () => {
                 case "暴雨到大暴雨":
                 case "大暴雨到特大暴雨":
                     return {
-                        cityName: pres.city + "😭",
+                        mark: "😭",
+                        cityName: pres.city,
                         adcode: pres.adcode,
                         weather: pres.weather,
                         temperature: pres.temperature,
@@ -75,7 +76,8 @@ export const useSearchStore = defineStore('SearchStore', () => {
                 case "小雨":
                 case "中雨":
                     return {
-                        cityName: pres.city + "😔",
+                        mark: "😔",
+                        cityName: pres.city,
                         adcode: pres.adcode,
                         weather: pres.weather,
                         temperature: pres.temperature,
@@ -87,7 +89,8 @@ export const useSearchStore = defineStore('SearchStore', () => {
                 case "暴雪":
                 case "大到暴雪":
                     return {
-                        cityName: pres.city + "🥶",
+                        mark: "🥶",
+                        cityName: pres.city,
                         adcode: pres.adcode,
                         weather: pres.weather,
                         temperature: pres.temperature,
@@ -99,7 +102,8 @@ export const useSearchStore = defineStore('SearchStore', () => {
                 case "中度霾":
                 case "强沙尘暴":
                     return {
-                        cityName: pres.city + "😷",
+                        mark: "😷",
+                        cityName: pres.city,
                         adcode: pres.adcode,
                         weather: pres.weather,
                         temperature: pres.temperature,
@@ -108,6 +112,7 @@ export const useSearchStore = defineStore('SearchStore', () => {
                     }
                 default:
                     return {
+                        mark: "",
                         cityName: pres.city,
                         adcode: pres.adcode,
                         weather: pres.weather,
@@ -123,7 +128,6 @@ export const useSearchStore = defineStore('SearchStore', () => {
         // console.log(cityList.value, 'cityList')
     }
     const setlocalStorage = () => {
-          console.log('set local storage')
         localStorageManager('set', 'searchWeatherLiveMoudle-', cityList.value)
     }
 
