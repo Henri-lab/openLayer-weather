@@ -13,6 +13,7 @@ import { useFeatureStore } from '@/stores/featureStore'
 import { ref, toRef, onMounted, watch } from 'vue'
 import featureStyle from '@/util/setStyle/featureStyle'
 import sleep from '@/util/sleep'
+import { getFeatureAtPixel } from '@/util/getOlObj/getFeature'
 const mapStore = useMapStore()
 const featureStore = useFeatureStore()
 let map = null
@@ -31,8 +32,9 @@ const high_style_yellow = featureStyle({
   fillColor: '#FFFF00'
 })
 
-let featureAtPixelFirstInLayerWithBorderProvince = ref(null)
-let featureAtPixelFirstInLayerWithBorderNextLevel = ref(null)
+// 點擊処的feature元素
+let featureAtPixelProvince_0 = ref(null)
+let featureAtPixelNextLevel_0 = ref(null)
 onMounted(async () => {
   await sleep(0)
   map = mapStore.$map
@@ -48,20 +50,34 @@ onMounted(async () => {
         }
       })
 
-      // mousemove时获取地图省级区划的矢量元素: featureAtPixelFirstInLayerWithBorderProvince
+      // // mousemove时获取地图省级区划的矢量元素: featureAtPixelProvince_0
       map.on('pointermove', (e) => {
-        const pixel = map.getEventPixel(e.originalEvent)
-        if (pixel) {
-          map.forEachFeatureAtPixel(pixel, (feature, layer) => {
-            if (layer.get('name') === 'layerWithBorderProvince')
-              featureAtPixelFirstInLayerWithBorderProvince.value = feature
-            return true
-          })
-        }
-        if (featureAtPixelFirstInLayerWithBorderProvince.value && content.value) {
-          let name = featureAtPixelFirstInLayerWithBorderProvince.value.get('name')
-          adcodeProvince = featureAtPixelFirstInLayerWithBorderProvince.value.get('adcode')
-          let level = featureAtPixelFirstInLayerWithBorderProvince.value.get('level')
+        const index=0
+        featureAtPixelNextLevel_0.value = getFeatureAtPixel(e, map, 'layerWithBorderProvince',index,(featureArr)=>{})
+        //   const pixel = map.getEventPixel(e.originalEvent)
+        //   if (pixel) {
+        //     // mousemove到有feature的區域
+        //     map.forEachFeatureAtPixel(pixel, (feature, layer) => {
+        //       if (layer.get('name') === 'layerWithBorderProvince')
+        //         featureAtPixelProvince_0.value = feature
+        //       return true
+        //     })
+        //     // mousemove到沒有feature的區域
+        //     if (!map.forEachFeatureAtPixel(pixel, () => true)) {
+        //       // -----------------------------------------------------console.log('out china')
+        //       mapStore.$layerSetStyle
+        //         .getSource()
+        //         .getFeatures()
+        //         .forEach((item) => {
+        //           item.setStyle(null)
+        //         })
+        //     }
+        //   }
+
+        if (featureAtPixelProvince_0.value && content.value) {
+          let name = featureAtPixelProvince_0.value.get('name')
+          adcodeProvince = featureAtPixelProvince_0.value.get('adcode')
+          let level = featureAtPixelProvince_0.value.get('level')
           let template = `
                 <p>adcode: <span>${adcodeProvince}</span></p>
                 <p>name: <span>${name}</span></p>
@@ -80,15 +96,15 @@ onMounted(async () => {
         if (pixel) {
           map.forEachFeatureAtPixel(pixel, (feature, layer) => {
             if (layer.get('name') === 'layerWithBorderNextLevel') {
-              featureAtPixelFirstInLayerWithBorderNextLevel.value = feature
+              featureAtPixelNextLevel_0.value = feature
               return true
             }
           })
         }
-        if (featureAtPixelFirstInLayerWithBorderNextLevel.value && content.value) {
-          let name = featureAtPixelFirstInLayerWithBorderNextLevel.value.get('name')
-          adcodeNextLevel = featureAtPixelFirstInLayerWithBorderNextLevel.value.get('adcode')
-          let level = featureAtPixelFirstInLayerWithBorderNextLevel.value.get('level')
+        if (featureAtPixelNextLevel_0.value && content.value) {
+          let name = featureAtPixelNextLevel_0.value.get('name')
+          adcodeNextLevel = featureAtPixelNextLevel_0.value.get('adcode')
+          let level = featureAtPixelNextLevel_0.value.get('level')
           let template = `
                 <p>adcode: <span>${adcodeNextLevel}</span></p>
                 <p>name: <span>${name}</span></p>
@@ -96,6 +112,7 @@ onMounted(async () => {
                 `
           content.value.innerHTML = template
           popup.setPosition(e.coordinate)
+          adcodeNextLevel && (featureStore.currentAdcodeMousemove = adcodeNextLevel)
         }
       })
 
@@ -112,9 +129,9 @@ onMounted(async () => {
 })
 // 设置省级区划矢量元素样式
 watch(
-  () => featureAtPixelFirstInLayerWithBorderProvince.value,
+  () => featureAtPixelProvince_0.value,
   () => {
-    console.log('watch---featureAtPixelFirstInLayerWithBorderProvince')
+    console.log('watch---featureAtPixelProvince_0', featureAtPixelProvince_0.value)
     // -------------------------------------------------------------------------------------------------------------console.log('watch',mapStore.$layerWithPolygonByAliyun)
     // 经典排他
     mapStore.$layerSetStyle
@@ -123,14 +140,13 @@ watch(
       .forEach((item) => {
         item.setStyle(null)
       })
-    featureAtPixelFirstInLayerWithBorderProvince.value &&
-      featureAtPixelFirstInLayerWithBorderProvince.value.setStyle(high_style_red)
+    featureAtPixelProvince_0.value && featureAtPixelProvince_0.value.setStyle(high_style_red)
   }
 )
 
 // 设置下一级区划矢量元素样式
 watch(
-  () => featureAtPixelFirstInLayerWithBorderNextLevel.value,
+  () => featureAtPixelNextLevel_0.value,
   () => {
     // -------------------------------------------------------------------------------------------------------------console.log('watch',mapStore.$layerWithPolygonByAliyun)
     // 经典排他
@@ -140,8 +156,7 @@ watch(
       .forEach((item) => {
         item.setStyle(null)
       })
-    featureAtPixelFirstInLayerWithBorderNextLevel.value &&
-      featureAtPixelFirstInLayerWithBorderNextLevel.value.setStyle(high_style_yellow)
+    featureAtPixelNextLevel_0.value && featureAtPixelNextLevel_0.value.setStyle(high_style_yellow)
   }
 )
 
@@ -150,11 +165,8 @@ watch(
   () => mapStore.currentZoom,
   () => {
     if (map.getView().getZoom() > 5)
-      featureAtPixelFirstInLayerWithBorderProvince.value &&
-        featureAtPixelFirstInLayerWithBorderProvince.value.setStyle(null)
-    else
-      featureAtPixelFirstInLayerWithBorderProvince.value &&
-        featureAtPixelFirstInLayerWithBorderProvince.value.setStyle(high_style_red)
+      featureAtPixelProvince_0.value && featureAtPixelProvince_0.value.setStyle(null)
+    else featureAtPixelProvince_0.value && featureAtPixelProvince_0.value.setStyle(high_style_red)
   }
 )
 </script>
