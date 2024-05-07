@@ -20,6 +20,8 @@ const container = ref(null)
 const closer = ref(null)
 const content = ref(null)
 
+let adcode = 0
+
 const high_style = new ol.style.Style({
   fill: new ol.style.Fill({
     color: '#4164fb'
@@ -51,7 +53,7 @@ onMounted(async () => {
         }
         if (featureAtPixelFirst.value && content.value) {
           let name = featureAtPixelFirst.value.get('name')
-          let adcode = featureAtPixelFirst.value.get('adcode')
+          adcode = featureAtPixelFirst.value.get('adcode')
           let level = featureAtPixelFirst.value.get('level')
           let template = `
                 <p>adcode: <span>${adcode}</span></p>
@@ -60,9 +62,11 @@ onMounted(async () => {
                 `
           content.value.innerHTML = template
           popup.setPosition(e.coordinate)
-          // 记录pointermove的adcode
-          featureStore.currentAdcodeMousemove = adcode
         }
+      })
+      map.on('click', () => {
+        // 记录pointermove的adcode
+        adcode && (featureStore.currentAdcodeMousemove = adcode)
       })
 
       if (closer.value) {
@@ -80,7 +84,7 @@ watch(
   () => {
     // -------------------------------------------------------------------------------------------------------------console.log('watch',mapStore.$layerWithPolygonByAliyun)
     // 经典排他
-    mapStore.$layerWithPolygonByAliyun
+    mapStore.$layerSetStyle
       .getSource()
       .getFeatures()
       .forEach((item) => {

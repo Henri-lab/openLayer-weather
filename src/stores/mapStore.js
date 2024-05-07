@@ -33,7 +33,7 @@ export const useMapStore = defineStore('MapStore', () => {
         zoom: zoom.value,
         minZoom: 3
     })
-    let $layerWithPolygonByAliyun = ref(null)
+    let $layerSetStyle = ref(null)
     // 地图
     let $map = null
 
@@ -57,7 +57,7 @@ export const useMapStore = defineStore('MapStore', () => {
                 wrapX: true,
             }),
         })
-        $layerWithPolygonByAliyun.value = layerWithPolygonByAliyun
+        $layerSetStyle.value = layerWithPolygonByAliyun
         return layerWithPolygonByAliyun
     }
 
@@ -86,7 +86,7 @@ export const useMapStore = defineStore('MapStore', () => {
         currentZoom,
         longtitude,
         latitude,
-        $layerWithPolygonByAliyun,
+        $layerSetStyle,
         isPosition,
         getUrlAliyun,
         getLayerWithPolygonByAdcodeByAliyun,
