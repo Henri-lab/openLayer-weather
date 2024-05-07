@@ -1,5 +1,5 @@
 <template>
-  <div class="overlayer"></div>
+  <div class="openlayer"></div>
 </template>
 
 <script setup>
@@ -31,4 +31,3 @@ onMounted(async () => {
 })
 </script>
 
-<style lang="scss" scoped></style>

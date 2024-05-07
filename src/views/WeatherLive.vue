@@ -1,5 +1,5 @@
 <template>
-  <div class="live">
+  <div class="weatherLive">
     <div class="title" v-if="isShow">
       你正在预览{{ cityName }}的天气信息,可以通过通过右上角的"+"号按钮保存起来
     </div>
@@ -58,14 +58,14 @@ onMounted(async () => {
   if (checkCityList(cityName.value)) {
     // 如果cityList已经存在查看live的城市
     isShow.value = false
-  }else{
+  } else {
     isShow.value = true
   }
 })
 </script>
 
 <style lang="scss" scoped>
-.live {
+.weatherLive {
   display: flex;
   width: 960px;
   height: 150px;

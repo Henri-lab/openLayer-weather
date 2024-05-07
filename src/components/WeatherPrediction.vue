@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="weatherPrediction">
     <span class="title">近期天气</span>
     <div class="predict">
       <ul class="list">
@@ -149,7 +149,7 @@ const renderChart = (v1, v2) => {
 </script>
 
 <style lang="scss" scoped>
-.container {
+.weatherPrediction {
   width: 960px;
   height: 380px;
   margin: 0 auto;
@@ -186,10 +186,10 @@ const renderChart = (v1, v2) => {
   .title {
     position: absolute;
     top: 20px;
-    color:darkgrey;
+    color: darkgrey;
   }
   .title:hover {
     color: rgb(93, 228, 160);
   }
 }
-</style>@/util/format/getFormatDay
+</style>

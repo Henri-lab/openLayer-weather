@@ -58,3 +58,4 @@ interface ol_Map {
  git add .
  git commit -m '15th'
  git push -u origin main
+ confirm!

@@ -47,7 +47,7 @@ onMounted(async () => {
         label: '\u00AB',
         collapsed: false,
         view: new ol.View({
-          minZoom: 1,
+          minZoom: 3,
           maxZoom: 18
         })
       }

@@ -1,5 +1,5 @@
 <template>
-  <div class="search">
+  <div class="citySearch">
     <input
       type="text"
       placeholder="请输入城市名称"
@@ -163,7 +163,7 @@ const cancel = () => {
 </script>
 
 <style lang="scss" scoped>
-.search {
+.citySearch {
   width: 960px;
   margin: 0 auto;
   //   background-color: aqua;

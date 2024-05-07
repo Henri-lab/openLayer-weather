@@ -9,9 +9,11 @@
 
 <script setup>
 import { useMapStore } from '@/stores/mapStore'
+import { useFeatureStore } from '@/stores/featureStore'
 import { ref, onMounted, watch } from 'vue'
 import sleep from '@/util/sleep'
 const mapStore = useMapStore()
+const featureStore = useFeatureStore()
 let map = null
 let popup = null
 const container = ref(null)
@@ -30,7 +32,7 @@ onMounted(async () => {
   if (map) {
     if (container.value) {
       popup = new ol.Overlay({
-        element: container.value,
+        // element: 'popup',
         autoPan: true,
         positioning: 'bottom-center',
         stopEvent: true,
@@ -58,6 +60,8 @@ onMounted(async () => {
                 `
           content.value.innerHTML = template
           popup.setPosition(e.coordinate)
+          // 记录pointermove的adcode
+          featureStore.currentAdcodeMousemove = adcode
         }
       })
 
@@ -97,16 +101,13 @@ watch(
 
 <style scoped>
 .ol-popup {
-  position: absolute;
-  background-color: white;
+  width: 200px;
+  padding: 5px;
+  background-color: greenyellow;
   -webkit-filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
   filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
-  padding: 15px;
   border-radius: 10px;
   border: 1px solid #cccccc;
-  bottom: 10px;
-  left: -50px;
-  min-width: 120px;
 }
 
 .ol-popup:after,
@@ -154,7 +155,7 @@ watch(
   font-weight: bold;
 }
 
-#popup-content p span {
-  color: #4164fb !important;
+#popup-content p {
+  color: gray !important;
 }
 </style>

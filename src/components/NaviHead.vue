@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="naviHead">
     <header class="navi-head">
       <img class="pic1" src="../img/天气预报 (1).png" @click="home" />
       <div class="title" @click="home">沙滩之子</div>
@@ -114,7 +114,7 @@ const pop = () => {
 </script>
 
 <style lang="scss" scoped>
-.container {
+.naviHead {
   width: 100%;
   height: 60px;
   background-color: var(--bcolor2);
