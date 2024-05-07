@@ -10,7 +10,8 @@
 <script setup>
 import { useMapStore } from '@/stores/mapStore'
 import { useFeatureStore } from '@/stores/featureStore'
-import { ref, onMounted, watch } from 'vue'
+import { ref, toRef, onMounted, watch } from 'vue'
+import { featureStyle } from '@/util/setStyle/featureStyle'
 import sleep from '@/util/sleep'
 const mapStore = useMapStore()
 const featureStore = useFeatureStore()
@@ -22,12 +23,15 @@ const content = ref(null)
 
 let adcode = 0
 
-const high_style = new ol.style.Style({
-  fill: new ol.style.Fill({
-    color: '#4164fb'
-  })
+const high_style_red = featureStyle({
+  fillColor: '#FF0000'
 })
-let featureAtPixelFirst = ref(null)
+const high_style_yellow = featureStyle({
+  fillColor: '#FFFF00'
+})
+
+let featureAtPixelFirstInLayerWithBorderProvince = ref(null)
+let featureAtPixelFirstInLayerWithBorderNextLevel = ref(null)
 onMounted(async () => {
   await sleep(0)
   map = mapStore.$map
@@ -43,18 +47,20 @@ onMounted(async () => {
         }
       })
 
+      // mousemove时获取地图省级区划的矢量元素: featureAtPixelFirstInLayerWithBorderProvince
       map.on('pointermove', (e) => {
         const pixel = map.getEventPixel(e.originalEvent)
         if (pixel) {
-          map.forEachFeatureAtPixel(pixel, (feature) => {
-            featureAtPixelFirst.value = feature
+          map.forEachFeatureAtPixel(pixel, (feature, layer) => {
+            if (layer.get('name') === 'layerWithBorderProvince')
+              featureAtPixelFirstInLayerWithBorderProvince.value = feature
             return true
           })
         }
-        if (featureAtPixelFirst.value && content.value) {
-          let name = featureAtPixelFirst.value.get('name')
-          adcode = featureAtPixelFirst.value.get('adcode')
-          let level = featureAtPixelFirst.value.get('level')
+        if (featureAtPixelFirstInLayerWithBorderProvince.value && content.value) {
+          let name = featureAtPixelFirstInLayerWithBorderProvince.value.get('name')
+          adcode = featureAtPixelFirstInLayerWithBorderProvince.value.get('adcode')
+          let level = featureAtPixelFirstInLayerWithBorderProvince.value.get('level')
           let template = `
                 <p>adcode: <span>${adcode}</span></p>
                 <p>name: <span>${name}</span></p>
@@ -64,11 +70,23 @@ onMounted(async () => {
           popup.setPosition(e.coordinate)
         }
       })
+      // 获取下一级的行政区划的矢量元素
       map.on('click', () => {
         // 记录pointermove的adcode
         adcode && (featureStore.currentAdcodeMousemove = adcode)
+        // 获取点击处的矢量元素
+        const pixel = map.getEventPixel(e.originalEvent)
+        if (pixel) {
+          map.forEachFeatureAtPixel(pixel, (feature, layer) => {
+            if (layer.get('name') === 'layerWithBorderNextLevel') {
+              featureAtPixelFirstInLayerWithBorderNextLevel.value = feature
+              return true
+            }
+          })
+        }
       })
 
+      // popup的关闭按钮
       if (closer.value) {
         closer.value.addEventListener('click', function () {
           popup.setPosition(undefined)
@@ -79,8 +97,9 @@ onMounted(async () => {
     }
   }
 })
+// 设置省级区划矢量元素样式
 watch(
-  () => featureAtPixelFirst.value,
+  () => featureAtPixelFirstInLayerWithBorderProvince.value,
   () => {
     // -------------------------------------------------------------------------------------------------------------console.log('watch',mapStore.$layerWithPolygonByAliyun)
     // 经典排他
@@ -90,15 +109,38 @@ watch(
       .forEach((item) => {
         item.setStyle(null)
       })
-    featureAtPixelFirst.value && featureAtPixelFirst.value.setStyle(high_style)
+    featureAtPixelFirstInLayerWithBorderProvince.value &&
+      featureAtPixelFirstInLayerWithBorderProvince.value.setStyle(high_style_red)
   }
 )
+
+// 设置下一级区划矢量元素样式
+watch(
+  () => featureAtPixelFirstInLayerWithBorderNextLevel.value,
+  () => {
+    // -------------------------------------------------------------------------------------------------------------console.log('watch',mapStore.$layerWithPolygonByAliyun)
+    // 经典排他
+    mapStore.$layerSetStyle
+      .getSource()
+      .getFeatures()
+      .forEach((item) => {
+        item.setStyle(null)
+      })
+    featureAtPixelFirstInLayerWithBorderNextLevel.value &&
+      featureAtPixelFirstInLayerWithBorderNextLevel.value.setStyle(high_style_yellow)
+  }
+)
+
+// zoom变大时，改变矢量元素的样式
 watch(
   () => mapStore.currentZoom,
   () => {
     if (map.getView().getZoom() > 5)
-      featureAtPixelFirst.value && featureAtPixelFirst.value.setStyle(null)
-    else featureAtPixelFirst.value && featureAtPixelFirst.value.setStyle(high_style)
+      featureAtPixelFirstInLayerWithBorderProvince.value &&
+        featureAtPixelFirstInLayerWithBorderProvince.value.setStyle(null)
+    else
+      featureAtPixelFirstInLayerWithBorderProvince.value &&
+        featureAtPixelFirstInLayerWithBorderProvince.value.setStyle(high_style_red)
   }
 )
 </script>

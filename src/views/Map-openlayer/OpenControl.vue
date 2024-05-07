@@ -23,7 +23,7 @@ onMounted(async () => {
   //----------------------------------------------------------------------------------------- console.log('opencontrol mounted start')
   $map = mapStore.$map
   if ($map) {
-    console.log('$map has already generated in the map store')
+    //----------------------------------------------------------------------------------------- console.log('$map has already generated in the map store')
     const gdTile = mapStore.gdTile
 
     // 添加控件

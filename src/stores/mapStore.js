@@ -33,6 +33,7 @@ export const useMapStore = defineStore('MapStore', () => {
         zoom: zoom.value,
         minZoom: 3
     })
+    // getLayerWithPolygonByAliyun的结果往往需要设置样式
     let $layerSetStyle = ref(null)
     // 地图
     let $map = null
