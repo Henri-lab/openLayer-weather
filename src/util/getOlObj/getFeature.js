@@ -54,7 +54,6 @@ function getPropsFromFeatureByAliyun(featuresArr) {
             parent: feature.get('parent'),
             subFeatureIndex: feature.get('subFeatureIndex'),
             acroutes: feature.get('acroutes')
-            // 添加其他需要提取的屬性
         }
     })
 

@@ -62,15 +62,8 @@ onMounted(async () => {
         )
         // 填充矢量元素區劃信息到popup
         if (featureAtPixelProvince_0.value && content.value) {
-          const [{ name, adcode, level }] = getPropsFromFeatureByAliyun([
-            featureAtPixelProvince_0.value
-          ])[0]
-          let template = `
-                <p>adcode: <span>${adcode}</span></p>
-                <p>name: <span>${name}</span></p>
-                <p>Level: <span>${level}</span></p>
-                `
-          content.value.innerHTML = template
+          const props = getPropsFromFeatureByAliyun([featureAtPixelProvince_0.value])[0]
+          content.value.innerHTML = text(props.adcode, props.name, props.level)
           popup.setPosition(e.coordinate)
         }
       })
@@ -88,17 +81,10 @@ onMounted(async () => {
         )
         // 填充矢量元素區劃信息到popup
         if (featureAtPixelNextLevel_0.value && content.value) {
-          const [{ name, adcode, level }] = getPropsFromFeatureByAliyun([
-            featureAtPixelNextLevel_0.value
-          ])[0]
-          let template = `
-                <p>adcode: <span>${adcode}</span></p>
-                <p>name: <span>${name}</span></p>
-                <p>Level: <span>${level}</span></p>
-                `
-          content.value.innerHTML = template
+          const props = getPropsFromFeatureByAliyun([featureAtPixelNextLevel_0.value])[0]
+          content.value.innerHTML = text(props.adcode, props.name, props.level)
           popup.setPosition(e.coordinate)
-          adcode && (featureStore.currentAdcodeMousemove = adcode)
+          adcode && (featureStore.currentAdcodeMousemove = props.adcode)
         }
       })
 
@@ -146,6 +132,15 @@ watch(
     else featureAtPixelProvince_0.value && featureAtPixelProvince_0.value.setStyle(high_style_red)
   }
 )
+
+function text(a, b, c) {
+  const text = `
+                <p>adcode: <span>${a}</span></p>
+                <p>name: <span>${b}</span></p>
+                <p>Level: <span>${c}</span></p>
+                `
+  return text
+}
 </script>
 
 <style scoped>
