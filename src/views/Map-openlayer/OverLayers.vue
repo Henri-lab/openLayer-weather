@@ -11,7 +11,7 @@
 import { useMapStore } from '@/stores/mapStore'
 import { useFeatureStore } from '@/stores/featureStore'
 import { ref, toRef, onMounted, watch } from 'vue'
-import { featureStyle } from '@/util/setStyle/featureStyle'
+import featureStyle from '@/util/setStyle/featureStyle'
 import sleep from '@/util/sleep'
 const mapStore = useMapStore()
 const featureStore = useFeatureStore()
@@ -21,7 +21,8 @@ const container = ref(null)
 const closer = ref(null)
 const content = ref(null)
 
-let adcode = 0
+let adcodeProvince = 0
+let adcodeNextLevel = 0
 
 const high_style_red = featureStyle({
   fillColor: '#FF0000'
@@ -59,10 +60,10 @@ onMounted(async () => {
         }
         if (featureAtPixelFirstInLayerWithBorderProvince.value && content.value) {
           let name = featureAtPixelFirstInLayerWithBorderProvince.value.get('name')
-          adcode = featureAtPixelFirstInLayerWithBorderProvince.value.get('adcode')
+          adcodeProvince = featureAtPixelFirstInLayerWithBorderProvince.value.get('adcode')
           let level = featureAtPixelFirstInLayerWithBorderProvince.value.get('level')
           let template = `
-                <p>adcode: <span>${adcode}</span></p>
+                <p>adcode: <span>${adcodeProvince}</span></p>
                 <p>name: <span>${name}</span></p>
                 <p>Level: <span>${level}</span></p>
                 `
@@ -71,9 +72,9 @@ onMounted(async () => {
         }
       })
       // 获取下一级的行政区划的矢量元素
-      map.on('click', () => {
-        // 记录pointermove的adcode
-        adcode && (featureStore.currentAdcodeMousemove = adcode)
+      map.on('click', (e) => {
+        // 记录上文pointermove事件中的省级区划的adcode
+        adcodeProvince && (featureStore.currentAdcodeMousemove = adcodeProvince)
         // 获取点击处的矢量元素
         const pixel = map.getEventPixel(e.originalEvent)
         if (pixel) {
@@ -83,6 +84,18 @@ onMounted(async () => {
               return true
             }
           })
+        }
+        if (featureAtPixelFirstInLayerWithBorderNextLevel.value && content.value) {
+          let name = featureAtPixelFirstInLayerWithBorderNextLevel.value.get('name')
+          adcodeNextLevel = featureAtPixelFirstInLayerWithBorderNextLevel.value.get('adcode')
+          let level = featureAtPixelFirstInLayerWithBorderNextLevel.value.get('level')
+          let template = `
+                <p>adcode: <span>${adcodeNextLevel}</span></p>
+                <p>name: <span>${name}</span></p>
+                <p>Level: <span>${level}</span></p>
+                `
+          content.value.innerHTML = template
+          popup.setPosition(e.coordinate)
         }
       })
 
@@ -101,6 +114,7 @@ onMounted(async () => {
 watch(
   () => featureAtPixelFirstInLayerWithBorderProvince.value,
   () => {
+    console.log('watch---featureAtPixelFirstInLayerWithBorderProvince')
     // -------------------------------------------------------------------------------------------------------------console.log('watch',mapStore.$layerWithPolygonByAliyun)
     // 经典排他
     mapStore.$layerSetStyle

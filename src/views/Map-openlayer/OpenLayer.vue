@@ -35,9 +35,6 @@ onMounted(async () => {
   }
 })
 watch(
-  // 🚩在overlayer设置点击map事件==>传递mouse点击区划adcode至featureStore.currentAdcodeMousemove
-  // 🚩在openlayer拿到featureStore.currentAdcodeMousemove申请相关矢量元素图层layerWithBorderNextLevel，并缓存在mapStore
-  // 🚩overlayers拿到openlayers缓存在mapStore的$layerSetStyle进行样式的设计
   () => featureStore.currentAdcodeMousemove,
   async () => {
     alert('您即将进入下一级区划')

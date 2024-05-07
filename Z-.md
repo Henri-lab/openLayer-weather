@@ -2,11 +2,6 @@
 //对变量先ref后computed会出问题~~~
 
 //用await会解决用then出现的异步陷阱
-
-//想给store的异步方法加锁，是否多此一举
-
-// watchEffect和computed感觉选择困难
-
 // 引起❌:
 const requestLive = async () => {
   console.log('头部组件调用')
@@ -55,6 +50,38 @@ interface ol_Map {
     }
   // 2.pinia中没有把公共属性设置为响应数据
 ```
+**overlayer和openlayer的配合**
+ 🚩在overlayer设置点击map事件==>传递mouse点击区划adcode至featureStore.currentAdcodeMousemove
+ 🚩在openlayer拿到featureStore.currentAdcodeMousemove申请相关矢量元素图层layerWithBorderNextLevel，并缓存在mapStore
+ 🚩overlayers拿到openlayers缓存在mapStore的$layerSetStyle进行样式的设计
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  git add .
  git commit -m '15th'
  git push -u origin main
