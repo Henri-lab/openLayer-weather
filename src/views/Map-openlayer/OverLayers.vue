@@ -13,7 +13,7 @@ import { useFeatureStore } from '@/stores/featureStore'
 import { ref, toRef, onMounted, watch } from 'vue'
 import { featureStyle, setFeaturesStyleSingle } from '@/util/setStyle/setFeatureStyle'
 import sleep from '@/util/sleep'
-import { getFeatureAtPixel } from '@/util/getOlObj/getFeature'
+import { getFeatureAtPixel, getPropsFromFeatureByAliyun } from '@/util/getOlObj/getFeature'
 const mapStore = useMapStore()
 const featureStore = useFeatureStore()
 let map = null
@@ -23,7 +23,6 @@ const closer = ref(null)
 const content = ref(null)
 
 let adcodeProvince = 0
-let adcodeNextLevel = 0
 
 const high_style_red = featureStyle({
   fillColor: '#FF0000'
@@ -63,11 +62,11 @@ onMounted(async () => {
         )
         // 填充矢量元素區劃信息到popup
         if (featureAtPixelProvince_0.value && content.value) {
-          let name = featureAtPixelProvince_0.value.get('name')
-          adcodeProvince = featureAtPixelProvince_0.value.get('adcode')
-          let level = featureAtPixelProvince_0.value.get('level')
+          const [{ name, adcode, level }] = getPropsFromFeatureByAliyun([
+            featureAtPixelProvince_0.value
+          ])[0]
           let template = `
-                <p>adcode: <span>${adcodeProvince}</span></p>
+                <p>adcode: <span>${adcode}</span></p>
                 <p>name: <span>${name}</span></p>
                 <p>Level: <span>${level}</span></p>
                 `
@@ -89,17 +88,17 @@ onMounted(async () => {
         )
         // 填充矢量元素區劃信息到popup
         if (featureAtPixelNextLevel_0.value && content.value) {
-          let name = featureAtPixelNextLevel_0.value.get('name')
-          adcodeNextLevel = featureAtPixelNextLevel_0.value.get('adcode')
-          let level = featureAtPixelNextLevel_0.value.get('level')
+          const [{ name, adcode, level }] = getPropsFromFeatureByAliyun([
+            featureAtPixelNextLevel_0.value
+          ])[0]
           let template = `
-                <p>adcode: <span>${adcodeNextLevel}</span></p>
+                <p>adcode: <span>${adcode}</span></p>
                 <p>name: <span>${name}</span></p>
                 <p>Level: <span>${level}</span></p>
                 `
           content.value.innerHTML = template
           popup.setPosition(e.coordinate)
-          adcodeNextLevel && (featureStore.currentAdcodeMousemove = adcodeNextLevel)
+          adcode && (featureStore.currentAdcodeMousemove = adcode)
         }
       })
 

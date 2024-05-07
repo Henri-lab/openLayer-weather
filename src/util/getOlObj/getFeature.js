@@ -42,5 +42,23 @@ function getFeatureAtPixel(e, $map, layerName, index, cb) {
 }
 
 
+function getPropsFromFeatureByAliyun(featuresArr) {
+    return featuresArr.map((feature) => {
+        return {
+            name: feature.get('name'),
+            adcode: feature.get('adcode'),
+            level: feature.get('level'),
+            center: feature.get('center'),
+            centroid: feature.get('centroid'),
+            childrenNum: feature.get('childrenNum'),
+            parent: feature.get('parent'),
+            subFeatureIndex: feature.get('subFeatureIndex'),
+            acroutes: feature.get('acroutes')
+            // 添加其他需要提取的屬性
+        }
+    })
 
-export { getFeatureAtPixel }
+}
+
+
+export { getFeatureAtPixel, getPropsFromFeatureByAliyun }
