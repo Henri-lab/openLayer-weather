@@ -37,7 +37,7 @@ onMounted(async () => {
 watch(
   () => featureStore.currentAdcodeMousemove,
   async () => {
-    console.log('cc')
+    alert('您即将进入下一级区划')
     // 移除先前添加的部分图层
     map.getLayers().forEach((layer) => {
       if (layer.get('name') === 'layerWithBorderNextLevel') {
