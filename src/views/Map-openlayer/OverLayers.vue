@@ -23,7 +23,7 @@ const high_style = new ol.style.Style({
     color: '#4164fb'
   })
 })
-let featureAtPixelFirst = null
+let featureAtPixelFirst = ref(null)
 onMounted(async () => {
   await sleep(0)
   map = mapStore.$map
@@ -43,20 +43,20 @@ onMounted(async () => {
         const pixel = map.getEventPixel(e.originalEvent)
         if (pixel) {
           map.forEachFeatureAtPixel(pixel, (feature) => {
-            featureAtPixelFirst = feature
+            featureAtPixelFirst.value = feature
             return true
           })
         }
-        if (featureAtPixelFirst && content.value) {
-          let name = featureAtPixelFirst.get('name')
-          let adcode = featureAtPixelFirst.get('adcode')
-          let level = featureAtPixelFirst.get('level')
+        if (featureAtPixelFirst.value && content.value) {
+          let name = featureAtPixelFirst.value.get('name')
+          let adcode = featureAtPixelFirst.value.get('adcode')
+          let level = featureAtPixelFirst.value.get('level')
           let template = `
                 <p>adcode: <span>${adcode}</span></p>
                 <p>name: <span>${name}</span></p>
                 <p>Level: <span>${level}</span></p>
                 `
-          content.value.interHTML = template
+          content.value.innerHTML = template
           popup.setPosition(e.coordinate)
         }
       })
@@ -72,15 +72,16 @@ onMounted(async () => {
   }
 })
 watch(
-  () => mapStore.OpenLayerComponentlayer,
+  () => featureAtPixelFirst.value,
   () => {
+    console.log('watch',mapStore.$layerWithPolygonByAliyun)
     // 经典排他
     mapStore.$layerWithPolygonByAliyun.getSource()
       .getFeatures()
       .forEach((item) => {
         item.setStyle(null)
       })
-    featureAtPixelFirst && featureAtPixelFirst.setStyle(high_style)
+    featureAtPixelFirst.value && featureAtPixelFirst.value.setStyle(high_style)
   }
 )
 </script>

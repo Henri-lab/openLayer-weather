@@ -27,10 +27,31 @@ const requestLive = async () => {
 4.  ref 定义响应定义引用要在对的位置
 
 1.ts关闭类型检查
+
 ```javascript
-let value:any 
+let value:any
 declare var ol: any;
 interface ol_Map {
   [key: string]: any // 允许该对象有任意数量的其他属性
 }
+```
+
+```javascript
+// 数据加载失败的可能原因：
+// 1.
+ const getUrlAliyun = async❌(adcode) => {
+        return `https://geo.datav.aliyun.com/areas_v3/bound/geojson?code=${adcode}_full`
+    }
+    const getLayerWithPolygonByAdcodeByAliyun = async (adcode) => {
+        const layerWithPolygonByAliyun = new ol.layer.Vector({
+            title: 'borderLayer',
+            source: await new ol.source.Vector({
+                title: 'borderSource',
+                url: ❌getUrlAliyun(adcode),
+                format: new ol.format.GeoJSON(),
+                wrapX: true,
+            }),
+        })
+    }
+  // 2.pinia中没有把公共属性设置为响应数据
 ```

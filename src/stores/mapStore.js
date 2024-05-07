@@ -37,7 +37,7 @@ export const useMapStore = defineStore('MapStore', () => {
         view: defaultView,
         layers: [gdTile]
     })
-    let $layerWithPolygonByAliyun = null
+    let $layerWithPolygonByAliyun = ref(null)
 
 
     // Func-----------------------------
@@ -59,7 +59,7 @@ export const useMapStore = defineStore('MapStore', () => {
                 wrapX: true,
             }),
         })
-        $layerWithPolygonByAliyun=layerWithPolygonByAliyun
+        $layerWithPolygonByAliyun.value=layerWithPolygonByAliyun
         return layerWithPolygonByAliyun
     }
 
