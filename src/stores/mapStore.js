@@ -15,12 +15,14 @@ export const useMapStore = defineStore('MapStore', () => {
     const longtitude = ref(defaultJing)
     const latitude = ref(defaultWei)
     const zoom = ref(defaultZoom)
+    const currentZoom = ref(defaultZoom)
+
 
     // --openLayer objects
     const gdXYZ = new ol.source.XYZ({
         title: 'gdXYZ',
         url: 'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}',
-        wrapX: true,
+        wrapX: false,
     })
     const gdTile = new ol.layer.Tile({
         title: 'gd',
@@ -29,15 +31,11 @@ export const useMapStore = defineStore('MapStore', () => {
     let defaultView = new ol.View({
         center: ol.proj.fromLonLat([longtitude.value, latitude.value]),
         zoom: zoom.value,
-    })
-    // 默认地图
-    let $map = new ol.Map({
-        title: 'openMap',
-        target: 'myMap',
-        view: defaultView,
-        layers: [gdTile]
+        minZoom: 3
     })
     let $layerWithPolygonByAliyun = ref(null)
+    // 地图
+    let $map = null
 
 
     // Func-----------------------------
@@ -59,7 +57,7 @@ export const useMapStore = defineStore('MapStore', () => {
                 wrapX: true,
             }),
         })
-        $layerWithPolygonByAliyun.value=layerWithPolygonByAliyun
+        $layerWithPolygonByAliyun.value = layerWithPolygonByAliyun
         return layerWithPolygonByAliyun
     }
 
@@ -73,6 +71,8 @@ export const useMapStore = defineStore('MapStore', () => {
         return source
     }
 
+    
+
     return {
         $map,
         gdXYZ,
@@ -83,9 +83,10 @@ export const useMapStore = defineStore('MapStore', () => {
         defaultWei,
         defaultCity,
         zoom,
+        currentZoom,
         longtitude,
         latitude,
-        $layerWithPolygonByAliyun ,
+        $layerWithPolygonByAliyun,
         isPosition,
         getUrlAliyun,
         getLayerWithPolygonByAdcodeByAliyun,

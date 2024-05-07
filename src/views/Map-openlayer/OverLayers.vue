@@ -39,7 +39,7 @@ onMounted(async () => {
         }
       })
 
-      map.on('click', (e) => {
+      map.on('pointermove', (e) => {
         const pixel = map.getEventPixel(e.originalEvent)
         if (pixel) {
           map.forEachFeatureAtPixel(pixel, (feature) => {
@@ -74,14 +74,23 @@ onMounted(async () => {
 watch(
   () => featureAtPixelFirst.value,
   () => {
-    console.log('watch',mapStore.$layerWithPolygonByAliyun)
+    // -------------------------------------------------------------------------------------------------------------console.log('watch',mapStore.$layerWithPolygonByAliyun)
     // 经典排他
-    mapStore.$layerWithPolygonByAliyun.getSource()
+    mapStore.$layerWithPolygonByAliyun
+      .getSource()
       .getFeatures()
       .forEach((item) => {
         item.setStyle(null)
       })
     featureAtPixelFirst.value && featureAtPixelFirst.value.setStyle(high_style)
+  }
+)
+watch(
+  () => mapStore.currentZoom,
+  () => {
+    if (map.getView().getZoom() > 5)
+      featureAtPixelFirst.value && featureAtPixelFirst.value.setStyle(null)
+    else featureAtPixelFirst.value && featureAtPixelFirst.value.setStyle(high_style)
   }
 )
 </script>

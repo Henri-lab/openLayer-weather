@@ -55,3 +55,6 @@ interface ol_Map {
     }
   // 2.pinia中没有把公共属性设置为响应数据
 ```
+ git add .
+ git commit -m '15th'
+ git push -u origin main

@@ -1,7 +1,5 @@
 <template>
-  <div class="overlayer">
-   
-  </div>
+  <div class="overlayer"></div>
 </template>
 
 <script setup>
@@ -12,8 +10,7 @@ import sleep from '@/util/sleep'
 const mapStore = useMapStore()
 let map = null
 
-
-onMounted(async() => {
+onMounted(async () => {
   await sleep(0)
   map = mapStore.$map
   if (map) {
@@ -23,7 +20,13 @@ onMounted(async() => {
       let pixel = map.getEventPixel(e.originalEvent)
       let hit = map.hasFeatureAtPixel(pixel)
       map.getTargetElement().style.cursor = hit ? 'pointer' : ''
-    })   
+    })
+    // 监听地图的缩放事件
+    map.getView().on('change:resolution', function (e) {
+      let currentZoom = map.getView().getZoom()
+      mapStore.currentZoom = parseInt(currentZoom)
+      // --------------------------------------------------------------------------console.log('地图缩放级别变为：' +  mapStore.currentZoom)
+    })
   }
 })
 </script>

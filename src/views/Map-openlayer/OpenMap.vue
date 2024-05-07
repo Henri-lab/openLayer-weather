@@ -58,7 +58,7 @@ const isPosition = computed(() => mapStore.isPosition())
 const count = ref(MAX)
 
 // 全局常量
-const MAX = 60
+const MAX = 999999999
 
 //默认地点
 const defaultCity = mapStore.defaultCity
@@ -193,6 +193,7 @@ async function load() {
     layers: [gdTile]
   })
   mapStore.$map = map
+  // --------------------------------------------------------------------------------------------------------------console.log(mapStore.$map)
   // ---------------------------------------------------------------------------------------------------------------------------console.log(mapStore.longtitude, mapStore.latitude, '--old 经纬state')
 }
 // 🧭定位
