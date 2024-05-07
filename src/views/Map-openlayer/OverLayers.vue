@@ -11,7 +11,7 @@
 import { useMapStore } from '@/stores/mapStore'
 import { useFeatureStore } from '@/stores/featureStore'
 import { ref, toRef, onMounted, watch } from 'vue'
-import featureStyle from '@/util/setStyle/featureStyle'
+import { featureStyle, setFeaturesStyleSingle } from '@/util/setStyle/setFeatureStyle'
 import sleep from '@/util/sleep'
 import { getFeatureAtPixel } from '@/util/getOlObj/getFeature'
 const mapStore = useMapStore()
@@ -32,7 +32,7 @@ const high_style_yellow = featureStyle({
   fillColor: '#FFFF00'
 })
 
-// 點擊処的feature元素
+// 點擊処的feature元素的省會features[0]
 let featureAtPixelProvince_0 = ref(null)
 let featureAtPixelNextLevel_0 = ref(null)
 onMounted(async () => {
@@ -50,30 +50,18 @@ onMounted(async () => {
         }
       })
 
-      // // mousemove时获取地图省级区划的矢量元素: featureAtPixelProvince_0
+      // // mousemove时获取地图省级区划的矢量元素
+      const index = 0
       map.on('pointermove', (e) => {
-        const index=0
-        featureAtPixelNextLevel_0.value = getFeatureAtPixel(e, map, 'layerWithBorderProvince',index,(featureArr)=>{})
-        //   const pixel = map.getEventPixel(e.originalEvent)
-        //   if (pixel) {
-        //     // mousemove到有feature的區域
-        //     map.forEachFeatureAtPixel(pixel, (feature, layer) => {
-        //       if (layer.get('name') === 'layerWithBorderProvince')
-        //         featureAtPixelProvince_0.value = feature
-        //       return true
-        //     })
-        //     // mousemove到沒有feature的區域
-        //     if (!map.forEachFeatureAtPixel(pixel, () => true)) {
-        //       // -----------------------------------------------------console.log('out china')
-        //       mapStore.$layerSetStyle
-        //         .getSource()
-        //         .getFeatures()
-        //         .forEach((item) => {
-        //           item.setStyle(null)
-        //         })
-        //     }
-        //   }
-
+        //获取
+        featureAtPixelProvince_0.value = getFeatureAtPixel(
+          e,
+          map,
+          'layerWithBorderProvince',
+          index,
+          (featureArr) => {}
+        )
+        // 填充矢量元素區劃信息到popup
         if (featureAtPixelProvince_0.value && content.value) {
           let name = featureAtPixelProvince_0.value.get('name')
           adcodeProvince = featureAtPixelProvince_0.value.get('adcode')
@@ -87,20 +75,19 @@ onMounted(async () => {
           popup.setPosition(e.coordinate)
         }
       })
-      // 获取下一级的行政区划的矢量元素
+      // click获取下一级的行政区划的矢量元素
       map.on('click', (e) => {
         // 记录上文pointermove事件中的省级区划的adcode
         adcodeProvince && (featureStore.currentAdcodeMousemove = adcodeProvince)
-        // 获取点击处的矢量元素
-        const pixel = map.getEventPixel(e.originalEvent)
-        if (pixel) {
-          map.forEachFeatureAtPixel(pixel, (feature, layer) => {
-            if (layer.get('name') === 'layerWithBorderNextLevel') {
-              featureAtPixelNextLevel_0.value = feature
-              return true
-            }
-          })
-        }
+        // 获取
+        featureAtPixelNextLevel_0.value = getFeatureAtPixel(
+          e,
+          map,
+          'layerWithBorderProvince',
+          index,
+          (featureArr) => {}
+        )
+        // 填充矢量元素區劃信息到popup
         if (featureAtPixelNextLevel_0.value && content.value) {
           let name = featureAtPixelNextLevel_0.value.get('name')
           adcodeNextLevel = featureAtPixelNextLevel_0.value.get('adcode')
@@ -131,16 +118,11 @@ onMounted(async () => {
 watch(
   () => featureAtPixelProvince_0.value,
   () => {
-    console.log('watch---featureAtPixelProvince_0', featureAtPixelProvince_0.value)
-    // -------------------------------------------------------------------------------------------------------------console.log('watch',mapStore.$layerWithPolygonByAliyun)
-    // 经典排他
-    mapStore.$layerSetStyle
-      .getSource()
-      .getFeatures()
-      .forEach((item) => {
-        item.setStyle(null)
-      })
-    featureAtPixelProvince_0.value && featureAtPixelProvince_0.value.setStyle(high_style_red)
+    setFeaturesStyleSingle(
+      mapStore.$layerSetStyle,
+      [featureAtPixelProvince_0.value],
+      high_style_red
+    )
   }
 )
 
@@ -148,15 +130,11 @@ watch(
 watch(
   () => featureAtPixelNextLevel_0.value,
   () => {
-    // -------------------------------------------------------------------------------------------------------------console.log('watch',mapStore.$layerWithPolygonByAliyun)
-    // 经典排他
-    mapStore.$layerSetStyle
-      .getSource()
-      .getFeatures()
-      .forEach((item) => {
-        item.setStyle(null)
-      })
-    featureAtPixelNextLevel_0.value && featureAtPixelNextLevel_0.value.setStyle(high_style_yellow)
+    setFeaturesStyleSingle(
+      mapStore.$layerSetStyle,
+      [featureAtPixelNextLevel_0.value],
+      high_style_yellow
+    )
   }
 )
 

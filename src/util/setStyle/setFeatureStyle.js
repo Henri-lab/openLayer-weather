@@ -1,4 +1,4 @@
-export default function featureStyle(options) {
+function featureStyle(options) {
   return new ol.style.Style({
     fill: new ol.style.Fill({
       color: options.fillColor || 'rgba(255, 255, 255, 0.4)' // 默认填充颜色为白色透明
@@ -14,3 +14,18 @@ export default function featureStyle(options) {
     // 其他属性根据需要添加
   });
 }
+
+// 经典排他
+// 清除$layer樣式，將需要添加樣式的feature放在集合featuresNeedStyleArr中
+function setFeaturesStyleSingle($layer, featuresNeedStyleArr, style) {
+  $layer
+    .getSource()
+    .getFeatures()
+    .forEach((item) => {
+      item.setStyle(null)
+    })
+  featuresNeedStyleArr.forEach((feature) => { feature && feature.setStyle(style) })
+
+}
+
+export { setFeaturesStyleSingle, featureStyle }
