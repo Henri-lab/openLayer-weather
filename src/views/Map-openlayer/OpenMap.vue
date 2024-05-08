@@ -53,6 +53,20 @@ const animateHTML = ref(null)
 
 // ol data
 let $map = null
+let gdXYZ = new ol.source.XYZ({
+  title: mapStore.gdXYZ_title,
+  url: mapStore.gdXYZ_url,
+  wrapX: mapStore.gdXYZ_wrapX
+})
+let gdTile = new ol.layer.Tile({
+  title: mapStore.gdTile_title,
+  source: gdXYZ
+})
+let defaultView = new ol.View({
+  center: ol.proj.fromLonLat([mapStore.longtitude, mapStore.latitude]),
+  zoom: mapStore.zoom,
+  minZoom: mapStore.minZoom
+})
 
 const isPosition = computed(() => mapStore.isPosition())
 const count = ref(MAX)
@@ -130,8 +144,11 @@ const isShow = ref(false)
 
 // onMounted---------------------------
 onMounted(async () => {
-  $map = await mapStore.loadMap('openMap','myMap')
-  mapStore.$map = $map
+  // $map = mapStore.loadMap('openMap', 'myMap', defaultView, gdTile)
+  $map = loadMap()
+  const app=inject('app')
+  app.config.globalProperties.$map = $map
+  console.log(gdTile.get('title'),gdXYZ.get('title'))//???
 
   const timer = setInterval(async () => {
     if (count.value > 0) count.value--
@@ -175,6 +192,16 @@ onMounted(async () => {
 })
 
 // method---------------------------
+
+//🌏
+function loadMap() {
+  return new ol.Map({
+    title: 'openmap',
+    target: 'myMap',
+    view: defaultView,
+    layers: [gdTile]
+  })
+}
 
 // 🧭定位
 async function updatePositionH5(type) {

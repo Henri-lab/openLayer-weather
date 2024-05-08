@@ -19,4 +19,9 @@ app.use(createPinia())
 app.use(router)
 app.use(echartsPlugin)
 
+app.provide('app', app)
+
 app.mount('#app')
+
+// console.log(app.config.globalProperties.$map)
+

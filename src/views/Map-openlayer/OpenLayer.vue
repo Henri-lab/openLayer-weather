@@ -10,7 +10,7 @@ import sleep from '@/util/sleep'
 
 const mapStore = useMapStore()
 const featureStore = useFeatureStore()
-let map = null
+let $map = null
 
 // 挂载立即请求省级边界
 // 添加省级边界的图层并设置名称
@@ -18,24 +18,24 @@ let map = null
 // 监听地图的缩放事件
 onMounted(async () => {
   await sleep(0)
-  map = mapStore.$map
-  if (map) {
+  $map = mapStore.$map
+  if ($map) {
     const layerWithBorderProvince = await mapStore.getLayerWithPolygonByAdcodeByAliyun(
       'chinaProvincesBorder',
       100000,
       {}
     )
     layerWithBorderProvince.set('name', 'layerWithBorderProvince')
-    map.addLayer(layerWithBorderProvince)
+    $map.addLayer(layerWithBorderProvince)
 
-    map.on('pointermove', function (e) {
-      let pixel = map.getEventPixel(e.originalEvent)
-      let hit = map.hasFeatureAtPixel(pixel)
-      map.getTargetElement().style.cursor = hit ? 'pointer' : ''
+    $map.on('pointermove', function (e) {
+      let pixel = $map.getEventPixel(e.originalEvent)
+      let hit = $map.hasFeatureAtPixel(pixel)
+      $map.getTargetElement().style.cursor = hit ? 'pointer' : ''
     })
 
-    map.getView().on('change:resolution', function (e) {
-      let currentZoom = map.getView().getZoom()
+    $map.getView().on('change:resolution', function (e) {
+      let currentZoom = $map.getView().getZoom()
       mapStore.currentZoom = parseInt(currentZoom)
     })
   }
@@ -50,9 +50,9 @@ watch(
   async () => {
     alert('您即将进入下一级区划')
 
-    map.getLayers().forEach((layer) => {
+    $map.getLayers().forEach((layer) => {
       if (layer.get('name') === 'layerWithBorderNextLevel') {
-        map.removeLayer(layer)
+        $map.removeLayer(layer)
       }
     })
 
@@ -63,7 +63,7 @@ watch(
       {}
     )
     layerWithBorderNextLevel.set('name', 'layerWithBorderNextLevel')
-    map.addLayer(layerWithBorderNextLevel)
+    $map.addLayer(layerWithBorderNextLevel)
   }
 )
 </script>

@@ -25,38 +25,12 @@ export const useMapStore = defineStore('MapStore', () => {
     const gdXYZ_title = ref('gdXYZ')
     const gdXYZ_url = ref('http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}')
     const gdXYZ_wrapX = ref(false)
-    const gdTile_title = ref('gd')
-    // --openLayer objects
-    let gdXYZ = new ol.source.XYZ({
-        title: gdXYZ_title.value,
-        url: gdXYZ_url.value,
-        wrapX: gdXYZ_wrapX.value
-    })
-    let gdTile = new ol.layer.Tile({
-        title: gdTile_title.value,
-        source: gdXYZ
-    })
-    let defaultView = new ol.View({
-        center: ol.proj.fromLonLat([longtitude.value, latitude.value]),
-        zoom: zoom.value,
-        minZoom: minZoom.value
-    })
-    let $map = null
+    const gdTile_title = ref('gdTile')
 
-    // Func-----------------------------
-    async function loadMap(title, target) {
-        try {
-            return new ol.Map({
-                title,
-                target,
-                view: defaultView,
-                layers: [gdTile]
-            });
-        }catch (e) {
-            console.error('loadMap fail',e)
-            return null
-        }
-    }
+
+
+    // Func----------------------------
+
 
     // 是否已经定位
     const isPosition = () => {
@@ -102,28 +76,35 @@ export const useMapStore = defineStore('MapStore', () => {
 
 
 
+    // test fail-------------------------------------------------------------------------
+    let $map = null
+    let $MAP = new ol.Map({});
+    function loadMap(title, target, view, layer) {
+        try {
 
+            $MAP.set('title', title);
+            if (target)
+                $MAP.setTarget(target);
+            if (view)
+                $MAP.setView(view);
+            if (layer)
+                $MAP.addLayer(layer);
 
+            return $MAP;
+        } catch (error) {
+            console.error('getMap fail', error);
+            return null;
+        }
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
+    function getMap() {
+        if ($map)
+            return $map;
+    }
 
     return {
+        $MAP,
         $map,
-        gdXYZ,
-        gdTile,
-        defaultView,
-        animateZoom,
         animateDuration,
         defaultLon,
         defaultLat,
@@ -134,10 +115,12 @@ export const useMapStore = defineStore('MapStore', () => {
         defaultCity,
         zoom,
         minZoom,
+        animateZoom,
         currentZoom,
         longtitude,
         latitude,
         loadMap,
+        getMap,
         isPosition,
         getUrlAliyun,
         getLayerWithPolygonByAdcodeByAliyun,

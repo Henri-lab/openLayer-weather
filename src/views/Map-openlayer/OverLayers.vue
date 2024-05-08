@@ -18,7 +18,7 @@ import { getView_zoomToAddress } from '@/util/getView'
 const mapStore = useMapStore()
 const featureStore = useFeatureStore()
 
-let map = null
+let $map = null
 let popup = null
 const container = ref(null)
 const closer = ref(null)
@@ -42,8 +42,8 @@ let featureAtPixelProvince_0 = ref(null)
 let featureAtPixelNextLevel_0 = ref(null)
 onMounted(async () => {
   await sleep(0)
-  map = mapStore.$map
-  if (map) {
+  $map = mapStore.$map
+  if ($map) {
     if (container.value) {
       popup = new ol.Overlay({
         // element: 'popup',
@@ -61,12 +61,12 @@ onMounted(async () => {
       // 1.获取省级区划行政区划的矢量元素
       // 2.将矢量元素的name，adcode，level属性加载至popup, .name设置响应性，表明正在mousemove
       // 3.记录此省级城市adcode🚩
-      map.on('pointermove', (e) => {
+      $map.on('pointermove', (e) => {
         if (!flag_isClickTriggered) {
           const index = 0
           featureAtPixelProvince_0.value = getFeatureAtPixel(
             e,
-            map,
+            $map,
             'layerWithBorderProvince',
             index,
             (featureArr) => {}
@@ -89,7 +89,7 @@ onMounted(async () => {
       // 4.根据address(featureAliyun)获取其location，并设置跳转效果的view
       // 5.记录点击处的adcode
       // 6.--还原flag
-      map.on('click', async (e) => {
+      $map.on('click', async (e) => {
         flag_isClickTriggered = 1
 
         adcodeProvince !== null && (featureStore.currentAdcodeMousemove = adcodeProvince)
@@ -97,7 +97,7 @@ onMounted(async () => {
         const index = 0
         featureAtPixelNextLevel_0.value = getFeatureAtPixel(
           e,
-          map,
+          $map,
           'layerWithBorderProvince',
           index,
           (featureArr) => {}
@@ -109,7 +109,7 @@ onMounted(async () => {
 
           const mainCity = props.name
           const view_zoomToMaincity = await getView_zoomToAddress(mainCity, { zoom: 10 })
-          map.setView(view_zoomToMaincity)
+          $map.setView(view_zoomToMaincity)
 
           props.adcode && (featureStore.currentAdcodeMouseClick = props.adcode)
         }
@@ -132,7 +132,7 @@ onMounted(async () => {
 watch(
   () => province.value,
   () => {
-    console.log('www',(map))
+    console.log('www',($map))
     // setFeaturesStyleSingle(layer, [featureAtPixelProvince_0.value], high_style_red)
   }
 )
@@ -153,7 +153,7 @@ watch(
 watch(
   () => mapStore.currentZoom,
   () => {
-    if (map.getView().getZoom() > 5)
+    if ($map.getView().getZoom() > 5)
       featureAtPixelProvince_0.value && featureAtPixelProvince_0.value.setStyle(null)
     else featureAtPixelProvince_0.value && featureAtPixelProvince_0.value.setStyle(high_style_red)
   }
