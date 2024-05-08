@@ -14,15 +14,21 @@ import { ref, toRef, onMounted, watch } from 'vue'
 import { featureStyle, setFeaturesStyleSingle } from '@/util/setStyle/setFeatureStyle'
 import sleep from '@/util/sleep'
 import { getFeatureAtPixel, getPropsFromFeatureByAliyun } from '@/util/getOlObj/getFeature'
+import { getView_zoomToAddress } from '@/util/getView'
 const mapStore = useMapStore()
 const featureStore = useFeatureStore()
+
 let map = null
 let popup = null
 const container = ref(null)
 const closer = ref(null)
 const content = ref(null)
 
-let adcodeProvince = 0
+let adcodeProvince = null
+
+let flag_isClickTriggered = 0 // 如果click正在执行中，为1，pointermove就不执行，防止其修改click回调所设置的数据
+
+const province = ref(0)
 
 const high_style_red = featureStyle({
   fillColor: '#FF0000'
@@ -49,29 +55,46 @@ onMounted(async () => {
         }
       })
 
-      // // mousemove时获取地图省级区划的矢量元素
-      const index = 0
+      // mousemove：
+
+      // --当clcik不正在执行时
+      // 1.获取省级区划行政区划的矢量元素
+      // 2.将矢量元素的name，adcode，level属性加载至popup, .name设置响应性，表明正在mousemove
+      // 3.记录此省级城市adcode🚩
       map.on('pointermove', (e) => {
-        //获取
-        featureAtPixelProvince_0.value = getFeatureAtPixel(
-          e,
-          map,
-          'layerWithBorderProvince',
-          index,
-          (featureArr) => {}
-        )
-        // 填充矢量元素區劃信息到popup
-        if (featureAtPixelProvince_0.value && content.value) {
-          const props = getPropsFromFeatureByAliyun([featureAtPixelProvince_0.value])[0]
-          content.value.innerHTML = text(props.adcode, props.name, props.level)
-          popup.setPosition(e.coordinate)
+        if (!flag_isClickTriggered) {
+          const index = 0
+          featureAtPixelProvince_0.value = getFeatureAtPixel(
+            e,
+            map,
+            'layerWithBorderProvince',
+            index,
+            (featureArr) => {}
+          )
+
+          if (featureAtPixelProvince_0.value && content.value) {
+            const props = getPropsFromFeatureByAliyun([featureAtPixelProvince_0.value])[0]
+            content.value.innerHTML = text(props.adcode, props.name, props.level)
+            province.value = props.name
+
+            adcodeProvince = props.adcode
+          }
         }
       })
-      // click获取下一级的行政区划的矢量元素
-      map.on('click', (e) => {
-        // 记录上文pointermove事件中的省级区划的adcode
-        adcodeProvince && (featureStore.currentAdcodeMousemove = adcodeProvince)
-        // 获取
+      // click：
+      // 0.--修改flag
+      // 1.读取记录的省级城市adcode🚩
+      // 2.获取（根据adcode返回）的下一级的行政区划的矢量元素
+      // 3.将矢量元素的首个元素（mainCity）name，adcode，level属性加载至popup
+      // 4.根据address(featureAliyun)获取其location，并设置跳转效果的view
+      // 5.记录点击处的adcode
+      // 6.--还原flag
+      map.on('click', async (e) => {
+        flag_isClickTriggered = 1
+
+        adcodeProvince !== null && (featureStore.currentAdcodeMousemove = adcodeProvince)
+
+        const index = 0
         featureAtPixelNextLevel_0.value = getFeatureAtPixel(
           e,
           map,
@@ -79,19 +102,24 @@ onMounted(async () => {
           index,
           (featureArr) => {}
         )
-        // 填充矢量元素區劃信息到popup
+
         if (featureAtPixelNextLevel_0.value && content.value) {
           const props = getPropsFromFeatureByAliyun([featureAtPixelNextLevel_0.value])[0]
           content.value.innerHTML = text(props.adcode, props.name, props.level)
-          popup.setPosition(e.coordinate)
-          adcode && (featureStore.currentAdcodeMousemove = props.adcode)
+
+          const mainCity = props.name
+          const view_zoomToMaincity = await getView_zoomToAddress(mainCity, { zoom: 10 })
+          map.setView(view_zoomToMaincity)
+
+          props.adcode && (featureStore.currentAdcodeMouseClick = props.adcode)
         }
+
+        flag_isClickTriggered = 0
       })
 
       // popup的关闭按钮
       if (closer.value) {
         closer.value.addEventListener('click', function () {
-          popup.setPosition(undefined)
           closer.value.blur()
           return false
         })
@@ -100,14 +128,12 @@ onMounted(async () => {
   }
 })
 // 设置省级区划矢量元素样式
+
 watch(
-  () => featureAtPixelProvince_0.value,
+  () => province.value,
   () => {
-    setFeaturesStyleSingle(
-      mapStore.$layerSetStyle,
-      [featureAtPixelProvince_0.value],
-      high_style_red
-    )
+    console.log('www',(map))
+    // setFeaturesStyleSingle(layer, [featureAtPixelProvince_0.value], high_style_red)
   }
 )
 
@@ -116,7 +142,7 @@ watch(
   () => featureAtPixelNextLevel_0.value,
   () => {
     setFeaturesStyleSingle(
-      mapStore.$layerSetStyle,
+      mapStore.$layersSetStyle,
       [featureAtPixelNextLevel_0.value],
       high_style_yellow
     )
@@ -133,6 +159,7 @@ watch(
   }
 )
 
+// 生產一段文本
 function text(a, b, c) {
   const text = `
                 <p>adcode: <span>${a}</span></p>
@@ -203,3 +230,4 @@ function text(a, b, c) {
   color: gray !important;
 }
 </style>
+@/util/setView

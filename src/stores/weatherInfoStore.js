@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { getLocal, getAdcode, getWeatherPrediction, getWeatherLive } from '@/api'
+import { getLocal, getWeatherPrediction, getWeatherLive, geoByAddress } from '@/api'
 
 export const useWeatherInfoStore = defineStore('WeatherInfoStore', () => {
   //查询所在城市
@@ -19,7 +19,7 @@ export const useWeatherInfoStore = defineStore('WeatherInfoStore', () => {
   const getCityAdcode = async (city) => {
     // console.log('getCityAdcode/store')
     if (city) {
-      const res = await getAdcode(city)
+      const res = await geoByAddress(city)
       // 匹配成功
       if (res.data.status!=='0') {
         cityAdcode.value = res.data.geocodes[0].adcode

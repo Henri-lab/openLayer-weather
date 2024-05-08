@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed, watchEffect } from 'vue'
+import { ref, onMounted, watch, computed, inject, getCurrentInstance } from 'vue'
 import { useWeatherInfoStore } from '@/stores/weatherInfoStore'
 import { useMapStore } from '@/stores/mapStore'
 import { useMouseStore } from '@/stores/mouseStore'
@@ -50,10 +50,10 @@ const mapStore = useMapStore()
 const mouseStore = useMouseStore()
 
 const animateHTML = ref(null)
+
 // ol data
-let map = null
-const gdTile = mapStore.gdTile
-const defaultView = mapStore.defaultView
+let $map = null
+
 const isPosition = computed(() => mapStore.isPosition())
 const count = ref(MAX)
 
@@ -75,8 +75,7 @@ watch(
   }
 )
 
-// 正在浏览文本的显示 (default:不显示，因为最开始拿不到城市，需要放置鼠标才获取到)
-// 🚫
+// 正在浏览文本的显示 (default:不显示，因为最开始拿不到城市，需要点击鼠标才获取到)
 const isBrowse = ref(false)
 // mouse处的城市名称
 const mouseCity = ref('')
@@ -131,36 +130,28 @@ const isShow = ref(false)
 
 // onMounted---------------------------
 onMounted(async () => {
-  // ---------------------------------------------------------------------------------------------------------------------------console.log('openmap mounted start')
-  await load()
-  // ---------------------------------------------------------------------------------------------------------------------------console.log(`${count.value}s后开始自动定位`)
+  $map = await mapStore.loadMap('openMap','myMap')
+  mapStore.$map = $map
+
   const timer = setInterval(async () => {
     if (count.value > 0) count.value--
     else {
       clearInterval(timer)
       await updatePositionH5()
-      // -------------------------------------------------------------------------------------------------------------------------------------console.log(mapStore.isPosition(), '定位成功？')
       //🌏🔄更新mapView在position更新之后
       if (mapStore.isPosition()) {
-        //--------------------------------------------------------------------------------------------------------------------------- console.log(mapStore.longtitude, mapStore.latitude, 'now 经纬state')
-
-        // 无动画
-        // map.getView().setCenter(ol.proj.fromLonLat([mapStore.longtitude, mapStore.latitude]))
-        // map.getView().setZoom(15)
-
-        // 有动画
-        let viewPosition = map.getView()
+        let viewPosition = $map.getView()
         viewPosition.animate({
           center: ol.proj.fromLonLat([mapStore.longtitude, mapStore.latitude]),
-          zoom: 15,
-          duration: 2000
+          zoom: mapStore.animateZoom,
+          duration: mapStore.animateDuration
         })
       } else console.log('定位失败')
     }
   }, 1000)
-  // ---------------------------------------------------------------------------------------------------------------------------console.log('openmap mounted done')
+
   // 定位之后--点击地图获取鼠标点击处的中国城市
-  map.on('click', async () => {
+  $map.on('click', async () => {
     console.log('mouse-->jing,wei:', mouseStore.mouseJing, ',', mouseStore.mouseWei)
     // '正在浏览:'这行文本的显示
     // --如果拿不到城市就'隐藏'
@@ -184,18 +175,7 @@ onMounted(async () => {
 })
 
 // method---------------------------
-//🌍加载map
-async function load() {
-  map = await new ol.Map({
-    title: 'openMap',
-    target: 'myMap',
-    view: defaultView,
-    layers: [gdTile]
-  })
-  mapStore.$map = map
-  // --------------------------------------------------------------------------------------------------------------console.log(mapStore.$map)
-  // ---------------------------------------------------------------------------------------------------------------------------console.log(mapStore.longtitude, mapStore.latitude, '--old 经纬state')
-}
+
 // 🧭定位
 async function updatePositionH5(type) {
   //前提：count === 0时定时器启动定位:updatePositionH5

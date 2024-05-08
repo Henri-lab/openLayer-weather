@@ -20,10 +20,8 @@ let $map = null
 onMounted(async () => {
   // ✨有await才拿到$map
   await sleep(0)
-  //----------------------------------------------------------------------------------------- console.log('opencontrol mounted start')
   $map = mapStore.$map
   if ($map) {
-    //----------------------------------------------------------------------------------------- console.log('$map has already generated in the map store')
     const gdTile = mapStore.gdTile
 
     // 添加控件
@@ -59,7 +57,6 @@ onMounted(async () => {
       // mouse div 已经创建为DOM时
       if (mouse.value) {
         let domEle = mouse.value
-        // ---------------------------------------------------------------------------------------------------------------------------console.log(e.coordinate)
         // EPSG:3857，也称为Web Mercator投影
         let XYarr = e.coordinate.map((item) => item)
         if (XYarr.length) {
@@ -86,7 +83,6 @@ onMounted(async () => {
     console.error('$map is not initialized.')
     return
   }
-  // -----------------------------------------------------------------------------------------console.log('opencontrol mounted done')
 })
 </script>
 

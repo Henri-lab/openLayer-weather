@@ -6,11 +6,10 @@ const key = 'bc18393795584768f61543fd423262e5'
 // const key = '030f480ba89c9b9bf9efe99c5f98c7a0'
 // const key = '15ac89d2e97769c345aa9be687d7bec3'
 
-// 天气查询------------------------------------------------
+// 地理编码
 const getLocal = async () => {
     try {
         const res = await gaode.get(`/ip?key=${key}`)
-        // console.log('{getLocal/api}','return:',res)
         return res.data
     } catch (error) {
         console.error('Error request data:', error)
@@ -18,11 +17,9 @@ const getLocal = async () => {
     }
 }
 
-const getAdcode = async (city) => {
+const geoByAddress = async (address) => {
     try {
-        // console.log('adcode查询~city:',city)
-        const res = await gaode.get(`/geocode/geo?key=${key}&address=${city}`)
-        // console.log('{getAdcode/api}','return:',res)
+        const res = await gaode.get(`/geocode/geo?key=${key}&address=${address}`)
         return res
     } catch (error) {
         console.error('Error request data:', error)
@@ -30,66 +27,7 @@ const getAdcode = async (city) => {
     }
 }
 
-const getWeatherPrediction = async (adcode) => {
-    try {
-        const res = await gaode.get(`/weather/weatherInfo?key=${key}&city=${adcode}&extensions=all`)
-        // console.log('{getWeatherPrediction/api}','return:',res)
-        return res
-    } catch (error) {
-        console.error('Error request data:', error)
-        return 0
-    }
-}
-
-const getWeatherLive = async (adcode) => {
-    try {
-        const res = await gaode.get(`/weather/weatherInfo?key=${key}&city=${adcode}&extensions=base`)
-        // console.log('{getWeatherLive/api}','return:',res)
-        return res
-    } catch (error) {
-        console.error('Error request data:', error)
-        return 0
-    }
-}
-
-//地理/逆地理编码------------------------------------------------
-//res.data 示例
-{
-    // "status": "1",
-    // "regeocode": {
-    //     "addressComponent": {
-    //         "city": "武汉市",
-    //         "province": "湖北省",
-    //         "adcode": "420115",
-    //         "district": "江夏区",
-    //         "towncode": "420115020000",
-    //         "streetNumber": {
-    //             "number": "1号",
-    //             "location": "114.408600,30.458861",
-    //             "direction": "西北",
-    //             "distance": "90.4667",
-    //             "street": "大学园路"
-    //         },
-    //         "country": "中国",
-    //         "township": "关东街道",
-    //         "businessAreas": [
-    //             []
-    //         ],
-    //         "building": {
-    //             "name": [],
-    //             "type": []
-    //         },
-    //         "neighborhood": {
-    //             "name": "万科城市花园(万科红郡东)",
-    //             "type": "商务住宅;住宅区;住宅小区"
-    //         },
-    //         "citycode": "027"
-    //     },
-    //     "formatted_address": "湖北省武汉市江夏区关东街道万科城市花园(万科红郡东)万科城市花园上西10区"
-    // },
-    // "info": "OK",
-    // "infocode": "10000"
-}
+//逆地理编码------------------------------------------------
 const regeoByCoordinates = async (lon, lat, prop) => {
     try {
         const res = await gaode.get(`/geocode/regeo?location=${lon},${lat}&key=${key}`);
@@ -162,6 +100,28 @@ const regeoByCoordinates = async (lon, lat, prop) => {
     }
 }
 
+// 天气查询------------------------------------------------
+const getWeatherPrediction = async (adcode) => {
+    try {
+        const res = await gaode.get(`/weather/weatherInfo?key=${key}&city=${adcode}&extensions=all`)
+        return res
+    } catch (error) {
+        console.error('Error request data:', error)
+        return 0
+    }
+}
+
+const getWeatherLive = async (adcode) => {
+    try {
+        const res = await gaode.get(`/weather/weatherInfo?key=${key}&city=${adcode}&extensions=base`)
+        return res
+    } catch (error) {
+        console.error('Error request data:', error)
+        return 0
+    }
+}
+
+
 // aliyun
 const getFeaturesByAliyun = async (adcode) => {
     try {
@@ -196,5 +156,5 @@ const getCityHttp = async () => {
 
 
 
-export { getLocal, getAdcode, getWeatherPrediction, getWeatherLive, regeoByCoordinates, getFeaturesByAliyun, getCityHttp }
+export { getLocal, geoByAddress, getWeatherPrediction, getWeatherLive, regeoByCoordinates, getFeaturesByAliyun, getCityHttp }
 
