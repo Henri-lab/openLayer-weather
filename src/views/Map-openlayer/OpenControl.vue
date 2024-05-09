@@ -5,7 +5,7 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted, inject } from 'vue'
+import { ref, onMounted, inject, getCurrentInstance } from 'vue'
 import { useMapStore } from '@/stores/mapStore'
 import { useMouseStore } from '@/stores/mouseStore'
 import coordinateFormat from '@/util/format/coordinateFormat'
@@ -17,17 +17,11 @@ const mouseStore = useMouseStore()
 const mouse = ref()
 let $map = null
 
-onMounted(async () => {
-  // ✨有await才拿到$map
-  await sleep(0)
-  // const app = inject('app')
-  // console.log(app)
-  const { proxy } = getCurrentInstance()
-  console.log(proxy.$map)
-  $map = proxy.$map
+onMounted(() => {
+  const app = inject('app')
+  $map = app.config.globalProperties.$map
   if ($map) {
     const gdTile = $map.getLayers()
-
 
     // 添加控件
     const controls = ['ZoomSlider', 'FullScreen', 'OverviewMap', 'ZoomToExtent']

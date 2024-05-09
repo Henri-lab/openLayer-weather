@@ -10,7 +10,7 @@
 <script setup>
 import { useMapStore } from '@/stores/mapStore'
 import { useFeatureStore } from '@/stores/featureStore'
-import { ref, toRef, onMounted, watch } from 'vue'
+import { ref, inject, onMounted, watch } from 'vue'
 import { featureStyle, setFeaturesStyleSingle } from '@/util/setStyle/setFeatureStyle'
 import sleep from '@/util/sleep'
 import { getFeatureAtPixel, getPropsFromFeatureByAliyun } from '@/util/getOlObj/getFeature'
@@ -40,9 +40,9 @@ const high_style_yellow = featureStyle({
 // 點擊処的feature元素的省會features[0]
 let featureAtPixelProvince_0 = ref(null)
 let featureAtPixelNextLevel_0 = ref(null)
-onMounted(async () => {
-  await sleep(0)
-  $map = mapStore.$map
+onMounted(() => {
+  const app = inject('app')
+  $map = app.config.globalProperties.$map
   if ($map) {
     if (container.value) {
       popup = new ol.Overlay({
@@ -132,8 +132,12 @@ onMounted(async () => {
 watch(
   () => province.value,
   () => {
-    console.log('www',($map))
-    // setFeaturesStyleSingle(layer, [featureAtPixelProvince_0.value], high_style_red)
+    const layers = $map
+      .getLayers()
+      .getArray()
+      .filter((layer) => layer.get('name') === 'layerWithBorderProvince')
+
+    setFeaturesStyleSingle(layers, [featureAtPixelProvince_0.value], high_style_red)
   }
 )
 
@@ -141,11 +145,11 @@ watch(
 watch(
   () => featureAtPixelNextLevel_0.value,
   () => {
-    setFeaturesStyleSingle(
-      mapStore.$layersSetStyle,
-      [featureAtPixelNextLevel_0.value],
-      high_style_yellow
-    )
+    const layers = $map
+      .getLayers()
+      .getArray()
+      .filter((layer) => layer.get('name') === 'layerWithBorderNextLevel')
+    setFeaturesStyleSingle(layers, [featureAtPixelNextLevel_0.value], high_style_yellow)
   }
 )
 

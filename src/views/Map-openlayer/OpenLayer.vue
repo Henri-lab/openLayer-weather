@@ -5,7 +5,7 @@
 <script setup>
 import { useMapStore } from '@/stores/mapStore'
 import { useFeatureStore } from '@/stores/featureStore'
-import { onMounted, watch } from 'vue'
+import { onMounted, watch ,inject} from 'vue'
 import sleep from '@/util/sleep'
 
 const mapStore = useMapStore()
@@ -17,8 +17,8 @@ let $map = null
 // 鼠标探测是否有矢量元素，如果有就改变cursor样式
 // 监听地图的缩放事件
 onMounted(async () => {
-  await sleep(0)
-  $map = mapStore.$map
+  const app = inject('app')
+  $map = app.config.globalProperties.$map
   if ($map) {
     const layerWithBorderProvince = await mapStore.getLayerWithPolygonByAdcodeByAliyun(
       'chinaProvincesBorder',

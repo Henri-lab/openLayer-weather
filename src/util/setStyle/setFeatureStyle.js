@@ -17,15 +17,16 @@ function featureStyle(options) {
 
 // 经典排他
 // 清除$layer樣式，將需要添加樣式的feature放在集合featuresNeedStyleArr中
-function setFeaturesStyleSingle($layer, featuresNeedStyleArr, style) {
-  $layer
-    .getSource()
-    .getFeatures()
-    .forEach((item) => {
-      item.setStyle(null)
-    })
-  featuresNeedStyleArr.forEach((feature) => { feature && feature.setStyle(style) })
-
+function setFeaturesStyleSingle($layersArr, featuresNeedStyleArr, style) {
+  if ($layersArr.length === 0) return
+  $layersArr.forEach(layer => {
+    layer.getSource()
+      .getFeatures()
+      .forEach((item) => {
+        item.setStyle(null)
+      })
+    featuresNeedStyleArr.forEach((feature) => { feature && feature.setStyle(style) })
+  })
 }
 
 export { setFeaturesStyleSingle, featureStyle }
