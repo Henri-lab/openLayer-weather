@@ -9,6 +9,7 @@ function getFeatureAtPixel(e, $map, layerName, index) {
     let featureByIndex = null
     let featureArr = []
     const pixel = $map.getEventPixel(e.originalEvent)
+
     if (pixel) {
         // mousemove到有feature的區域
         let i = 0
@@ -30,6 +31,7 @@ function getFeatureAtPixel(e, $map, layerName, index) {
                 }
             }
         })
+        
         // 没有指定index，则返回features数组
         if (!index) return featureArr
 

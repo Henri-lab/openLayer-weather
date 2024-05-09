@@ -26,7 +26,7 @@ const content = ref(null)
 
 let adcodeLevel = null
 
-// click执行所修改的popup内容优先pointmove
+
 // click 为 pointermove加锁解锁
 let flag_isPointermoveTriggered = ref(1)
 
@@ -120,13 +120,10 @@ function text(a, b, c) {
 
 // 下钻递归
 function nextLevelFeatureCheck(currentLevel, nextLevel) {
-  // @pointermove：
-  // 0.修改本flag
-  // 当clcik不正在执行时
+  // @pointermove：展示move之处 的feature信息
   // 1.获取省级区划行政区划的矢量元素
   // 2.将矢量元素的name，adcode，level属性加载至popup, .name设置响应性，表明正在mousemove
   // 3.--记录此省级城市adcode🚩
-  // 4.还原clickFlag
   const findOuterCity = $map.on('pointermove', (e) => {
     if (flag_isPointermoveTriggered) {
       const index = 0
@@ -146,7 +143,7 @@ function nextLevelFeatureCheck(currentLevel, nextLevel) {
   // 1.读取记录的省级城市adcode🚩
   // 2.获取（根据adcode返回）的下一级的行政区划的矢量元素数组
   // 3.将矢量元素的每个元素依次
-  // 4.--根据address(featureAliyun)获取其location，并设置跳转效果的view
+  // 4.--根据address(featureAliyun.name)获取，设置跳转效果的view
   // 5.--记录点击处的adcode
   // 6.等待一段时间,恢复flag给pointermove解锁
   const findInnerCity = $map.on('click', async (e) => {
@@ -157,7 +154,7 @@ function nextLevelFeatureCheck(currentLevel, nextLevel) {
     let featureArr = getFeatureAtPixel(e, $map, 'layerWithBorderProvince')
 
     featureArr.forEach(async (nextLevel) => {
-      if (nextLevel && content.value) {
+      if (nextLevel) {
         const props = getPropsFromFeatureByAliyun([nextLevel])[0]
 
         const mainCity = props.name
