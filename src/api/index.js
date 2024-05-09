@@ -123,7 +123,7 @@ const getWeatherLive = async (adcode) => {
 
 
 // aliyun
-const getFeaturesByAliyun = async (adcode) => {
+const getFeaturesByAdcodeByAliyun = async (adcode) => {
     try {
         const res = await aliyun.get(`/bound/${adcode}_full.json`)
         return new ol.format.GeoJSON().readFeatures(res)
@@ -156,5 +156,5 @@ const getCityHttp = async () => {
 
 
 
-export { getLocal, geoByAddress, getWeatherPrediction, getWeatherLive, regeoByCoordinates, getFeaturesByAliyun, getCityHttp }
+export { getLocal, geoByAddress, getWeatherPrediction, getWeatherLive, regeoByCoordinates, getFeaturesByAdcodeByAliyun, getCityHttp }
 

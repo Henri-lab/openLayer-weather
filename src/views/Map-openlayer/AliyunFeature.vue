@@ -24,7 +24,7 @@ const container = ref(null)
 const closer = ref(null)
 const content = ref(null)
 
-let adcodeProvince = null
+let adcodeLevel = null
 
 // click执行所修改的popup内容优先pointmove
 // click 为 pointermove加锁解锁
@@ -130,59 +130,52 @@ function nextLevelFeatureCheck(currentLevel, nextLevel) {
   const findOuterCity = $map.on('pointermove', (e) => {
     if (flag_isPointermoveTriggered) {
       const index = 0
-      currentLevel = getFeatureAtPixel(
-        e,
-        $map,
-        'layerWithBorderProvince',
-        index,
-        (featureArr) => {}
-      )
+      currentLevel = getFeatureAtPixel(e, $map, 'layerWithBorderProvince', index)
 
       if (currentLevel && content.value) {
         const props = getPropsFromFeatureByAliyun([currentLevel])[0]
         content.value.innerHTML = text(props.adcode, props.name, props.level)
         province.value = props.name
 
-        adcodeProvince = props.adcode
+        adcodeLevel = props.adcode
       }
     }
   })
   // @click：
   // 0.修改flag给pointermove加锁
   // 1.读取记录的省级城市adcode🚩
-  // 2.获取（根据adcode返回）的下一级的行政区划的矢量元素
-  // 3.将矢量元素的首个元素（mainCity）name，adcode，level属性加载至popup
+  // 2.获取（根据adcode返回）的下一级的行政区划的矢量元素数组
+  // 3.将矢量元素的每个元素依次
   // 4.--根据address(featureAliyun)获取其location，并设置跳转效果的view
   // 5.--记录点击处的adcode
   // 6.等待一段时间,恢复flag给pointermove解锁
   const findInnerCity = $map.on('click', async (e) => {
     flag_isPointermoveTriggered = 0
 
-    adcodeProvince !== null && (featureStore.currentAdcodeMousemove = adcodeProvince)
+    adcodeLevel !== null && (featureStore.currentAdcodeMousemove = adcodeLevel)
 
-    const index = 0
-    nextLevel = getFeatureAtPixel(e, $map, 'layerWithBorderProvince', index, (featureArr) => {})
+    let featureArr = getFeatureAtPixel(e, $map, 'layerWithBorderProvince')
 
-    if (nextLevel && content.value) {
-      const props = getPropsFromFeatureByAliyun([nextLevel])[0]
-      content.value.innerHTML = text(props.adcode, props.name, props.level)
+    featureArr.forEach(async (nextLevel) => {
+      if (nextLevel && content.value) {
+        const props = getPropsFromFeatureByAliyun([nextLevel])[0]
 
-      const mainCity = props.name
-      const view_zoomToMaincity = await getView_zoomToAddress(mainCity, { zoom: 10 })
-      $map.setView(view_zoomToMaincity)
+        const mainCity = props.name
+        const view_zoomToMaincity = await getView_zoomToAddress(mainCity, { zoom: 10 })
+        $map.setView(view_zoomToMaincity)
 
-      props.adcode && (featureStore.currentAdcodeMouseClick = props.adcode)
-    }
-
-    await sleep(2000)
-    flag_isPointermoveTriggered = 1
+        props.adcode && (featureStore.currentAdcodeMouseClick = props.adcode)
+        await sleep(2000)
+        flag_isPointermoveTriggered = 1
+        $map.un('pointermove', findOuterCity)
+        $map.un('click', findInnerCity)
+        const nextNextLevel = null
+        nextLevelFeatureCheck(nextLevel, nextNextLevel)
+      }
+    })
   })
-  $map.un('pointermove', findOuterCity)
-  $map.un('click', findInnerCity)
-  const nextNextLevel =
-  nextLevelFeatureCheck(nextLevel,)
 }
-</script> 
+</script>
 
 <style scoped>
 .ol-popup {

@@ -143,11 +143,11 @@ const mouseCity = ref('')
 // 分享地图
 // 自动定位倒计时
 // 定位之后--点击地图获取鼠标点击处的中国城市
-onMounted(async () => {
+const app = inject('app')
+onMounted(() => {
   // $map = mapStore.loadMap('openMap', 'myMap', defaultView, gdTile)
   $map = loadMap()
 
-  const app = inject('app')
   app.config.globalProperties.$map = $map
 
   const timer = setInterval(async () => {

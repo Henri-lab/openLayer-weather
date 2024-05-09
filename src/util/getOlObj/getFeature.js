@@ -3,7 +3,9 @@
 // 3.如果你指定了index:
 // --那麽你所mousemove的位置有features的話則返回第index個;反之則返回NULL;
 // 4.cb回調獲得全部的featuresAtPixel數組
-function getFeatureAtPixel(e, $map, layerName, index, cb) {
+function getFeatureAtPixel(e, $map, layerName, index) {
+    if (typeof e !== 'object' || typeof $map !== 'object' || typeof layerName !== "string") return
+
     let featureByIndex = null
     let featureArr = []
     const pixel = $map.getEventPixel(e.originalEvent)
@@ -14,30 +16,28 @@ function getFeatureAtPixel(e, $map, layerName, index, cb) {
             // 獲取name為layerName的圖層的features數組
             if (layer.get('name') === layerName) {
                 featureArr.push(feature)
-                cb(featureArr)
+                i++
                 // 如果指定index且合法則返回name為layerName的圖層的features數組的第index個元素
                 // 如果指定index大於name為layerName的圖層的features數組長度則返回null
+                // 如果你指定了index，就不会遍历完所有features
                 if (typeof index === 'number') {
                     if (i === index) {
-                        featureByIndex = feature;
+                        featureByIndex = feature; // feature=features[index]
                     } else if (index > featureArr.length - 1 || index < 0) {
                         console.error(`Invalid index when getfeatureAtPixel in ${layerName} layer`);
                         featureByIndex = null;
                     }
                 }
             }
-
-            // 
-            i++
-
         })
+        // 没有指定index，则返回features数组
+        if (!index) return featureArr
 
         // mousemove到沒有feature的區域
-        if (!$map.forEachFeatureAtPixel(pixel, () => true) || featureArr.length === 0) {
-            // console.log(`no featureAtPixel yet when getfeatureAtPixel in ${layerName} layer`)
-            return null
-        }
+        if (!$map.forEachFeatureAtPixel(pixel, () => true) || featureArr.length === 0) return null
+
         return featureByIndex
+
     } else console.error('getEventPixel fail')
 }
 

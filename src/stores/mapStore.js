@@ -1,6 +1,6 @@
 
 import { defineStore } from 'pinia'
-import { getFeaturesByAliyun } from '@/api'
+
 import { ref } from 'vue'
 
 export const useMapStore = defineStore('MapStore', () => {
@@ -59,22 +59,6 @@ export const useMapStore = defineStore('MapStore', () => {
         return layerWithPolygonByAliyun
     }
 
-    const getSourceWithPolygonByAdcodeByAliyun = async (adcode) => {
-        const features = new ol.format.GeoJSON().readFeatures(getFeaturesByAliyun(adcode));
-        let source = new ol.source.Vector({
-            title: 'borderSource',
-            wrapX: true,
-        })
-        source.addFeatures(features)
-        return source
-    }
-
-
-
-
-
-
-
     // test fail-------------------------------------------------------------------------
     let $map = null
     let $MAP = new ol.Map({});
@@ -122,6 +106,6 @@ export const useMapStore = defineStore('MapStore', () => {
         isPosition,
         getUrlAliyun,
         getLayerWithPolygonByAdcodeByAliyun,
-        getSourceWithPolygonByAdcodeByAliyun,
+      
     }
 })

@@ -15,9 +15,9 @@ import sleep from '@/util/sleep'
 const mouseStore = useMouseStore()
 const mouse = ref()
 let $map = null
+const app = inject('app')
 
 onMounted(() => {
-  const app = inject('app')
   $map = app.config.globalProperties.$map
   if ($map) {
     const gdTile = $map.getLayers()

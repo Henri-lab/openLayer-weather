@@ -6,7 +6,7 @@ import OpenMap from './views/Map-openlayer/OpenMap.vue'
 import OpenControl from './views/Map-openlayer/OpenControl.vue'
 import SideComponent from './components/SideComponent.vue'
 import OpenLayer from './views/Map-openlayer/OpenLayer.vue'
-import OverLayers from './views/Map-openlayer/OverLayers.vue'
+import AliyunFeature from './views/Map-openlayer/AliyunFeature.vue'
 import CityHot from './views/CityHot.vue'
 
 import { onMounted } from 'vue'
@@ -14,7 +14,6 @@ import { onMounted } from 'vue'
 const author = '@henriFox:https://github.com/Henri-lab/weather'
 onMounted(() => {
   console.log(author)
-
 })
 </script>
 
@@ -27,7 +26,7 @@ onMounted(() => {
       <OpenMap />
       <OpenControl />
       <OpenLayer />
-      <OverLayers/>
+      <AliyunFeature />
       <!-- <router-view name="hotCity"/> -->
       <!-- <CityHot></CityHot> -->
       <!-- <DialogMark /> -->
@@ -65,4 +64,4 @@ onMounted(() => {
 //   opacity: 0;
 // }
 </style>
-./components/common/DialogMark.vue
+./components/common/DialogMark.vue ./views/Map-openlayer/AliyunFeature.vue
