@@ -5,7 +5,7 @@
 <script setup>
 import { useMapStore } from '@/stores/mapStore'
 import { useFeatureStore } from '@/stores/featureStore'
-import { onMounted, watch, inject } from 'vue'
+import { ref,onMounted, watch, inject } from 'vue'
 import sleep from '@/util/sleep'
 
 const mapStore = useMapStore()
@@ -34,7 +34,7 @@ onMounted(() => {
   }
 })
 
-// 组件挂载后申请低level图层
+// 组件挂载后申请高level图层
 watch(
   () => isOnMounted.value,
   async () => await loadLayerWithFeature(100000)
@@ -50,7 +50,7 @@ watch(
     alert('您即将进入下一级区划')
 
     $map.getLayers().forEach((layer) => {
-      if (layer.get('name') === 'layerWithBorderNextLevel') {
+      if (layer.get('name') === 'layerNextLevel') {
         $map.removeLayer(layer)
       }
     })
@@ -61,7 +61,7 @@ watch(
       adcode,
       {}
     )
-    layerWithBorderNextLevel.set('name', 'layerWithBorderNextLevel')
+    layerWithBorderNextLevel.set('name', 'layerNextLevel')//📌
     $map.addLayer(layerWithBorderNextLevel)
   }
 )
@@ -73,7 +73,7 @@ async function loadLayerWithFeature(adcode) {
     adcode,
     { wrapX: false }
   )
-  adcode === 100000 && layerWithBorderProvince.set('name', 'layerWithBorderProvince')
+  layerWithBorderProvince.set('name', 'layerLevel')//📌
   $map.addLayer(layerWithBorderProvince)
 }
 </script>

@@ -8,7 +8,7 @@ import SideComponent from './components/SideComponent.vue'
 import OpenLayer from './views/Map-openlayer/OpenLayer.vue'
 import AliyunFeature from './views/Map-openlayer/AliyunFeature.vue'
 import CityHot from './views/CityHot.vue'
-
+import Test from '@/test/test.vue'
 import { onMounted } from 'vue'
 
 const author = '@henriFox:https://github.com/Henri-lab/weather'
@@ -25,8 +25,9 @@ onMounted(() => {
       <WeatherPrediction />
       <OpenMap />
       <OpenControl />
-      <OpenLayer />
-      <AliyunFeature />
+      <!-- <OpenLayer /> -->
+      <!-- <AliyunFeature /> -->
+      <Test></Test>
       <!-- <router-view name="hotCity"/> -->
       <!-- <CityHot></CityHot> -->
       <!-- <DialogMark /> -->

@@ -18,6 +18,8 @@ import { getView_zoomToAddress } from '@/util/getView'
 const mapStore = useMapStore()
 const featureStore = useFeatureStore()
 
+const isOnMounted = ref(false)
+
 let $map = null
 let popup = null
 const container = ref(null)
@@ -25,7 +27,6 @@ const closer = ref(null)
 const content = ref(null)
 
 let adcodeLevel = null
-
 
 // click 为 pointermove加锁解锁
 let flag_isPointermoveTriggered = ref(1)
@@ -59,9 +60,6 @@ onMounted(() => {
           duration: 250
         }
       })
-      // 下钻
-      nextLevelFeatureCheck(currentLevel, nextLevel)
-
       // popup的关闭按钮
       if (closer.value) {
         closer.value.addEventListener('click', function () {
@@ -70,6 +68,7 @@ onMounted(() => {
         })
       }
     }
+    isOnMounted.value = true
   }
 })
 
@@ -118,6 +117,11 @@ function text(a, b, c) {
   return text
 }
 
+// 挂载完毕开启下钻功能
+watch(
+  () => isOnMounted.value,
+  () => nextLevelFeatureCheck()
+)
 // 下钻递归
 function nextLevelFeatureCheck(currentLevel, nextLevel) {
   // @pointermove：展示move之处 的feature信息
@@ -126,8 +130,10 @@ function nextLevelFeatureCheck(currentLevel, nextLevel) {
   // 3.--记录此省级城市adcode🚩
   const findOuterCity = $map.on('pointermove', (e) => {
     if (flag_isPointermoveTriggered) {
-      const index = 0
-      currentLevel = getFeatureAtPixel(e, $map, 'layerWithBorderProvince', index)
+      const layerName = 'layerLevel'
+      let featureArr = getFeatureAtPixel(e, $map, layerName)
+      currentLevel = featureArr[0]
+      console.log('test', currentLevel.get('name'))
 
       if (currentLevel && content.value) {
         const props = getPropsFromFeatureByAliyun([currentLevel])[0]
@@ -151,10 +157,12 @@ function nextLevelFeatureCheck(currentLevel, nextLevel) {
 
     adcodeLevel !== null && (featureStore.currentAdcodeMousemove = adcodeLevel)
 
-    let featureArr = getFeatureAtPixel(e, $map, 'layerWithBorderProvince')
+    const layerName = 'layerLevel'
+    let featureArr = getFeatureAtPixel(e, $map, layerName)
 
     featureArr.forEach(async (nextLevel) => {
       if (nextLevel) {
+        layerNamelayerNamelayerName
         const props = getPropsFromFeatureByAliyun([nextLevel])[0]
 
         const mainCity = props.name

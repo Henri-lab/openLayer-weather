@@ -31,12 +31,13 @@ function getFeatureAtPixel(e, $map, layerName, index) {
                 }
             }
         })
-        
+
         // 没有指定index，则返回features数组
         if (!index) return featureArr
 
         // mousemove到沒有feature的區域
-        if (!$map.forEachFeatureAtPixel(pixel, () => true) || featureArr.length === 0) return null
+        // if (!$map.forEachFeatureAtPixel(pixel, () => true) || featureArr.length === 0) return null
+        if (!$map.hasFeatureAtPixel(pixel)) return null
 
         return featureByIndex
 
