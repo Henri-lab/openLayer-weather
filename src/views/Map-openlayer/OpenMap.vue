@@ -168,7 +168,7 @@ onMounted(async () => {
   }, 1000)
 
   $map.on('click', async () => {
-    console.log('mouse-->jing,wei:', mouseStore.mouseJing, ',', mouseStore.mouseWei)
+    // console.log('mouse-->jing,wei:', mouseStore.mouseJing, ',', mouseStore.mouseWei)
     // '正在浏览:'这行文本的显示
     // --如果拿不到城市就'隐藏'
     // --如果拿到城市就'显示'
