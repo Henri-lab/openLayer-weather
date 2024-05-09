@@ -22,7 +22,6 @@ export const useMapStore = defineStore('MapStore', () => {
 
 
     // --openLayer objects options
-    const gdXYZ_title = ref('gdXYZ')
     const gdXYZ_url = ref('http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}')
     const gdXYZ_wrapX = ref(false)
     const gdTile_title = ref('gdTile')
@@ -108,7 +107,6 @@ export const useMapStore = defineStore('MapStore', () => {
         animateDuration,
         defaultLon,
         defaultLat,
-        gdXYZ_title,
         gdXYZ_url,
         gdXYZ_wrapX,
         gdTile_title,
