@@ -12,7 +12,6 @@ import coordinateFormat from '@/util/format/coordinateFormat'
 import { addControls } from '@/util/addOlObj'
 import sleep from '@/util/sleep'
 
-const mapStore = useMapStore()
 const mouseStore = useMouseStore()
 const mouse = ref()
 let $map = null
@@ -44,25 +43,26 @@ onMounted(() => {
         label: '\u00AB',
         collapsed: false,
         view: new ol.View({
-          minZoom: 3,
-          maxZoom: 18
+          minZoom: 0,
+          maxZoom: 22
         })
       }
     ]
     addControls(controls, optionsArr, $map)
 
-    // 鼠标事件-获取鼠标经纬度
+    // 鼠标事件-获取鼠标平面坐标
+    // 转换平面投影到经纬度
+    // 调整格式并视图展示
+    // 更新mouseStore中的鼠标经纬度
     $map.on('pointermove', (e) => {
-      // mouse div 已经创建为DOM时
       if (mouse.value) {
         let domEle = mouse.value
-        // EPSG:3857，也称为Web Mercator投影
         let XYarr = e.coordinate.map((item) => item)
         if (XYarr.length) {
           domEle.innerHTML = coordinateFormat(XYarr[0], XYarr[1])
-          // 转换平面投影到经纬度
+
           const jingwei = ol.proj.toLonLat(XYarr, 'EPSG:3857')
-          // 更新pinia
+
           mouseStore.mouseJing = parseFloat(jingwei[0].toFixed(6))
           mouseStore.mouseWei = parseFloat(jingwei[1].toFixed(6))
         }
@@ -73,11 +73,11 @@ onMounted(() => {
     if (mouse.value) {
       let domEle = mouse.value
       domEle.innerHTML = '👽点击地图'
-      //重置鼠标经纬度文本
       window.addEventListener('mouseover', (e) => {
         if (!e.target.classList.contains('openmap')) domEle.innerHTML = '👽点击地图'
       })
     }
+
   } else {
     console.error('$map is not initialized.')
     return

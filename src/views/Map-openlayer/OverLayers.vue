@@ -26,10 +26,9 @@ const content = ref(null)
 
 let adcodeProvince = null
 
-// 如果click正在执行中，为1，pointermove就不执行，防止其修改click回调所设置的数据
-// 如果pointmove正在执行中，则flag_isPointermoveTriggered会置为1
-let flag_isClickTriggered = 0
-let flag_isPointermoveTriggered = ref(0)
+// click执行所修改的popup内容优先pointmove
+// click 为 pointermove加锁解锁
+let flag_isPointermoveTriggered = ref(1)
 
 const province = ref(0)
 
@@ -46,8 +45,10 @@ let featureAtPixelNextLevel_0 = ref(null)
 onMounted(() => {
   const app = inject('app')
   $map = app.config.globalProperties.$map
+
   if ($map) {
     if (container.value) {
+      // 挂载popup
       popup = new ol.Overlay({
         // element: 'popup',
         autoPan: true,
@@ -58,15 +59,15 @@ onMounted(() => {
         }
       })
 
-      // mousemove：
-
-      // --当clcik不正在执行时
+      // @pointermove：
+      // 0.修改本flag
+      // 当clcik不正在执行时
       // 1.获取省级区划行政区划的矢量元素
       // 2.将矢量元素的name，adcode，level属性加载至popup, .name设置响应性，表明正在mousemove
-      // 3.记录此省级城市adcode🚩
+      // 3.--记录此省级城市adcode🚩
+      // 4.还原clickFlag
       $map.on('pointermove', (e) => {
-        flag_isPointermoveTriggered.value=1
-        if (!flag_isClickTriggered) {
+        if (flag_isPointermoveTriggered) {
           const index = 0
           featureAtPixelProvince_0.value = getFeatureAtPixel(
             e,
@@ -84,18 +85,17 @@ onMounted(() => {
             adcodeProvince = props.adcode
           }
         }
-        flag_isPointermoveTriggered.value=0
       })
-      // click：
-      // 0.--修改flag
+      // @click：
+      // 0.修改flag给pointermove加锁
       // 1.读取记录的省级城市adcode🚩
       // 2.获取（根据adcode返回）的下一级的行政区划的矢量元素
       // 3.将矢量元素的首个元素（mainCity）name，adcode，level属性加载至popup
-      // 4.根据address(featureAliyun)获取其location，并设置跳转效果的view
-      // 5.记录点击处的adcode
-      // 6.--还原flag
+      // 4.--根据address(featureAliyun)获取其location，并设置跳转效果的view
+      // 5.--记录点击处的adcode
+      // 6.等待一段时间,恢复flag给pointermove解锁
       $map.on('click', async (e) => {
-        flag_isClickTriggered = 1
+        flag_isPointermoveTriggered = 0
 
         adcodeProvince !== null && (featureStore.currentAdcodeMousemove = adcodeProvince)
 
@@ -119,7 +119,10 @@ onMounted(() => {
           props.adcode && (featureStore.currentAdcodeMouseClick = props.adcode)
         }
 
-        flag_isClickTriggered = 0
+        console.log(flag_isPointermoveTriggered,'0')
+        await sleep(2000)
+        flag_isPointermoveTriggered = 1
+        console.log(flag_isPointermoveTriggered,'1')
       })
 
       // popup的关闭按钮
@@ -132,8 +135,8 @@ onMounted(() => {
     }
   }
 })
-// 设置省级区划矢量元素样式
 
+// 设置省级区划矢量元素样式
 watch(
   () => province.value,
   () => {
@@ -160,8 +163,10 @@ watch(
 
 // zoom变大时，改变矢量元素的样式
 watch(
-  () => flag_isPointermoveTriggered.value,
+  // () => flag_isPointermoveTriggered.value,
+  () => mapStore.currentZoom,
   () => {
+    console.log('pointer move triggered', flag_isPointermoveTriggered.value)
     if ($map.getView().getZoom() > 5)
       featureAtPixelProvince_0.value && featureAtPixelProvince_0.value.setStyle(null)
     else featureAtPixelProvince_0.value && featureAtPixelProvince_0.value.setStyle(high_style_red)
