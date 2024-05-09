@@ -23,5 +23,5 @@ app.provide('app', app)
 
 app.mount('#app')
 
-// console.log(app.config.globalProperties.$map)
+
 

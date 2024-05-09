@@ -26,7 +26,10 @@ const content = ref(null)
 
 let adcodeProvince = null
 
-let flag_isClickTriggered = 0 // 如果click正在执行中，为1，pointermove就不执行，防止其修改click回调所设置的数据
+// 如果click正在执行中，为1，pointermove就不执行，防止其修改click回调所设置的数据
+// 如果pointmove正在执行中，则flag_isPointermoveTriggered会置为1
+let flag_isClickTriggered = 0
+let flag_isPointermoveTriggered = ref(0)
 
 const province = ref(0)
 
@@ -62,6 +65,7 @@ onMounted(() => {
       // 2.将矢量元素的name，adcode，level属性加载至popup, .name设置响应性，表明正在mousemove
       // 3.记录此省级城市adcode🚩
       $map.on('pointermove', (e) => {
+        flag_isPointermoveTriggered.value=1
         if (!flag_isClickTriggered) {
           const index = 0
           featureAtPixelProvince_0.value = getFeatureAtPixel(
@@ -80,6 +84,7 @@ onMounted(() => {
             adcodeProvince = props.adcode
           }
         }
+        flag_isPointermoveTriggered.value=0
       })
       // click：
       // 0.--修改flag
@@ -155,7 +160,7 @@ watch(
 
 // zoom变大时，改变矢量元素的样式
 watch(
-  () => mapStore.currentZoom,
+  () => flag_isPointermoveTriggered.value,
   () => {
     if ($map.getView().getZoom() > 5)
       featureAtPixelProvince_0.value && featureAtPixelProvince_0.value.setStyle(null)
