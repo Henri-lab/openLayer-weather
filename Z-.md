@@ -50,39 +50,18 @@ interface ol_Map {
     }
   // 2.pinia中没有把公共属性设置为响应数据
 ```
+
 **overlayer和openlayer的配合**
- 🚩在overlayer设置点击map事件==>传递mouse点击区划adcode至featureStore.currentAdcodeMousemove
- 🚩在openlayer拿到featureStore.currentAdcodeMousemove申请相关矢量元素图层layerWithBorderNextLevel，并缓存在mapStore
- 🚩overlayers拿到openlayers缓存在mapStore的$layerSetStyle进行样式的设计
+🚩在overlayer设置点击map事件==>传递mouse点击区划adcode至featureStore.currentAdcodeMousemove
+🚩在openlayer拿到featureStore.currentAdcodeMousemove(并且点击了map)申请相关矢量元素图层
+🚩overlayers拿到openlayers存在map的图层进行其他行为
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- git add .
- git commit -m '15th'
- git push -u origin main
- done!
+git add .
+git commit -m '15th'
+git push -u origin main
+done!
