@@ -41,22 +41,23 @@ export const useMapStore = defineStore('MapStore', () => {
     }
 
     let index = 0
-    const getLayerWithPolygonByAdcodeByAliyun = async (title, adcode, { wrapX, opacity, visible, zIndex, style }) => {
-        const layerWithPolygonByAliyun = new ol.layer.Vector({
+    const getLayerWithPolygonByAdcodeByAliyun = async (title, adcode /**{ wrapX, opacity, visible, zIndex, style }**/) => {
+        return new ol.layer.Vector({
             title: title || `borderLayer-${index++}`,
             source: await new ol.source.Vector({
                 title: `borderSource-${index++}`,
                 url: getUrlAliyun(adcode),
                 format: new ol.format.GeoJSON(),
-                wrapX: wrapX || false,
-                opacity: opacity,
-                visible: visible || true,
-                zIndex: zIndex || 0,
-                style: style || {}
+                // wrapX: wrapX || false,
+                // opacity: opacity,
+                // visible: visible || true,
+                // zIndex: zIndex || 0,
+                // style: style || {}
             }),
-
         })
-        return layerWithPolygonByAliyun
+
+
+
     }
 
     // test fail-------------------------------------------------------------------------
@@ -106,6 +107,6 @@ export const useMapStore = defineStore('MapStore', () => {
         isPosition,
         getUrlAliyun,
         getLayerWithPolygonByAdcodeByAliyun,
-      
+
     }
 })

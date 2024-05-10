@@ -128,6 +128,7 @@ function nextLevelFeatureCheck(currentLevel, nextLevel) {
   // 1.获取省级区划行政区划的矢量元素
   // 2.将矢量元素的name，adcode，level属性加载至popup, .name设置响应性，表明正在mousemove
   // 3.--记录此省级城市adcode🚩
+  //   --更新move处province
   const findOuterCity = $map.on('pointermove', (e) => {
     if (flag_isPointermoveTriggered) {
       const layerName = 'layerLevel'
@@ -136,42 +137,44 @@ function nextLevelFeatureCheck(currentLevel, nextLevel) {
       console.log('test', currentLevel.get('name'))
 
       if (currentLevel && content.value) {
-        const props = getPropsFromFeatureByAliyun([currentLevel])[0]
-        content.value.innerHTML = text(props.adcode, props.name, props.level)
-        province.value = props.name
+        const prop = getPropsFromFeatureByAliyun([currentLevel])[0]
+        content.value.innerHTML = text(prop.adcode, prop.name, prop.level)
+        province.value = prop.name
 
-        adcodeLevel = props.adcode
+        adcodeLevel = prop.adcode
       }
     }
   })
   // @click：
-  // 0.修改flag给pointermove加锁
+  // 0.修改flag给pointermove(findOuterCity)加锁
   // 1.读取记录的省级城市adcode🚩
-  // 2.获取（根据adcode返回）的下一级的行政区划的矢量元素数组
+  // 2.获取(layerName:'layerNextLevel')的矢量元素数组
   // 3.将矢量元素的每个元素依次
   // 4.--根据address(featureAliyun.name)获取，设置跳转效果的view
   // 5.--记录点击处的adcode
-  // 6.等待一段时间,恢复flag给pointermove解锁
+  // 6.等待一段时间,恢复flag给pointermove(findOuterCity)解锁
+  // 7.卸载事件，递归调用...
   const findInnerCity = $map.on('click', async (e) => {
     flag_isPointermoveTriggered = 0
 
     adcodeLevel !== null && (featureStore.currentAdcodeMousemove = adcodeLevel)
 
-    const layerName = 'layerLevel'
+    const layerName = 'layerNextLevel'
     let featureArr = getFeatureAtPixel(e, $map, layerName)
 
     featureArr.forEach(async (nextLevel) => {
       if (nextLevel) {
-        layerNamelayerNamelayerName
-        const props = getPropsFromFeatureByAliyun([nextLevel])[0]
+        const prop = getPropsFromFeatureByAliyun([nextLevel])[0]
 
-        const mainCity = props.name
+        const mainCity = prop.name
         const view_zoomToMaincity = await getView_zoomToAddress(mainCity, { zoom: 10 })
         $map.setView(view_zoomToMaincity)
 
-        props.adcode && (featureStore.currentAdcodeMouseClick = props.adcode)
+        prop.adcode && (featureStore.currentAdcodeMouseClick = prop.adcode)
+
         await sleep(2000)
         flag_isPointermoveTriggered = 1
+
         $map.un('pointermove', findOuterCity)
         $map.un('click', findInnerCity)
         const nextNextLevel = null
