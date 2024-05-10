@@ -44,7 +44,7 @@ onMounted(() => {
 // 组件挂载后申请高level图层
 watch(
   () => isOnMounted.value,
-  async () => await loadLayerWithFeature(100000, 'layerLevel')
+  async () => await loadLayerWithPolygonByAdcodeByAliyun(100000, 'layerLevel')
 )
 
 // 当move并click某个不同的高level矢量元素时
@@ -56,14 +56,14 @@ watch(
   async () => {
     if (isMapCilcked) {
       let adcodeMouseClick = featureStore.currentAdcodeMouseClick
-      await loadLayerWithNextFeature(adcodeMouseClick)
+      await loadUniqueLayerWithPolygonByAdcodeByAliyun(adcodeMouseClick, 'layerNextLevel')
     }
   }
 )
 
 // method
-// 根据adcode获取aliyun的矢量geojson，并设置图层title和name
-async function loadLayerWithFeature(adcode, layerTitle, layerName) {
+// 根据adcode添加aliyun的矢量图层，并设置图层title和name
+async function loadLayerWithPolygonByAdcodeByAliyun(adcode, layerTitle, layerName) {
   if (typeof adcode !== 'number' || typeof layerTitle !== 'string' || typeof layerName !== 'string')
     return null
   const layer = await mapStore.getLayerWithPolygonByAdcodeByAliyun(layerTitle, adcode)
@@ -78,10 +78,10 @@ function clearLayersByName($map, layerName) {
     }
   })
 }
-
-async function loadLayerWithNextFeature(adcode) {
+// 添加图层,并保持此名称图层只有一个
+async function loadUniqueLayerWithPolygonByAdcodeByAliyun(adcode, layerNameUnique) {
   alert('您即将进入下一级区划')
-  clearLayersByName($map, 'layerNextLevel')
-  loadLayerWithFeature(adcode, 'chinaNextlevelBorder', 'layerNextLevel')
+  clearLayersByName($map, layerNameUnique)
+  loadLayerWithFeature(adcode, 'chinaNextlevelBorder', layerNameUnique)
 }
 </script>
