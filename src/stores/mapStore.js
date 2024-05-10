@@ -39,7 +39,6 @@ export const useMapStore = defineStore('MapStore', () => {
     const getUrlAliyun = (adcode) => {
         return `https://geo.datav.aliyun.com/areas_v3/bound/geojson?code=${adcode}_full`
     }
-
     let index = 0
     const getLayerWithPolygonByAdcodeByAliyun = async (title, adcode /**{ wrapX, opacity, visible, zIndex, style }**/) => {
         return new ol.layer.Vector({
@@ -55,32 +54,35 @@ export const useMapStore = defineStore('MapStore', () => {
                 // style: style || {}
             }),
         })
-
-
-
     }
 
+    // 根据adcode添加aliyun的矢量图层，并设置图层title和name
+    async function loadLayerWithPolygonByAdcodeByAliyun(adcode, layerTitle, layerName) {
+        if (typeof adcode !== 'number' || typeof layerTitle !== 'string' || typeof layerName !== 'string')
+            return null
+        const layer = await mapStore.getLayerWithPolygonByAdcodeByAliyun(layerTitle, adcode)
+        layer.set('name', layerName) //📌
+        $map.addLayer(layer)
+    }
+    // 根据图层name清除指定地图的图层
+    function clearLayersByName($map, layerName) {
+        $map.getLayers().forEach((layer) => {
+            if (layer.get('name') === layerName) {
+                $map.removeLayer(layer)
+            }
+        })
+    }
+    // 添加图层,并保持此名称图层只有一个
+    async function loadUniqueLayerWithPolygonByAdcodeByAliyun(adcode, layerNameUnique) {
+        alert('您即将进入下一级区划')
+        clearLayersByName($map, layerNameUnique)
+        loadLayerWithFeature(adcode, 'cityPolygon_aliyun', layerNameUnique)
+    }
+
+
+    
     // test fail-------------------------------------------------------------------------
     let $map = null
-    let $MAP = new ol.Map({});
-    function loadMap(title, target, view, layer) {
-        try {
-
-            $MAP.set('title', title);
-            if (target)
-                $MAP.setTarget(target);
-            if (view)
-                $MAP.setView(view);
-            if (layer)
-                $MAP.addLayer(layer);
-
-            return $MAP;
-        } catch (error) {
-            console.error('getMap fail', error);
-            return null;
-        }
-    }
-
     function getMap() {
         if ($map)
             return $map;
@@ -107,6 +109,10 @@ export const useMapStore = defineStore('MapStore', () => {
         isPosition,
         getUrlAliyun,
         getLayerWithPolygonByAdcodeByAliyun,
+        loadLayerWithPolygonByAdcodeByAliyun,
+        loadUniqueLayerWithPolygonByAdcodeByAliyun
+
+
 
     }
 })
