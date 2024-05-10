@@ -44,7 +44,7 @@ onMounted(() => {
 // 组件挂载后申请高level图层
 watch(
   () => isOnMounted.value,
-  async () => await loadLayerWithPolygonByAdcodeByAliyun(100000, 'layerLevel')
+  async () => await loadLayerWithPolygonByAdcodeByAliyun(100000, 'provincePolygon_aliyun','layerLevel')
 )
 
 // 当move并click某个不同的高level矢量元素时
@@ -82,6 +82,6 @@ function clearLayersByName($map, layerName) {
 async function loadUniqueLayerWithPolygonByAdcodeByAliyun(adcode, layerNameUnique) {
   alert('您即将进入下一级区划')
   clearLayersByName($map, layerNameUnique)
-  loadLayerWithFeature(adcode, 'chinaNextlevelBorder', layerNameUnique)
+  loadLayerWithFeature(adcode, 'cityPolygon_aliyun', layerNameUnique)
 }
 </script>
