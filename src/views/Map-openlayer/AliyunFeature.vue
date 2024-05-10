@@ -142,35 +142,34 @@ function nextLevelFeatureCheck(currentLevel, nextLevel) {
         province.value = prop.name
 
         adcodeLevel = prop.adcode
+
+        adcodeLevel !== null && (featureStore.currentAdcodeLevel = adcodeLevel)
       }
     }
   })
   // @click：
-  // 0.修改flag给pointermove(findOuterCity)加锁
-  // 1.读取记录的省级城市adcode🚩
+  // 1.修改flag 给pointermove(findOuterCity)加锁
   // 2.获取(layerName:'layerNextLevel')的矢量元素数组
   // 3.将矢量元素的每个元素依次
   // 4.--根据address(featureAliyun.name)获取，设置跳转效果的view
   // 5.--记录点击处的adcode
-  // 6.等待一段时间,恢复flag给pointermove(findOuterCity)解锁
+  // 6.等待一段时间,恢复flag 给pointermove(findOuterCity)解锁
   // 7.卸载事件，递归调用...
   const findInnerCity = $map.on('click', async (e) => {
     flag_isPointermoveTriggered = 0
 
-    adcodeLevel !== null && (featureStore.currentAdcodeMousemove = adcodeLevel)
-
     const layerName = 'layerNextLevel'
     let featureArr = getFeatureAtPixel(e, $map, layerName)
 
-    featureArr.forEach(async (nextLevel) => {
-      if (nextLevel) {
-        const prop = getPropsFromFeatureByAliyun([nextLevel])[0]
+    featureArr.forEach(async (feature) => {
+      if (feature) {
+        const prop = getPropsFromFeatureByAliyun([feature])[0]
 
         const mainCity = prop.name
         const view_zoomToMaincity = await getView_zoomToAddress(mainCity, { zoom: 10 })
         $map.setView(view_zoomToMaincity)
 
-        prop.adcode && (featureStore.currentAdcodeMouseClick = prop.adcode)
+        prop.adcode && (featureStore.currentAdcodeNextLevel = prop.adcode)
 
         await sleep(2000)
         flag_isPointermoveTriggered = 1

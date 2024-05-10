@@ -52,11 +52,11 @@ watch(
 // 请求点击地区的图层(带矢量)
 // 添加此图层并设置名称
 watch(
-  () => featureStore.currentAdcodeMousemove,
+  () => featureStore.currentAdcodeLevel,
   async () => {
     if (isMapCilcked) {
-      let adcodeMouseClick = featureStore.currentAdcodeMouseClick
-      await loadUniqueLayerWithPolygonByAdcodeByAliyun(adcodeMouseClick, 'layerNextLevel')
+      let adcodeLevel = featureStore.currentAdcodeLevel
+      await loadUniqueLayerWithPolygonByAdcodeByAliyun(adcodeLevel, 'layerNextLevel')
     }
   }
 )

@@ -6,8 +6,8 @@ import { getFeaturesByAdcodeByAliyun } from '@/api'
 
 export const useFeatureStore = defineStore('FeatureStore', () => {
 
-    let currentAdcodeMousemove = ref(0)
-    let currentAdcodeMouseClick = ref(0)
+    let currentAdcodeLevel = ref(0)
+    let currentAdcodeNextLevel = ref(0)
 
 
     // 根据adcode请求一个features数组
@@ -18,8 +18,8 @@ export const useFeatureStore = defineStore('FeatureStore', () => {
 
 
     return {
-        currentAdcodeMousemove,
-        currentAdcodeMouseClick,
+        currentAdcodeLevel,
+        currentAdcodeNextLevel,
         getNextLevelByAdcode,
     }
 })
