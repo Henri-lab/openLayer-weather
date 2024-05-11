@@ -135,18 +135,19 @@ function goDeeper() {
   })
   const click_zoomTo = $map.on('click', async (e) => {
     flag_isPointermove_a_Triggered = 0
-
+    await sleep(500)
     if (mapStore.islayerNextLevelLoaded) {
-      $map.getLayers().forEach((layer) => {
+      $map.getLayers().getArray().forEach((layer) => {
         if (layer.get('name') === 'layerNextLevel') {
           zoomToCurrentCityClicked_in_LayerNextLevel(e)
           $map.getLayers().getArray().forEach((layer) => {
-            // console.log('zoomTo后--layerName',  layer.get('name'))
-            if (layer.get('name') === 'layerLevel') $map.removeLayer(layer)
-            if (layer.get('name') === 'layerNextLevel') layer.set('name', 'layerLevel')
+            console.log('zoomTo后--layerName',  layer.get('name'))
+            // if (layer.get('name') === 'layerLevel') $map.removeLayer(layer)
+            // if (layer.get('name') === 'layerNextLevel') layer.set('name', 'layerLevel')
           })
         }
       })
+      test()
     }
 
     await sleep(1000)
