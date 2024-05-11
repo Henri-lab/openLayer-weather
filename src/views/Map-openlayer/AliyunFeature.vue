@@ -27,6 +27,7 @@ const closer = ref(null)
 const content = ref(null)
 
 let adcodeLevel = null
+let adcodeNextLevel = null
 
 // click 为 pointermove加锁解锁
 let flag_isPointermoveTriggered = ref(1)
@@ -122,82 +123,89 @@ watch(
   () => isOnMounted.value,
   () => {}
 )
-// 下钻递归
-function getNextLevelByAdcode(currentLevel) {
-  // @pointermove：展示move之处 的feature信息
-  // 1.获取行政区划的矢量元素
-  // 2.将矢量元素的name，adcode，level属性加载至popup, 设置响应性数据的值，表明正在mousemove
-  // 3.--记录此省级城市adcode🚩
-  //   --更新move处province
+
+// method
+function goDeeper(adcodeLevel, adcodeNextLevel) {
   const findOuterCity = $map.on('pointermove', (e) => {
-    if (flag_isPointermoveTriggered) {
-      const layerName = 'layerLevel'
-      let featureArr = getFeatureAtPixel(e, $map, layerName)
-      currentLevel = featureArr[0]
-      console.log('test', currentLevel.get('name'))
-
-      if (currentLevel && content.value) {
-        const prop = getPropsFromFeatureByAliyun([currentLevel])[0]
-        content.value.innerHTML = text(prop.adcode, prop.name, prop.level)
-        cityNameLevel.value = prop.name
-
-        adcodeLevel = prop.adcode
-
-        adcodeLevel !== null && (featureStore.currentAdcodeLevel = adcodeLevel)
-        // ===剩下工作由OpenLayer.Vue完成===
-        // # OpenLayer.Vue：
-        // -------------------------------------------------------------------
-        // watch(
-        //   () => featureStore.currentAdcodeLevel,
-        //   async () => {
-        //     if (isMapCilcked) {
-        //       let adcodeLevel = featureStore.currentAdcodeLevel
-        //       await mapStore.loadUniqueLayerWithPolygonByAdcodeByAliyun(
-        //         adcodeLevel,
-        //         'layerNextLevel'
-        //       )
-        //     }
-        //   }
-        // )
-        //  -------------------------------------------------------------------
-      }
-    }
+    if (flag_isPointermoveTriggered) getCurrentFeatureProps_in_LayerNameIsLevel(e)
   })
+  const findInnerCity = $map.on('click', async (e) => {
+    flag_isPointermoveTriggered = 0
+
+    zoomToCurrentCityClicked_in_LayerNextLevel(e)
+
+    await sleep(2000)
+    flag_isPointermoveTriggered = 1
+  })
+
+  unEvent($map, findOuterCity, findInnerCity)
+
+  const nextNextLevel = getNextLevelByAdcode(featureStore.currentAdcodeNextLevel)
+  goDeeper(adcodeNextLevel, nextNextLevel)
 }
-// @click：
-// 1.修改flag 给pointermove(findOuterCity)加锁
-// 2.获取(layerName:'layerNextLevel')的矢量元素数组
-// 3.将矢量元素的每个元素依次
-// 4.--根据address(featureAliyun.name)获取，设置跳转效果的view
-// 5.--记录点击处的adcode
-// 6.卸载事件，递归调用...
-// 7.等待一段时间,恢复flag 给pointermove(findOuterCity)解锁
-const findInnerCity = $map.on('click', async (e) => {
-  flag_isPointermoveTriggered = 0
 
-  const layerName = 'layerNextLevel'
+// 根据当前你正在点击的矢量数据的adcode,name属性--更新move处adcodeLevel
+// ===剩下工作由OpenLayer.Vue完成===
+// \\🐱‍👤// openlayer.vue会根据featureStore.currentAdcodeLevel的改变添加此adcode的下一级feature
+function getCurrentFeatureProps_in_LayerNameIsLevel(e) {
+  const layerName = 'layerLevel'
   let featureArr = getFeatureAtPixel(e, $map, layerName)
+  currentLevel = featureArr[0]
 
-  featureArr.length > 0 &&
-    featureArr.forEach(async (feature) => {
-      if (feature) {
-        const prop = getPropsFromFeatureByAliyun([feature])[0]
+  if (currentLevel && content.value) {
+    const prop = getPropsFromFeatureByAliyun([currentLevel])[0]
+    content.value.innerHTML = text(prop.adcode, prop.name, prop.level)
+    cityNameLevel.value = prop.name
 
-        const mainCity = prop.name
-        const view_zoomToMaincity = await getView_zoomToAddress(mainCity, { zoom: 10 })
-        $map.setView(view_zoomToMaincity)
+    adcodeLevel = prop.adcode
+    adcodeLevel !== null && (featureStore.currentAdcodeLevel = adcodeLevel)
+  }
+}
 
-        prop.adcode && (featureStore.currentAdcodeNextLevel = prop.adcode)
+// 获取(layerName:'layerNextLevel')的矢量元素数组
+// --持续获取直到获取到
+// 将矢量元素的元素设置行为：
+// --根据address(featureAliyun.name)获取，设置跳转效果的view
+// --记录点击处的adcodeNextLevel
+function zoomToCurrentCityClicked_in_LayerNextLevel(e) {
+  const layerName = 'layerNextLevel'
+  const time = setInterval(() => {
+    let featureArr = getFeatureAtPixel(e, $map, layerName)
+    if (!featureArr.length) getFeatureAtPixel(e, $map, layerName)
+    else {
+      clearInterval(time)
 
-        $map.un('pointermove', findOuterCity)
-        $map.un('click', findInnerCity)
-        const nextNextLevel = null
-        nextLevelFeatureCheck(nextLevel, nextNextLevel)
-      }
+      featureArr.forEach(async (feature) => {
+        if (feature) {
+          const prop = getPropsFromFeatureByAliyun([feature])[0]
+
+          const mainCity = prop.name
+          const view_zoomToMaincity = await getView_zoomToAddress(mainCity, { zoom: 10 })
+          $map.setView(view_zoomToMaincity)
+
+          adcodeNextLevel = prop.adcode
+          adcodeNextLevel != null && (featureStore.currentAdcodeNextLevel = adcodeNextLevel)
+        }
+      })
+    }
+  }, 100)
+}
+
+// 卸载事件
+function unEvent($map, pointermoveEventName, clickEventName) {
+  if (pointermoveEventName.length) {
+    pointermoveEventName.forEach((name) => {
+      $map.un('pointermove', name)
     })
-  await sleep(2000)
-  flag_isPointermoveTriggered = 1
-})
+  } else if (pointermoveEventName == []) console.error('PointermoveEventName is empty')
+  else $map.un('pointermove', pointermoveEventName)
+  if (clickEventName.length) {
+    clickEventName.forEach((name) => {
+      $map.un('click', name)
+    })
+  } else if (clickEventName == []) console.error('clickmoveEventName is empty')
+  else $map.un('click', clickEventName)
+}
 </script>
 
 <style scoped>

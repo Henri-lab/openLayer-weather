@@ -46,12 +46,14 @@ watch(
   () => isOnMounted.value,
   async () =>
     await mapStore.loadLayerWithPolygonByAdcodeByAliyun(
+      $map,
       100000,
       'provincePolygon_aliyun',
       'layerLevel'
     )
 )
 
+// \\🐱‍👤//
 // 当move并click某个不同的高level矢量元素时
 // 移除先前添加的低level图层
 // 请求点击地区的图层(带矢量)
@@ -61,7 +63,7 @@ watch(
   async () => {
     if (isMapCilcked) {
       let adcodeLevel = featureStore.currentAdcodeLevel
-      await mapStore.loadUniqueLayerWithPolygonByAdcodeByAliyun(adcodeLevel, 'layerNextLevel')
+      await mapStore.loadUniqueLayerWithPolygonByAdcodeByAliyun($map, adcodeLevel, 'layerNextLevel')
     }
   }
 )

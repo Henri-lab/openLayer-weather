@@ -25,9 +25,9 @@ onMounted(() => {
       <WeatherPrediction />
       <OpenMap />
       <OpenControl />
-      <!-- <OpenLayer /> -->
-      <!-- <AliyunFeature /> -->
-      <Test></Test>
+      <!-- <OpenLayer />
+      <AliyunFeature /> -->
+      <Test></Test> 
       <!-- <router-view name="hotCity"/> -->
       <!-- <CityHot></CityHot> -->
       <!-- <DialogMark /> -->

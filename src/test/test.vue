@@ -19,7 +19,7 @@ onMounted(async () => {
   if ($map) {
     const layerWithBorderProvince = await mapStore.getLayerWithPolygonByAdcodeByAliyun(
       'defaultLayerWithFeature',
-      510000,//改变这个adcode
+      420527,//改变这个adcode
       { wrapX: false }
     )
     layerWithBorderProvince.set('name', 'layerTest') //📌
@@ -30,7 +30,7 @@ onMounted(async () => {
       let featureArr = getFeatureAtPixel(e, $map, layerName)
       if (featureArr.length > 0) {
         const props = getPropsFromFeatureByAliyun(featureArr)
-        props.forEach((prop) => console.log('test.vue-',prop.name))
+        props.forEach((prop) => console.log('test.vue-',prop.name,prop.adcode))
       }
     })
   }

@@ -57,10 +57,10 @@ export const useMapStore = defineStore('MapStore', () => {
     }
 
     // 根据adcode添加aliyun的矢量图层，并设置图层title和name
-    async function loadLayerWithPolygonByAdcodeByAliyun(adcode, layerTitle, layerName) {
+    async function loadLayerWithPolygonByAdcodeByAliyun($map,adcode, layerTitle, layerName) {
         if (typeof adcode !== 'number' || typeof layerTitle !== 'string' || typeof layerName !== 'string')
             return null
-        const layer = await mapStore.getLayerWithPolygonByAdcodeByAliyun(layerTitle, adcode)
+        const layer = await getLayerWithPolygonByAdcodeByAliyun(layerTitle, adcode)
         layer.set('name', layerName) //📌
         $map.addLayer(layer)
     }
@@ -73,7 +73,7 @@ export const useMapStore = defineStore('MapStore', () => {
         })
     }
     // 添加图层,并保持此名称图层只有一个
-    async function loadUniqueLayerWithPolygonByAdcodeByAliyun(adcode, layerNameUnique) {
+    async function loadUniqueLayerWithPolygonByAdcodeByAliyun($map,adcode, layerNameUnique) {
         alert('您即将进入下一级区划')
         clearLayersByName($map, layerNameUnique)
         loadLayerWithFeature(adcode, 'cityPolygon_aliyun', layerNameUnique)
@@ -82,15 +82,13 @@ export const useMapStore = defineStore('MapStore', () => {
 
     
     // test fail-------------------------------------------------------------------------
-    let $map = null
-    function getMap() {
-        if ($map)
-            return $map;
-    }
+    // let $map = null
+    // function getMap() {
+    //     if ($map)
+    //         return $map;
+    // }
 
     return {
-        $MAP,
-        $map,
         animateDuration,
         defaultLon,
         defaultLat,
@@ -104,8 +102,6 @@ export const useMapStore = defineStore('MapStore', () => {
         currentZoom,
         longtitude,
         latitude,
-        loadMap,
-        getMap,
         isPosition,
         getUrlAliyun,
         getLayerWithPolygonByAdcodeByAliyun,
