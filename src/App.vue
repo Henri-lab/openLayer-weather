@@ -6,7 +6,7 @@ import OpenMap from './views/Map-openlayer/OpenMap.vue'
 import OpenControl from './views/Map-openlayer/OpenControl.vue'
 import SideComponent from './components/SideComponent.vue'
 import OpenLayer from './views/Map-openlayer/OpenLayer.vue'
-import AliyunFeature from './views/Map-openlayer/AliyunFeature.vue'
+import ParseFeature from './views/Map-openlayer/ParseFeature.vue'
 import CityHot from './views/CityHot.vue'
 import Test from '@/test/test.vue'
 import { onMounted } from 'vue'
@@ -25,9 +25,9 @@ onMounted(() => {
       <WeatherPrediction />
       <OpenMap />
       <OpenControl />
-      <!-- <OpenLayer />
-      <AliyunFeature /> -->
-      <Test></Test> 
+      <OpenLayer />
+      <ParseFeature />
+      <!-- <Test></Test>  -->
       <!-- <router-view name="hotCity"/> -->
       <!-- <CityHot></CityHot> -->
       <!-- <DialogMark /> -->
@@ -65,4 +65,4 @@ onMounted(() => {
 //   opacity: 0;
 // }
 </style>
-./components/common/DialogMark.vue ./views/Map-openlayer/AliyunFeature.vue
+

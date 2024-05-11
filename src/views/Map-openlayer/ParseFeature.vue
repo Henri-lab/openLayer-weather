@@ -4,17 +4,19 @@
       <a href="#" id="popup-closer" class="ol-popup-closer" ref="closer"></a>
       <div id="popup-content" ref="content"></div>
     </div>
+    <button @="test">showLayers</button>
   </div>
 </template>
 
 <script setup>
 import { useMapStore } from '@/stores/mapStore'
 import { useFeatureStore } from '@/stores/featureStore'
-import { ref, inject, onMounted, watch } from 'vue'
+import { ref, inject, onMounted, watch, onBeforeUnmount } from 'vue'
 import { featureStyle, setFeaturesStyleSingle } from '@/util/setStyle/setFeatureStyle'
 import sleep from '@/util/sleep'
 import { getFeatureAtPixel, getPropsFromFeatureByAliyun } from '@/util/getOlObj/getFeature'
 import { getView_zoomToAddress } from '@/util/getView'
+
 const mapStore = useMapStore()
 const featureStore = useFeatureStore()
 
@@ -42,7 +44,7 @@ const high_style_yellow = featureStyle({
 })
 
 // feature
-let currentLevel = ref(null)
+let currentLevel = null
 let nextLevel = ref(null)
 
 onMounted(() => {
@@ -69,20 +71,24 @@ onMounted(() => {
         })
       }
     }
+    goDeeper()
     isOnMounted.value = true
   }
 })
 
-// 设置省级区划矢量元素样式
+// 设置上一级区划矢量元素样式
 watch(
   () => cityNameLevel.value,
   () => {
-    const layers = $map
+    test()
+    $map
       .getLayers()
       .getArray()
-      .filter((layer) => layer.get('name') === 'layerWithBorderProvince')
-
-    setFeaturesStyleSingle(layers, [currentLevel.value], high_style_red)
+      .forEach((layer) => {
+        if (layer.get('name') === 'layerLevel') {
+          setFeaturesStyleSingle([layer], [currentLevel], high_style_red)
+        }
+      })
   }
 )
 
@@ -98,13 +104,12 @@ watch(
   }
 )
 
-// zoom变大时，改变矢量元素的样式
+// zoom变大变小时，改变矢量元素的样式
 watch(
   () => mapStore.currentZoom,
   () => {
-    console.log('pointer move triggered', flag_isPointermoveTriggered.value)
-    if ($map.getView().getZoom() > 5) currentLevel.value && currentLevel.value.setStyle(null)
-    else currentLevel.value && currentLevel.value.setStyle(high_style_red)
+    if ($map.getView().getZoom() > 5) currentLevel && currentLevel.setStyle(null)
+    else currentLevel && currentLevel.setStyle(high_style_red)
   }
 )
 
@@ -118,36 +123,38 @@ function text(a, b, c) {
   return text
 }
 
-// 挂载完毕开启下钻功能
-watch(
-  () => isOnMounted.value,
-  () => {}
-)
-
 // method
-function goDeeper(adcodeLevel, adcodeNextLevel) {
-  const findOuterCity = $map.on('pointermove', (e) => {
-    if (flag_isPointermoveTriggered) getCurrentFeatureProps_in_LayerNameIsLevel(e)
+function goDeeper() {
+  $map.on('pointermove', (e) => {
+    if (flag_isPointermoveTriggered) {
+      handleCurrentFeatureProps_in_LayerNameIsLevel(e)
+    }
   })
-  const findInnerCity = $map.on('click', async (e) => {
+  $map.on('click', async (e) => {
     flag_isPointermoveTriggered = 0
 
-    zoomToCurrentCityClicked_in_LayerNextLevel(e)
+    const untilExist_LayerNextLevel = setInterval(() => {
+      $map.getLayers().forEach((layer) => {
+        if (layer.get('name') === 'layerNextLevel') {
+          zoomToCurrentCityClicked_in_LayerNextLevel(e)
+          clearInterval(untilExist_LayerNextLevel)
+          $map.getLayers().forEach((layer) => {
+            if (layer.get('name') === 'layerLevel') $map.removeLayer(layer)
+            if (layer.get('name') === 'layerNextLevel') layer.set('name', 'layerLevel')
+          })
+        }
+      })
+    }, 100)
 
-    await sleep(2000)
+    await sleep(5000)
     flag_isPointermoveTriggered = 1
   })
-
-  unEvent($map, findOuterCity, findInnerCity)
-
-  const nextNextLevel = getNextLevelByAdcode(featureStore.currentAdcodeNextLevel)
-  goDeeper(adcodeNextLevel, nextNextLevel)
 }
 
 // 根据当前你正在点击的矢量数据的adcode,name属性--更新move处adcodeLevel
 // ===剩下工作由OpenLayer.Vue完成===
 // \\🐱‍👤// openlayer.vue会根据featureStore.currentAdcodeLevel的改变添加此adcode的下一级feature
-function getCurrentFeatureProps_in_LayerNameIsLevel(e) {
+function handleCurrentFeatureProps_in_LayerNameIsLevel(e) {
   const layerName = 'layerLevel'
   let featureArr = getFeatureAtPixel(e, $map, layerName)
   currentLevel = featureArr[0]
@@ -169,42 +176,32 @@ function getCurrentFeatureProps_in_LayerNameIsLevel(e) {
 // --记录点击处的adcodeNextLevel
 function zoomToCurrentCityClicked_in_LayerNextLevel(e) {
   const layerName = 'layerNextLevel'
-  const time = setInterval(() => {
-    let featureArr = getFeatureAtPixel(e, $map, layerName)
-    if (!featureArr.length) getFeatureAtPixel(e, $map, layerName)
-    else {
-      clearInterval(time)
+  let featureArr = getFeatureAtPixel(e, $map, layerName)
+  if (featureArr.length > 0) {
+    featureArr.forEach(async (feature) => {
+      if (feature) {
+        const prop = getPropsFromFeatureByAliyun([feature])[0]
 
-      featureArr.forEach(async (feature) => {
-        if (feature) {
-          const prop = getPropsFromFeatureByAliyun([feature])[0]
+        const mainCity = prop.name
+        const view_zoomToMaincity = await getView_zoomToAddress(mainCity, { zoom: 6})
+        $map.setView(view_zoomToMaincity)
 
-          const mainCity = prop.name
-          const view_zoomToMaincity = await getView_zoomToAddress(mainCity, { zoom: 10 })
-          $map.setView(view_zoomToMaincity)
-
-          adcodeNextLevel = prop.adcode
-          adcodeNextLevel != null && (featureStore.currentAdcodeNextLevel = adcodeNextLevel)
-        }
-      })
-    }
-  }, 100)
+        adcodeNextLevel = prop.adcode
+        adcodeNextLevel != null && (featureStore.currentAdcodeNextLevel = adcodeNextLevel)
+      }
+    })
+  }
 }
 
-// 卸载事件
-function unEvent($map, pointermoveEventName, clickEventName) {
-  if (pointermoveEventName.length) {
-    pointermoveEventName.forEach((name) => {
-      $map.un('pointermove', name)
-    })
-  } else if (pointermoveEventName == []) console.error('PointermoveEventName is empty')
-  else $map.un('pointermove', pointermoveEventName)
-  if (clickEventName.length) {
-    clickEventName.forEach((name) => {
-      $map.un('click', name)
-    })
-  } else if (clickEventName == []) console.error('clickmoveEventName is empty')
-  else $map.un('click', clickEventName)
+// test:显示图层name
+function test() {
+  let index = 0
+  $map.getLayers().forEach((layer) => {
+    console.log(`layerName${index}:`, layer.get('name'))
+    index++
+  })
+  console.log('adcodeLevel', adcodeLevel)
+  console.log('adcodeNextLevel', adcodeNextLevel)
 }
 </script>
 

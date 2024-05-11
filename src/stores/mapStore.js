@@ -57,7 +57,7 @@ export const useMapStore = defineStore('MapStore', () => {
     }
 
     // 根据adcode添加aliyun的矢量图层，并设置图层title和name
-    async function loadLayerWithPolygonByAdcodeByAliyun($map,adcode, layerTitle, layerName) {
+    async function loadLayerWithPolygonByAdcodeByAliyun($map, adcode, layerTitle, layerName) {
         if (typeof adcode !== 'number' || typeof layerTitle !== 'string' || typeof layerName !== 'string')
             return null
         const layer = await getLayerWithPolygonByAdcodeByAliyun(layerTitle, adcode)
@@ -73,14 +73,31 @@ export const useMapStore = defineStore('MapStore', () => {
         })
     }
     // 添加图层,并保持此名称图层只有一个
-    async function loadUniqueLayerWithPolygonByAdcodeByAliyun($map,adcode, layerNameUnique) {
-        alert('您即将进入下一级区划')
+    async function loadUniqueLayerWithPolygonByAdcodeByAliyun($map, adcode, layerTitle, layerNameUnique) {
         clearLayersByName($map, layerNameUnique)
-        loadLayerWithFeature(adcode, 'cityPolygon_aliyun', layerNameUnique)
+        loadLayerWithPolygonByAdcodeByAliyun($map, adcode, layerTitle, layerNameUnique)
+
     }
 
 
-    
+
+    // 卸载事件
+    function unEvent($map, pointermoveEventName, clickEventName) {
+        if (pointermoveEventName.length) {
+            pointermoveEventName.forEach((name) => {
+                $map.un('pointermove', name)
+            })
+        } else if (pointermoveEventName == []) console.error('PointermoveEventName is empty')
+        else $map.un('pointermove', pointermoveEventName)
+        if (clickEventName.length) {
+            clickEventName.forEach((name) => {
+                $map.un('click', name)
+            })
+        } else if (clickEventName == []) console.error('clickmoveEventName is empty')
+        else $map.un('click', clickEventName)
+    }
+
+
     // test fail-------------------------------------------------------------------------
     // let $map = null
     // function getMap() {
@@ -106,7 +123,8 @@ export const useMapStore = defineStore('MapStore', () => {
         getUrlAliyun,
         getLayerWithPolygonByAdcodeByAliyun,
         loadLayerWithPolygonByAdcodeByAliyun,
-        loadUniqueLayerWithPolygonByAdcodeByAliyun
+        loadUniqueLayerWithPolygonByAdcodeByAliyun,
+        unEvent
 
 
 

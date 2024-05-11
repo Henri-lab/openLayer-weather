@@ -36,6 +36,14 @@ onMounted(() => {
     $map.getView().on('change:resolution', function (e) {
       let currentZoom = $map.getView().getZoom()
       mapStore.currentZoom = parseInt(currentZoom)
+
+      if (currentZoom < 5)
+        mapStore.loadUniqueLayerWithPolygonByAdcodeByAliyun(
+          $map,
+          100000,
+          'initialPolygon_aliyun',
+          'layerLevel'
+        )
     })
     isOnMounted.value = true
   }
@@ -44,13 +52,20 @@ onMounted(() => {
 // 组件挂载后申请高level图层
 watch(
   () => isOnMounted.value,
-  async () =>
+  async () => {
     await mapStore.loadLayerWithPolygonByAdcodeByAliyun(
       $map,
       100000,
-      'provincePolygon_aliyun',
+      'cityPolygon_aliyun',
       'layerLevel'
     )
+    await mapStore.loadLayerWithPolygonByAdcodeByAliyun(
+      $map,
+      100000,
+      'initialPolygon_aliyun',
+      'entranceLayer'
+    )
+  }
 )
 
 // \\🐱‍👤//
@@ -61,9 +76,12 @@ watch(
 watch(
   () => featureStore.currentAdcodeLevel,
   async () => {
-    if (isMapCilcked) {
+    if (!isMapCilcked.value) {
+      console.log('next')
       let adcodeLevel = featureStore.currentAdcodeLevel
-      await mapStore.loadUniqueLayerWithPolygonByAdcodeByAliyun($map, adcodeLevel, 'layerNextLevel')
+      let title = 'cityPolygon_aliyun'
+      let layerName = 'layerNextLevel'
+      await mapStore.loadUniqueLayerWithPolygonByAdcodeByAliyun($map, adcodeLevel, title, layerName)
     }
   }
 )
