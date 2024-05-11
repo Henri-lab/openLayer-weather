@@ -79,7 +79,6 @@ watch(
 watch(
   () => isMapCilcked.value,
   async () => {
-    console.log('MapCilcked')
     mapStore.islayerNextLevelLoaded = false
     let title = 'cityPolygon_aliyun'
     let layerName = 'layerNextLevel'

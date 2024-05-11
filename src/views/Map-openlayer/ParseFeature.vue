@@ -80,7 +80,7 @@ onMounted(() => {
 watch(
   () => cityNameLevel.value,
   () => {
-    test()
+    // test()
     $map
       .getLayers()
       .getArray()
@@ -125,7 +125,7 @@ function text(a, b, c) {
                 `
   return text
 }
-
+let layerName = ref(null)
 // method
 function goDeeper() {
   const pointerMove_a = $map.on('pointermove', (e) => {
@@ -140,10 +140,10 @@ function goDeeper() {
       $map.getLayers().forEach((layer) => {
         if (layer.get('name') === 'layerNextLevel') {
           zoomToCurrentCityClicked_in_LayerNextLevel(e)
-          $map.getLayers().forEach((layer) => {
-            console.log('zoomTo后--layerName', layer.get('name'))
-            // if (layer.get('name') === 'layerLevel') $map.removeLayer(layer)
-            // if (layer.get('name') === 'layerNextLevel') layer.set('name', 'layerLevel')
+          $map.getLayers().getArray().forEach((layer) => {
+            // console.log('zoomTo后--layerName',  layer.get('name'))
+            if (layer.get('name') === 'layerLevel') $map.removeLayer(layer)
+            if (layer.get('name') === 'layerNextLevel') layer.set('name', 'layerLevel')
           })
         }
       })

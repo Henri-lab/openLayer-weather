@@ -67,10 +67,12 @@ export const useMapStore = defineStore('MapStore', () => {
     }
     // 根据图层name清除指定地图的图层
     function clearLayersByName($map, layerName) {
-        $map.getLayers().forEach((layer) => {
-            if (layer.get('name') === layerName) {
-                $map.removeLayer(layer)
-            }
+        $map.getLayers().getArray().forEach((layer) => {
+           
+                if (layer.get('name') === layerName) {
+                    $map.removeLayer(layer)
+                }
+            
         })
     }
     // 添加图层,并保持此名称图层只有一个
