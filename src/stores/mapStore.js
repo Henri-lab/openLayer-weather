@@ -27,7 +27,7 @@ export const useMapStore = defineStore('MapStore', () => {
     const gdTile_title = ref('basic')
 
     // 组件交流
-    islayerNextLevelLoaded=false
+    let islayerNextLevelLoaded = false
 
     // Func----------------------------
 
@@ -119,6 +119,7 @@ export const useMapStore = defineStore('MapStore', () => {
         currentZoom,
         longtitude,
         latitude,
+        islayerNextLevelLoaded,
         isPosition,
         getUrlAliyun,
         getLayerWithPolygonByAdcodeByAliyun,

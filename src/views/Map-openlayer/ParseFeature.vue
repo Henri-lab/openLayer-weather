@@ -30,11 +30,14 @@ const content = ref(null)
 
 let adcodeLevel = null
 let adcodeNextLevel = null
+// feature
+let currentLevel = null
+let nextLevel = null
 
+const cityNameLevel = ref('')
+const cityNameNextLevel = ref('')
 // click 为 pointermove加锁解锁
 let flag_isPointermoveTriggered = ref(1)
-
-const cityNameLevel = ref(0)
 
 const high_style_red = featureStyle({
   fillColor: '#FF0000'
@@ -42,10 +45,6 @@ const high_style_red = featureStyle({
 const high_style_yellow = featureStyle({
   fillColor: '#FFFF00'
 })
-
-// feature
-let currentLevel = null
-let nextLevel = ref(null)
 
 onMounted(() => {
   const app = inject('app')
@@ -94,13 +93,16 @@ watch(
 
 // 设置下一级区划矢量元素样式
 watch(
-  () => nextLevel.value,
+  () => cityNameNextLevel.value,
   () => {
-    const layers = $map
+    $map
       .getLayers()
       .getArray()
-      .filter((layer) => layer.get('name') === 'layerWithBorderNextLevel')
-    setFeaturesStyleSingle(layers, [nextLevel.value], high_style_yellow)
+      .forEach((layer) => {
+        if (layer.get('name') === 'layerLevel') {
+          setFeaturesStyleSingle([layer], [currentLevel], high_style_yellow)
+        }
+      })
   }
 )
 
@@ -137,16 +139,16 @@ function goDeeper() {
       $map.getLayers().forEach((layer) => {
         if (layer.get('name') === 'layerNextLevel') {
           zoomToCurrentCityClicked_in_LayerNextLevel(e)
-          clearInterval(untilExist_LayerNextLevel)
           $map.getLayers().forEach((layer) => {
-            if (layer.get('name') === 'layerLevel') $map.removeLayer(layer)
-            if (layer.get('name') === 'layerNextLevel') layer.set('name', 'layerLevel')
+            console.log('zoomTo后--layerName',layer.get('name'))
+            // if (layer.get('name') === 'layerLevel') $map.removeLayer(layer)
+            // if (layer.get('name') === 'layerNextLevel') layer.set('name', 'layerLevel')
           })
         }
       })
     }
 
-    await sleep(5000)
+    await sleep(1000)
     flag_isPointermoveTriggered = 1
   })
 }
@@ -182,8 +184,8 @@ function zoomToCurrentCityClicked_in_LayerNextLevel(e) {
       if (feature) {
         const prop = getPropsFromFeatureByAliyun([feature])[0]
 
-        const mainCity = prop.name
-        const view_zoomToMaincity = await getView_zoomToAddress(mainCity, { zoom: 6 })
+        cityNameNextLevel.value = prop.name
+        const view_zoomToMaincity = await getView_zoomToAddress(cityNameNextLevel.value, { zoom: 6 })
         $map.setView(view_zoomToMaincity)
 
         adcodeNextLevel = prop.adcode

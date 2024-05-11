@@ -5,7 +5,9 @@
         >您现在处于的位置:{{ location }}</span
       >
       <br />
-      <span class="now-browsing" v-show="isBrowse">点击城市：{{ mouseCity }}</span>
+      <span class="now-browsing" v-show="isBrowse"
+        >点击城市：{{ mouseCity }}<br /><span style="font-size: 10px;margin-left: 280px;" >-----由GaoDeMap提供支持</span></span
+      >
     </div>
     <div class="title" v-else>
       <span class="welcome">欢迎来到{{ defaultCity }}</span>
@@ -58,7 +60,7 @@ let gdXYZ = new ol.source.XYZ({
   wrapX: mapStore.gdXYZ_wrapX
 })
 let gdTile = new ol.layer.Tile({
-  name:' 高德矢量底图',
+  name: ' 高德矢量底图',
   title: mapStore.gdTile_title, //layer直接设置title有效🌈???
   source: gdXYZ
 })
