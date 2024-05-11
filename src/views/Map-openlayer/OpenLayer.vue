@@ -30,12 +30,8 @@ onMounted(() => {
       let hit = $map.hasFeatureAtPixel(pixel)
       $map.getTargetElement().style.cursor = hit ? 'pointer' : ''
     })
-    const click_isMapClicked = $map.on('click', async function (e) {
-      $map.on('click', async function (e) {
-          isMapCilcked.value = true
-          await sleep(1000)
-          isMapCilcked.value = false  
-      })
+    const click_isMapClicked = $map.on('click', function (e) {
+      isMapCilcked.value = !isMapCilcked.value
     })
     $map.getView().on('change:resolution', function (e) {
       let currentZoom = $map.getView().getZoom()
@@ -68,22 +64,28 @@ watch(
 )
 
 // \\🐱‍👤//
-// 当move并click某个不同的高level矢量元素时
+// 当move到不同的区划，更新adcodeLevel
+// 并click某个不同的高level矢量元素时
 // 移除先前添加的低level图层
 // 请求点击地区的图层(带矢量)
 // 添加此图层并设置名称
+let adcodeLevel = null
 watch(
   () => featureStore.currentAdcodeLevel,
+  () => {
+    adcodeLevel = featureStore.currentAdcodeLevel
+  }
+)
+watch(
+  () => isMapCilcked.value,
   async () => {
-    if (isMapCilcked.value) {
-      console.log('MapCilcked')
-      mapStore.islayerNextLevelLoaded = false
-      let adcodeLevel = featureStore.currentAdcodeLevel
-      let title = 'cityPolygon_aliyun'
-      let layerName = 'layerNextLevel'
-      await mapStore.loadUniqueLayerWithPolygonByAdcodeByAliyun($map, adcodeLevel, title, layerName)
-      mapStore.islayerNextLevelLoaded = true
-    }
+    console.log('MapCilcked')
+    mapStore.islayerNextLevelLoaded = false
+    let title = 'cityPolygon_aliyun'
+    let layerName = 'layerNextLevel'
+    await mapStore.loadUniqueLayerWithPolygonByAdcodeByAliyun($map, adcodeLevel, title, layerName)
+
+    mapStore.islayerNextLevelLoaded = true
   }
 )
 
