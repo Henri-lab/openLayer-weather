@@ -58,7 +58,7 @@ let gdXYZ = new ol.source.XYZ({
   wrapX: mapStore.gdXYZ_wrapX
 })
 let gdTile = new ol.layer.Tile({
-  name:'gdLayer',
+  name:' 高德矢量底图',
   title: mapStore.gdTile_title, //layer直接设置title有效🌈???
   source: gdXYZ
 })

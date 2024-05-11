@@ -49,7 +49,7 @@ onMounted(() => {
   }
 })
 
-// 组件挂载后申请高level图层
+// 组件挂载后添加高level图层和全国多边形矢量图层
 watch(
   () => isOnMounted.value,
   async () => {
@@ -59,12 +59,7 @@ watch(
       'cityPolygon_aliyun',
       'layerLevel'
     )
-    await mapStore.loadLayerWithPolygonByAdcodeByAliyun(
-      $map,
-      100000,
-      'initialPolygon_aliyun',
-      'entranceLayer'
-    )
+    await mapStore.loadLayerWithPolygonByAdcodeByAliyun($map, 100000, 'basic', 'entranceLayer')
   }
 )
 
@@ -77,11 +72,13 @@ watch(
   () => featureStore.currentAdcodeLevel,
   async () => {
     if (!isMapCilcked.value) {
+      mapStore.islayerNextLevelLoaded = false
       console.log('next')
       let adcodeLevel = featureStore.currentAdcodeLevel
       let title = 'cityPolygon_aliyun'
       let layerName = 'layerNextLevel'
       await mapStore.loadUniqueLayerWithPolygonByAdcodeByAliyun($map, adcodeLevel, title, layerName)
+      mapStore.islayerNextLevelLoaded = true
     }
   }
 )

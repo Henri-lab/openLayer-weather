@@ -133,7 +133,7 @@ function goDeeper() {
   $map.on('click', async (e) => {
     flag_isPointermoveTriggered = 0
 
-    const untilExist_LayerNextLevel = setInterval(() => {
+    if (mapStore.islayerNextLevelLoaded) {
       $map.getLayers().forEach((layer) => {
         if (layer.get('name') === 'layerNextLevel') {
           zoomToCurrentCityClicked_in_LayerNextLevel(e)
@@ -144,7 +144,7 @@ function goDeeper() {
           })
         }
       })
-    }, 100)
+    }
 
     await sleep(5000)
     flag_isPointermoveTriggered = 1
@@ -183,7 +183,7 @@ function zoomToCurrentCityClicked_in_LayerNextLevel(e) {
         const prop = getPropsFromFeatureByAliyun([feature])[0]
 
         const mainCity = prop.name
-        const view_zoomToMaincity = await getView_zoomToAddress(mainCity, { zoom: 6})
+        const view_zoomToMaincity = await getView_zoomToAddress(mainCity, { zoom: 6 })
         $map.setView(view_zoomToMaincity)
 
         adcodeNextLevel = prop.adcode

@@ -24,9 +24,10 @@ export const useMapStore = defineStore('MapStore', () => {
     // --openLayer objects options
     const gdXYZ_url = ref('http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}')
     const gdXYZ_wrapX = ref(false)
-    const gdTile_title = ref('gdTile')
+    const gdTile_title = ref('basic')
 
-
+    // 组件交流
+    islayerNextLevelLoaded=false
 
     // Func----------------------------
 
@@ -98,12 +99,11 @@ export const useMapStore = defineStore('MapStore', () => {
     }
 
 
-    // test fail-------------------------------------------------------------------------
-    // let $map = null
-    // function getMap() {
-    //     if ($map)
-    //         return $map;
-    // }
+
+
+
+
+
 
     return {
         animateDuration,
@@ -125,8 +125,13 @@ export const useMapStore = defineStore('MapStore', () => {
         loadLayerWithPolygonByAdcodeByAliyun,
         loadUniqueLayerWithPolygonByAdcodeByAliyun,
         unEvent
-
-
-
     }
+    // test fail-------------------------------------------------------------------------
+    // let $map = null
+    // function getMap() {
+    //     if ($map)
+    //         return $map;
+    // }
+
+
 })
