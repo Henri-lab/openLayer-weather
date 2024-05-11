@@ -32,12 +32,13 @@ let adcodeLevel = null
 let adcodeNextLevel = null
 // feature
 let currentLevel = null
-let nextLevel = null
+let currentNextLevel = null
 
 const cityNameLevel = ref('')
 const cityNameNextLevel = ref('')
 // click 为 pointermove加锁解锁
-let flag_isPointermoveTriggered = ref(1)
+// Pointermove_a事件--->执行handleCurrentFeatureProps_in_LayerNameIsLevel
+let flag_isPointermove_a_Triggered = ref(1)
 
 const high_style_red = featureStyle({
   fillColor: '#FF0000'
@@ -99,8 +100,8 @@ watch(
       .getLayers()
       .getArray()
       .forEach((layer) => {
-        if (layer.get('name') === 'layerLevel') {
-          setFeaturesStyleSingle([layer], [currentLevel], high_style_yellow)
+        if (layer.get('name') === 'layerNextLevel') {
+          setFeaturesStyleSingle([layer], [currentNextLevel], high_style_yellow)
         }
       })
   }
@@ -127,20 +128,20 @@ function text(a, b, c) {
 
 // method
 function goDeeper() {
-  $map.on('pointermove', (e) => {
-    if (flag_isPointermoveTriggered) {
+  const pointerMove_a = $map.on('pointermove', (e) => {
+    if (flag_isPointermove_a_Triggered) {
       handleCurrentFeatureProps_in_LayerNameIsLevel(e)
     }
   })
-  $map.on('click', async (e) => {
-    flag_isPointermoveTriggered = 0
+  const click_zoomTo = $map.on('click', async (e) => {
+    flag_isPointermove_a_Triggered = 0
 
     if (mapStore.islayerNextLevelLoaded) {
       $map.getLayers().forEach((layer) => {
         if (layer.get('name') === 'layerNextLevel') {
           zoomToCurrentCityClicked_in_LayerNextLevel(e)
           $map.getLayers().forEach((layer) => {
-            console.log('zoomTo后--layerName',layer.get('name'))
+            console.log('zoomTo后--layerName', layer.get('name'))
             // if (layer.get('name') === 'layerLevel') $map.removeLayer(layer)
             // if (layer.get('name') === 'layerNextLevel') layer.set('name', 'layerLevel')
           })
@@ -149,7 +150,7 @@ function goDeeper() {
     }
 
     await sleep(1000)
-    flag_isPointermoveTriggered = 1
+    flag_isPointermove_a_Triggered = 1
   })
 }
 
@@ -179,13 +180,17 @@ function handleCurrentFeatureProps_in_LayerNameIsLevel(e) {
 function zoomToCurrentCityClicked_in_LayerNextLevel(e) {
   const layerName = 'layerNextLevel'
   let featureArr = getFeatureAtPixel(e, $map, layerName)
+
   if (featureArr.length > 0) {
     featureArr.forEach(async (feature) => {
       if (feature) {
+        currentNextLevel = featureArr[0]
         const prop = getPropsFromFeatureByAliyun([feature])[0]
 
         cityNameNextLevel.value = prop.name
-        const view_zoomToMaincity = await getView_zoomToAddress(cityNameNextLevel.value, { zoom: 6 })
+        const view_zoomToMaincity = await getView_zoomToAddress(cityNameNextLevel.value, {
+          zoom: 6
+        })
         $map.setView(view_zoomToMaincity)
 
         adcodeNextLevel = prop.adcode

@@ -4,12 +4,14 @@
 
 <script setup>
 import { useMapStore } from '@/stores/mapStore'
+import { useEventStore } from '@/stores/eventStore'
 import { useFeatureStore } from '@/stores/featureStore'
 import { ref, onMounted, watch, inject } from 'vue'
 import sleep from '@/util/sleep'
 
 const mapStore = useMapStore()
 const featureStore = useFeatureStore()
+const eventStore = useEventStore()
 let $map = null
 const app = inject('app')
 const isOnMounted = ref(false)
@@ -28,10 +30,12 @@ onMounted(() => {
       let hit = $map.hasFeatureAtPixel(pixel)
       $map.getTargetElement().style.cursor = hit ? 'pointer' : ''
     })
-    $map.on('click', async function (e) {
-      isMapCilcked.value = true
-      await sleep(1)
-      isMapCilcked.value = false
+    const click_isMapClicked = $map.on('click', async function (e) {
+      $map.on('click', async function (e) {
+          isMapCilcked.value = true
+          await sleep(1000)
+          isMapCilcked.value = false  
+      })
     })
     $map.getView().on('change:resolution', function (e) {
       let currentZoom = $map.getView().getZoom()
@@ -71,9 +75,9 @@ watch(
 watch(
   () => featureStore.currentAdcodeLevel,
   async () => {
-    if (!isMapCilcked.value) {
+    if (isMapCilcked.value) {
+      console.log('MapCilcked')
       mapStore.islayerNextLevelLoaded = false
-      console.log('next')
       let adcodeLevel = featureStore.currentAdcodeLevel
       let title = 'cityPolygon_aliyun'
       let layerName = 'layerNextLevel'
